@@ -181,7 +181,7 @@ ItemBrowser:ObjectEntry/LockedChestDrops	Text		Wall destruction
 ItemBrowser:ObjectEntry/ArchaeologistDrops	Text		Wall destruction												
 ItemBrowser:ObjectEntry/Breeding	Text		Breeding												
 ItemBrowser:ObjectEntry/ChallengeArenaReward	Text		Challenge arena reward												
-ItemBrowser:ObjectEntry/StructureContents	Text		Plundering												
+ItemBrowser:ObjectEntry/StructureContents	Text		Structure plundering												
 ItemBrowser:ObjectEntry/StructureContents_NonObtainable	Text		Structure contents												
 ItemBrowser:ObjectEntry/Miscellaneous	Text		Miscellaneous												
 ItemBrowser:ObjectEntry/CreatureSummoning	Text		Summoning												
