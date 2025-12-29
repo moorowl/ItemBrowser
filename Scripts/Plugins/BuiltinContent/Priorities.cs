@@ -28,7 +28,8 @@
 		public const int Unlocking = 5300;
 		public const int Salvaging = 5200;
 		public const int StructureContents = 5100;
-		public const int UpgradeMaterial = 5000;
+		public const int TerritoryContents = 5000;
+		public const int UpgradeMaterial = 4900;
 		public const int Miscellaneous = 0;
 	}
 }

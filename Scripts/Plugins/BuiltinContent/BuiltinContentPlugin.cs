@@ -72,7 +72,8 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 				new DropsWhenDamaged.Provider(),
 				new Unlocking.Provider(),
 				new Bucketing.Provider(),
-				new CookingIngredient.Provider()
+				new CookingIngredient.Provider(),
+				new TerritoryContents.Provider()
 			};
 			
 			foreach (var provider in providers)

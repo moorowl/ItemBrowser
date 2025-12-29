@@ -191,6 +191,8 @@ ItemBrowser:ObjectEntry/UpgradeMaterial	Text		Upgrade material
 ItemBrowser:ObjectEntry/Unlocking	Text		Unlocking												
 ItemBrowser:ObjectEntry/Bucketing	Text		Bucketing												
 ItemBrowser:ObjectEntry/CookingIngredient	Text		Cooking ingredient												
+ItemBrowser:ObjectEntry/TerritoryContents	Text		Territory plundering												
+ItemBrowser:ObjectEntry/TerritoryContents_NonObtainable	Text		Territory contents												
 ItemBrowser:MoreInfo/Farming_0	Text		Grown from a {0}												
 ItemBrowser:MoreInfo/Farming_0_Normal	Text		Grown from a normal {0}												
 ItemBrowser:MoreInfo/Farming_0_Golden	Text		Grown from a golden {0}												
@@ -289,8 +291,8 @@ ItemBrowser:MoreInfo/StructureContents_1_Dungeon	Text		Found in the {0} dungeon
 ItemBrowser:MoreInfo/StructureContents_2_Scene	Text		Contains {0} total												
 ItemBrowser:MoreInfo/StructureContents_2_Dungeon	Text		Contains a varying amount												
 ItemBrowser:MoreInfo/ChallengeArenaReward_0	Text		Reward chest contents after completing a challenge arena												
-ItemBrowser:MoreInfo/ChallengeArenaReward_0_RandomPool	Text		Reward chest contents after completing a challenge arena (random pool)												
-ItemBrowser:MoreInfo/ChallengeArenaReward_0_GuaranteedPool	Text		Reward chest contents after completing a challenge arena (guaranteed pool)												
+ItemBrowser:MoreInfo/ChallengeArenaReward_0_RandomPool	Text		Reward chest contents after completing a challenge arena (secondary pool)												
+ItemBrowser:MoreInfo/ChallengeArenaReward_0_GuaranteedPool	Text		Reward chest contents after completing a challenge arena (primary pool)												
 ItemBrowser:MoreInfo/ChallengeArenaReward_1	Text		{0}% chance												
 ItemBrowser:MoreInfo/ChallengeArenaReward_1_ForOne	Text		- {0}% chance of being dropped at least once, on average												
 ItemBrowser:MoreInfo/ChallengeArenaReward_1_PerRoll	Text		- {0}% chance of being dropped per roll, in {1} rolls												
@@ -427,3 +429,9 @@ ItemBrowser:FactionNames/CrystalCreature	Text		Crystal creature
 ItemBrowser:FactionNames/MushroomEnemy	Text		Mushroom enemy												
 ItemBrowser:FactionNames/CoreBoss	Text		Core boss												
 ItemBrowser:FactionNames/PassageEnemy	Text		Passage creature												
+ItemBrowser:TerritoryType/OrangeSlime	Text		Orange slime territory												
+ItemBrowser:TerritoryType/PurpleSlime	Text		Purple slime territory												
+ItemBrowser:TerritoryType/BlueSlime	Text		Blue slime territory												
+ItemBrowser:TerritoryType/Larva	Text		Larva territory												
+ItemBrowser:TerritoryType/Caveling	Text		Caveling territory												
+ItemBrowser:TerritoryType/NatureCaveling	Text		Wilderness caveling territory												
