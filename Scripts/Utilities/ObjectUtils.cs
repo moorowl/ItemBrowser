@@ -316,11 +316,11 @@ namespace ItemBrowser.Utilities {
 			};
 
 			if (PugDatabase.TryGetComponent<HasWeaponDamageCD>(objectData, out var hasWeaponDamageCD)) {
-				if (hasWeaponDamageCD.isRange)
-					return GetDamage(id, variation, DamageCategory.PhysicalRange);
-				
 				if (hasWeaponDamageCD.isMagic)
 					return GetDamage(id, variation, DamageCategory.Magic);
+				
+				if (hasWeaponDamageCD.isRange)
+					return GetDamage(id, variation, DamageCategory.PhysicalRange);
 
 				return math.max(GetDamage(id, variation, DamageCategory.PhysicalMelee), GetDamage(id, variation, DamageCategory.Explosive));
 			}
