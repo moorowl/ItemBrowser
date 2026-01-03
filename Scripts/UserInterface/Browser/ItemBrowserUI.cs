@@ -78,7 +78,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			} else if (objectEntriesWindow.HasAnyHistory) {
 				objectEntriesWindow.PopObjectData();
 				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.GenericClose, this);
-			} else if (objectEntriesWindow.IsShowing && !_entriesOpenedOutsideOfBrowser) {
+			} else if (objectEntriesWindow.IsShowing) {
 				ShowObjectList();
 				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.GenericClose, this);
 			} else {
