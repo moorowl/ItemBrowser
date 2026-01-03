@@ -54,10 +54,10 @@ MonoBehaviour:
   checkForProfanity: 0
   isHidden: 0
   trackDynamicTextCharacterEndPositions: 0
-  localize: 0
+  localize: 1
   topAligned: 0
   languagesToForceLatinFont: 
-  localizePlaceholders: 1
+  localizePlaceholders: 0
   dontResetEffectsOnRender: 0
   hideInStreamerMode: 0
   maxWidth: 0
