@@ -93,7 +93,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		public float GetCurrentWindowHeight() {
 			if (itemSlots.Count > MAX_COLUMNS) {
 				var totalRows = math.ceil((float) _objects.Count / MAX_COLUMNS);
-				return (spread * totalRows) - (2f / 16f);
+				return spread * totalRows - 1f / 16f;
 			}
 
 			return 0f;

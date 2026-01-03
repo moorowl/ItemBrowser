@@ -11,6 +11,8 @@ namespace ItemBrowser.UserInterface.Browser {
 		private const int MaxCategoryButtons = 8;
 		
 		[SerializeField]
+		private DetailsPanel detailsPanel;
+		[SerializeField]
 		private SelectedItemSlot selectedItemSlot;
 		[SerializeField]
 		private ObjectEntriesList objectEntriesList;
@@ -51,6 +53,7 @@ namespace ItemBrowser.UserInterface.Browser {
 
 		protected override void OnShow(bool isFirstTimeShowing) {
 			TrySelectSelectedItemSlot();
+			AdjustWindowPosition();
 		}
 
 		private void LateUpdate() {
@@ -122,6 +125,10 @@ namespace ItemBrowser.UserInterface.Browser {
 			_history.Clear();
 			_objectData = default;
 		}
+		
+		private void AdjustWindowPosition() {
+			transform.localPosition = new Vector3(Mathf.Round(detailsPanel.IsShowing ? -(detailsPanel.WindowWidth / 2f + (1f / 16f)) : 0f), transform.localPosition.y, transform.localPosition.z);
+		}
 
 		private void TrySelectSelectedItemSlot() {
 			if (!UserInterfaceUtils.IsUsingMouseAndKeyboard)
@@ -171,6 +178,8 @@ namespace ItemBrowser.UserInterface.Browser {
 				prevTypeButton.canBeClicked = true;
 				prevTypeButton.SetCategoryAndType(0, 0, NextType, allEntriesOfOtherType.Count, allEntriesOfOtherType.First().Category);
 			}
+			
+			detailsPanel.SetObjectData(_objectData);
 			
 			if (_entries.Count == 0)
 				return;

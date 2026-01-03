@@ -18,6 +18,8 @@ namespace ItemBrowser.UserInterface.Browser {
 		[SerializeField]
 		private float headerPaddingBottom = 0.4375f;
 		[SerializeField]
+		private float headerHeight = 0.875f;
+		[SerializeField]
 		private float filterSpread = 0.625f;
 
 		private readonly List<FilterButton> _filterButtons = new();
@@ -56,7 +58,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 		
 		public void AddFilter(Filter<ObjectDataCD> filter) {
-			if (_left >= 32f / 10f) {
+			if (_left >= 52f / 10f) {
 				_left = 0f;
 				_top -= filterSpread;
 			}
@@ -78,7 +80,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public void Clear() {
-			_top = headerPaddingTop;
+			_top = headerHeight / 2f;
 			_filterButtons.Clear();
 			childElements.Clear();
 			scrollWindow.ResetScroll();	
@@ -108,7 +110,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public float GetCurrentWindowHeight() {
-			return Mathf.Abs(_top) + 1f;
+			return Mathf.Abs(_top) + (filterSpread / 2f);
 		}
 	}
 }
