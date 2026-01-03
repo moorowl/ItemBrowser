@@ -54,7 +54,7 @@ MonoBehaviour:
   checkForProfanity: 0
   isHidden: 0
   trackDynamicTextCharacterEndPositions: 0
-  localize: 1
+  localize: 0
   topAligned: 0
   languagesToForceLatinFont: 
   localizePlaceholders: 1
@@ -182,14 +182,6 @@ MonoBehaviour:
   onElementDeselectedEvent:
     m_PersistentCalls:
       m_Calls: []
-  topMostUIElements:
-  - {fileID: 9122015134071768588}
-  - {fileID: 8110691323894934873}
-  - {fileID: 1175822458289469767}
-  bottomMostUIElements:
-  - {fileID: 9122015134071768588}
-  - {fileID: 8110691323894934873}
-  - {fileID: 1175822458289469767}
   moreInfoButton: {fileID: 1175822458289469767}
   resultSlot: {fileID: 8110691323894934873}
   entitySlot: {fileID: 9122015134071768588}

@@ -1,6 +1,7 @@
 ﻿using ItemBrowser.Api.Entries;
 using ItemBrowser.UserInterface.Browser;
 using ItemBrowser.Utilities;
+using PugMod;
 using UnityEngine;
 
 namespace ItemBrowser.Plugins.BuiltinContent.Entries {
@@ -26,10 +27,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 				objectID = Entry.Entity.Id,
 				variation = Entry.Entity.Variation
 			});
-			damageToDropText.formatFields = new[] {
-				Entry.DamageRequiredToDrop.ToString()
-			};
-			damageToDropText.Render("ItemBrowser:AmountPerDamage");
+			damageToDropText.Render(string.Format(API.Localization.GetLocalizedTerm("ItemBrowser:AmountPerDamage"), Entry.DamageRequiredToDrop));
 		}
 
 		private void RenderMoreInfo() {
