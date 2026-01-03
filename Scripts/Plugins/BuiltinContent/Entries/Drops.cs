@@ -223,6 +223,9 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 					var entity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, pugDatabaseBankBlob, objectData.variation);
 					if (entity == Unity.Entities.Entity.Null || !ObjectUtils.IsPrimaryVariation(objectData.objectID, objectData.variation))
 						continue;
+
+					if (ObjectUtils.GetCategories(objectData.objectID).Contains("NonObtainable/Other"))
+						continue;
 					
 					AddEntriesFromPrefab(API.Client.World, objectData, entity);
 					
