@@ -91,6 +91,9 @@ namespace ItemBrowser.UserInterface.Browser {
 			UpdateGoBack();
 			HideMapAndInventoryIfShowing();
 			UpdateSwapToInventory();
+
+			if (Manager.main.player != null && Manager.main.player.guestMode)
+				IsShowing = false;
 		}
 
 		private void UpdateScale() {
