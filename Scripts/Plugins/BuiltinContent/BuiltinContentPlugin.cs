@@ -148,7 +148,8 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 						LocalizeNameFormatFields = false,
 						DescriptionFormatFields = new[] { displayName },
 						LocalizeDescriptionFormatFields = false,
-						Function = objectData => itemIds.Contains(objectData)
+						Function = objectData => itemIds.Contains(objectData),
+						Group = sourceGroup
 					});
 				}
 				
@@ -158,7 +159,8 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 						LocalizeNameFormatFields = false,
 						DescriptionFormatFields = new[] { displayName },
 						LocalizeDescriptionFormatFields = false,
-						Function = objectData => creatureIds.Contains(objectData)
+						Function = objectData => creatureIds.Contains(objectData),
+						Group = sourceGroup
 					});	
 				}
 			}
@@ -168,22 +170,28 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 			// Item damage
 			const string damageGroup = "ItemBrowser:Filters/Damage";
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_AnyDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation) > 0
+				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation) > 0,
+				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_PhysicalMeleeDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.PhysicalMelee) > 0
+				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.PhysicalMelee) > 0,
+				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_PhysicalRangeDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.PhysicalRange) > 0
+				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.PhysicalRange) > 0,
+				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_MagicDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.Magic) > 0
+				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.Magic) > 0,
+				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_SummonDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.Summon) > 0
+				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.Summon) > 0,
+				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_ExplosiveDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.Explosive) > 0
+				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.Explosive) > 0,
+				Group = damageGroup
 			});
 		}
 		
@@ -197,7 +205,8 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 						return true;
 
 					return PugDatabase.TryGetComponent<SecondaryUseCD>(objectData, out var secondaryUse) && secondaryUse.summonsMinion;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Tool") {
 				Function = objectData => {
@@ -209,70 +218,82 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return ObjectUtils.ArmorObjectTypes.Contains(objectType);
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Helm") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Helm;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_BreastArmor") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.BreastArmor;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_PantsArmor") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.PantsArmor;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Accessory") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return ObjectUtils.AccessoryObjectTypes.Contains(objectType);
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Ring") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Ring;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Necklace") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Necklace;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_OffHand") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Offhand;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Bag") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Bag;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Pouch") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Pouch;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Lantern") {
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Lantern;
-				}
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Pet") {
-				Function = objectData => PugDatabase.HasComponent<PetCD>(objectData)
+				Function = objectData => PugDatabase.HasComponent<PetCD>(objectData),
+				Group = equipmentGroup
 			});
 		}
 		
@@ -283,19 +304,24 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 				Function = objectData => !ObjectCategoryTagsCD.HasTag(PugDatabase.GetComponent<ObjectCategoryTagsCD>(objectData).tagsBitMask, ObjectCategoryTag.NonHostileCreature)
 				                         && !PugDatabase.HasComponent<CattleCD>(objectData)
 				                         && !PugDatabase.HasComponent<CritterCD>(objectData)
-				                         && !PugDatabase.HasComponent<MerchantCD>(objectData)
+				                         && !PugDatabase.HasComponent<MerchantCD>(objectData),
+				Group = typeGroup
 			});
 			registry.AddCreatureFilter(typeGroup, new Filter<ObjectDataCD>($"{typeGroup}_Boss") {
-				Function = objectData => PugDatabase.HasComponent<BossCD>(objectData) || ObjectUtils.GetCategories(objectData.objectID).Contains("Boss/BossCreature")
+				Function = objectData => PugDatabase.HasComponent<BossCD>(objectData) || ObjectUtils.GetCategories(objectData.objectID).Contains("Boss/BossCreature"),
+				Group = typeGroup
 			});
 			registry.AddCreatureFilter(typeGroup, new Filter<ObjectDataCD>($"{typeGroup}_Merchant") {
-				Function = PugDatabase.HasComponent<MerchantCD>
+				Function = PugDatabase.HasComponent<MerchantCD>,
+				Group = typeGroup
 			});
 			registry.AddCreatureFilter(typeGroup, new Filter<ObjectDataCD>($"{typeGroup}_Cattle") {
-				Function = PugDatabase.HasComponent<CattleCD>
+				Function = PugDatabase.HasComponent<CattleCD>,
+                                                             				Group = typeGroup
 			});
 			registry.AddCreatureFilter(typeGroup, new Filter<ObjectDataCD>($"{typeGroup}_Critter") {
-				Function = PugDatabase.HasComponent<CritterCD>
+				Function = PugDatabase.HasComponent<CritterCD>,
+				Group = typeGroup
 			});
 		}
 		
@@ -383,7 +409,8 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 					DescriptionFormatFields = new[] {
 						$"ItemBrowser:FactionNames/{faction}"
 					},
-					Function = objectData => PugDatabase.TryGetComponent<FactionCD>(objectData, out var factionCD) && factionCD.faction == faction
+					Function = objectData => PugDatabase.TryGetComponent<FactionCD>(objectData, out var factionCD) && factionCD.faction == faction,
+					Group = factionGroup
 				});
 			}
 		}
@@ -393,7 +420,8 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 			const string rarityGroup = "ItemBrowser:Filters/Rarity";
 			foreach (var rarity in Enum.GetValues(typeof(Rarity)).Cast<Rarity>()) {
 				registry.AddItemFilter(rarityGroup, new Filter<ObjectDataCD>($"{rarityGroup}_{rarity}") {
-					Function = objectData => PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).rarity == rarity
+					Function = objectData => PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).rarity == rarity,
+					Group = rarityGroup
 				});
 			}
 		}
@@ -408,7 +436,8 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 					LocalizeNameFormatFields = false,
 					DescriptionFormatFields = new[] { i.ToString() },
 					LocalizeDescriptionFormatFields = false,
-					Function = objectData => ObjectUtils.GetBaseLevel(objectData.objectID, objectData.variation) == level
+					Function = objectData => ObjectUtils.GetBaseLevel(objectData.objectID, objectData.variation) == level,
+					Group = levelGroup
 				});
 			}
 		}
@@ -423,7 +452,8 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 						LocalizeNameFormatFields = false,
 						DescriptionFormatFields = new[] { version.Name },
 						LocalizeDescriptionFormatFields = false,
-						Function = objectData => version.Objects.Contains(objectData.objectID)
+						Function = objectData => version.Objects.Contains(objectData.objectID),
+						Group = versionGroup
 					});	
 				}
 				if (version.HasAnyCreatures) {
@@ -432,7 +462,8 @@ namespace ItemBrowser.Plugins.BuiltinContent {
 						LocalizeNameFormatFields = false,
 						DescriptionFormatFields = new[] { version.Name },
 						LocalizeDescriptionFormatFields = false,
-						Function = objectData => version.Objects.Contains(objectData.objectID)
+						Function = objectData => version.Objects.Contains(objectData.objectID),
+						Group = versionGroup
 					});
 				}
 			}

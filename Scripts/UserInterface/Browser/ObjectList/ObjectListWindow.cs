@@ -80,7 +80,7 @@ namespace ItemBrowser.UserInterface.Browser {
 				_lastSearchTerm = currentSearchTerm;
 			}
 
-			if (PrimaryFiltersPanel.HasDynamicFiltersEnabled && Time.time >= _refreshedListTime + DynamicFiltersRefreshInterval)
+			if ((PrimaryFiltersPanel.HasDynamicFiltersEnabled || Options.DefaultDiscoveredFilter) && Time.time >= _refreshedListTime + DynamicFiltersRefreshInterval)
 				RequestListRefresh(true);
 			
 			if (_refreshList) {
@@ -202,8 +202,8 @@ namespace ItemBrowser.UserInterface.Browser {
 		private bool MatchesFilters(ObjectDataCD objectData) {
 			return _searchFilter.Function(objectData)
 			       && (!Options.DefaultDiscoveredFilter || ObjectUtils.HasBeenDiscovered(objectData.objectID, objectData.variation, true))
-			       && PrimaryFiltersPanel.FiltersToInclude.All(filter => filter.Matches(objectData))
-			       && !PrimaryFiltersPanel.FiltersToExclude.Any(filter => filter.Matches(objectData));
+			       && PrimaryFiltersPanel.FiltersToInclude.All(group => group.Any(filter => filter.Matches(objectData)))
+			       && !PrimaryFiltersPanel.FiltersToExclude.Any(group => group.Any(filter => filter.Matches(objectData)));
 		}
 	}
 }

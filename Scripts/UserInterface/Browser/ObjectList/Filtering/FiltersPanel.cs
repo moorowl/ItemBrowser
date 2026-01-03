@@ -33,12 +33,14 @@ namespace ItemBrowser.UserInterface.Browser {
 		public bool HasDynamicFiltersEnabled => _filterButtons.Any(button => button.Filter.FunctionIsDynamic && button.CurrentState != FilterState.None);
 		public bool DisplayItemCraftingRequirements => _filterButtons.Any(button => button.Filter.CausesItemCraftingRequirementsToDisplay && button.CurrentState != FilterState.None);
 		
-		public IEnumerable<Filter<ObjectDataCD>> FiltersToInclude => _filterButtons
+		public IEnumerable<IEnumerable<Filter<ObjectDataCD>>> FiltersToInclude => _filterButtons
 			.Where(filterButton => filterButton.CurrentState == FilterState.Include)
-			.Select(filterButton => filterButton.Filter);
-		public IEnumerable<Filter<ObjectDataCD>> FiltersToExclude => _filterButtons
+			.Select(filterButton => filterButton.Filter)
+			.GroupBy(filter => filter.Group ?? filter.Name);
+		public IEnumerable<IEnumerable<Filter<ObjectDataCD>>> FiltersToExclude => _filterButtons
 			.Where(filterButton => filterButton.CurrentState == FilterState.Exclude)
-			.Select(filterButton => filterButton.Filter);
+			.Select(filterButton => filterButton.Filter)
+			.GroupBy(filter => filter.Group ?? filter.Name);
 		
 		public void AddHeader(string term) {
 			_left = 0f;
