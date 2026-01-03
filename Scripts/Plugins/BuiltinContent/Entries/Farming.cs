@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Api.Entries;
+using PugProperties;
 using UnityEngine;
 
 namespace ItemBrowser.Plugins.BuiltinContent.Entries {
@@ -15,22 +16,29 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 		
 		public class Provider : ObjectEntryProvider {
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
-				foreach (var (objectData, authoring) in allObjects) {
-					if (objectData.variation != 0 || !authoring.TryGetComponent<SeedAuthoring>(out var seedAuthoring))
+				foreach (var (objectData, _) in allObjects) {
+					if (objectData.variation != 0 || !PugDatabase.TryGetComponent<ObjectPropertiesCD>(objectData, out var objectPropertiesCD))
 						continue;
 
-					var turnsIntoPlant = seedAuthoring.turnsIntoPlantID;
-					var turnsIntoPlantVariationRare = seedAuthoring.rarePlantVariation;
+					if (!objectPropertiesCD.Has(PropertyID.isSeed))
+						continue;
 
-					var seedGrowthSettings = seedAuthoring.growingSettings;
-					var growthTime = seedGrowthSettings.timeBetweenStages * seedGrowthSettings.highestStage;
+					var turnsIntoPlant = objectPropertiesCD.Get<ObjectID>(PropertyID.Seed.turnsIntoPlantID);
+					var turnsIntoPlantVariationRare = objectPropertiesCD.Get<int>(PropertyID.Seed.rarePlantVariation);
 
-					var plantAuthoring = allObjects.First(x => x.ObjectData.objectID == turnsIntoPlant && x.ObjectData.variation == 0).Authoring.GetComponent<PlantAuthoring>();
-					var plantGrowthSettings = plantAuthoring.growingSettings;
-					growthTime += plantGrowthSettings.timeBetweenStages * plantGrowthSettings.highestStage;
-
+					var timeBetweenStages = objectPropertiesCD.Get<float>(PropertyID.Growing.timeBetweenStages);;
+					var highestStage = objectPropertiesCD.Get<int>(PropertyID.Growing.highestStage);
+					var growthTime = timeBetweenStages * highestStage;
+					
+					if (!PugDatabase.TryGetComponent<PlantCD>(turnsIntoPlant, out var plantCD) || !PugDatabase.TryGetComponent<ObjectPropertiesCD>(turnsIntoPlant, out var plantObjectPropertiesCD))
+						continue;
+					
+					var plantTimeBetweenStages = plantObjectPropertiesCD.Get<float>(PropertyID.Growing.timeBetweenStages);;
+					var plantHighestStage = plantObjectPropertiesCD.Get<int>(PropertyID.Growing.highestStage);
+					growthTime += plantTimeBetweenStages * plantHighestStage;
+					
 					var normalEntry = new Farming {
-						Result = plantAuthoring.objectToDropWhenHarvested,
+						Result = plantCD.objectToDropWhenHarvested,
 						Seed = objectData.objectID,
 						RequiresGoldSeed = false,
 						HasGoldSeed = turnsIntoPlantVariationRare > 0,
@@ -39,10 +47,9 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 					registry.Register(ObjectEntryType.Source, normalEntry.Result, 0, normalEntry);
 					registry.Register(ObjectEntryType.Usage, normalEntry.Seed, 0, normalEntry);
 
-					if (turnsIntoPlantVariationRare > 0) {
-						var rarePlantAuthoring = allObjects.First(x => x.ObjectData.objectID == turnsIntoPlant && x.ObjectData.variation == turnsIntoPlantVariationRare).Authoring.GetComponent<PlantAuthoring>();
+					if (turnsIntoPlantVariationRare > 0 && PugDatabase.TryGetComponent<PlantCD>(new ObjectData { objectID = turnsIntoPlant, variation = turnsIntoPlantVariationRare }, out var rarePlantCD)) {
 						var goldEntry = new Farming {
-							Result = rarePlantAuthoring.objectToDropWhenHarvested,
+							Result = rarePlantCD.objectToDropWhenHarvested,
 							Seed = objectData.objectID,
 							RequiresGoldSeed = true,
 							HasGoldSeed = true,
