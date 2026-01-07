@@ -109,9 +109,9 @@ ItemBrowser:Filters/Utility_CraftableDesc	Text		Items currently craftable using 
 ItemBrowser:Filters/Utility_Discovered	Text		Discovered												
 ItemBrowser:Filters/Utility_DiscoveredDesc	Text		Items that you've picked up before												
 ItemBrowser:Filters/Utility_Technical_Item	Text		Technical												
-ItemBrowser:Filters/Utility_Technical_ItemDesc	Text		Items that are generally irrelevant to normal gameplay and can't be obtained without cheats												
+ItemBrowser:Filters/Utility_Technical_ItemDesc	Text		Items that are generally irrelevant to normal gameplay												
 ItemBrowser:Filters/Utility_Technical_Creature	Text		Technical												
-ItemBrowser:Filters/Utility_Technical_CreatureDesc	Text		Creatures that are generally irrelevant to normal gameplay and can't be spawned without cheats												
+ItemBrowser:Filters/Utility_Technical_CreatureDesc	Text		Creatures that are generally irrelevant to normal gameplay												
 ItemBrowser:Filters/Utility_CookingIngredient	Text		Cooking ingredient												
 ItemBrowser:Filters/Utility_CookingIngredientDesc	Text		Items that are cooking ingredients												
 ItemBrowser:Filters/Utility_Paintable	Text		Paintable												
