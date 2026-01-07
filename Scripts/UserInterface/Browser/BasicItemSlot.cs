@@ -38,6 +38,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		
 		public bool IsSelected => hoverBorder.gameObject.activeSelf;
 		public bool IsFavorited => Options.FavoritedObjects.Contains(FavoritedKey);
+		public bool CanBeFavorited => FavoritedKey.objectID != ObjectID.None;
 		private ObjectDataCD FavoritedKey => new() {
 			objectID = DisplayedObject.ContainedObject.objectID,
 			variation = DisplayedObject.ContainedObject.variation
@@ -96,7 +97,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		private void UpdateFavoriting() {
 			var input = Manager.input.singleplayerInputModule;
 			
-			if (IsSelected && input.WasButtonPressedDownThisFrame(PlayerInput.InputType.LOCKING_TOGGLE)) {
+			if (IsSelected && CanBeFavorited && input.WasButtonPressedDownThisFrame(PlayerInput.InputType.LOCKING_TOGGLE)) {
 				if (IsFavorited) {
 					UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.Unfavorite, this);
 					Options.FavoritedObjects.Remove(FavoritedKey);
