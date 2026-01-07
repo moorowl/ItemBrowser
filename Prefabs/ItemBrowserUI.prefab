@@ -10586,7 +10586,7 @@ MonoBehaviour:
   darkBackground: {fileID: 0}
   hoverBorder: {fileID: 3766530911561826165}
   activeBorder: {fileID: 0}
-  highlightBorder: {fileID: 8707189142357310467}
+  highlightBorder: {fileID: 0}
   dontWrapAroundNavigation: 0
   upgradeIcon: {fileID: 0}
   upgradeSprites: []
@@ -10608,7 +10608,7 @@ MonoBehaviour:
   - {fileID: 1397301432, guid: 687549f5a63866d4a9267afe38240b1b, type: 3}
   - {fileID: -2138394407, guid: 687549f5a63866d4a9267afe38240b1b, type: 3}
   - {fileID: 190261337, guid: 687549f5a63866d4a9267afe38240b1b, type: 3}
-  favoritedBorder: {fileID: 0}
+  favoritedBorder: {fileID: 1961159166797110560}
   preferSmallIcons: 0
   linksSource: 0
   linksUsage: 0

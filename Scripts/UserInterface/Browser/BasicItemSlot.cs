@@ -87,8 +87,10 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 
 			var isDiscovered = IsDiscovered;
-			if (isDiscovered != _wasDiscovered)
+			if (isDiscovered != _wasDiscovered) {
 				UpdateVisuals();
+				_wasDiscovered = isDiscovered;
+			}
 
 			if (IsSelected)
 				UpdateCheatObjectIn();
@@ -276,7 +278,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		public void UpdateVisuals() {
 			background.sprite = rarityBorders[0];
 			if (favoritedBorder != null)
-				favoritedBorder.gameObject.SetActive(false);
+				favoritedBorder.gameObject.SetActive(IsFavorited);
 
 			var visualObject = DisplayedObject.VisualObject;
 			RenderAmountNumberRange(DisplayedObject.Amount);
