@@ -64,7 +64,9 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public bool ShowObjectEntries(ObjectDataCD objectData, ObjectEntryType type) {
-			if (!objectEntriesWindow.PushObjectData(objectData, type, false)) {
+			if (!IsShowing && objectData.Equals(objectEntriesWindow.SelectedObject)) {
+				IsShowing = true;
+			} else if (!objectEntriesWindow.PushObjectData(objectData, type, false)) {
 				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.NoSourcesOrUsages, this);
 				return false;
 			}

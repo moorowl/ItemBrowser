@@ -35,12 +35,11 @@ namespace ItemBrowser.UserInterface.Browser {
 		[SerializeField]
 		private float categoryButtonGap;
 		
-		private ObjectDataCD _objectData;
 		private List<List<ObjectEntry>> _entries = new();
-
 		private readonly List<ChangeCategoryAndTypeButton> _categoryButtons = new();
 		private readonly Stack<(ObjectDataCD ObjectData, ObjectEntryType SelectedType, int SelectedCategory, float ScrollProgress)> _history = new();
 		
+		public ObjectDataCD SelectedObject { get; private set; }
 		public ObjectEntryType SelectedType { get; private set; }
 		public int SelectedCategory { get; private set; }
 		public bool HasAnyHistory => _history.Count > 0;
@@ -91,7 +90,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public bool PushObjectData(ObjectDataCD objectData, ObjectEntryType initialSelectedType, bool clearHistory) {
-			if (objectData.Equals(_objectData) && initialSelectedType == SelectedType)
+			if (objectData.Equals(SelectedObject) && initialSelectedType == SelectedType)
 				return false;
 			
 			var entries = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(initialSelectedType, objectData.objectID, objectData.variation);
@@ -100,11 +99,11 @@ namespace ItemBrowser.UserInterface.Browser {
 
 			if (clearHistory) {
 				_history.Clear();
-			} else if (_objectData.objectID != ObjectID.None && !_objectData.Equals(objectData)) {
-				_history.Push((_objectData, SelectedType, SelectedCategory, objectEntriesList.CurrentScrollProgress));
+			} else if (SelectedObject.objectID != ObjectID.None && !SelectedObject.Equals(objectData)) {
+				_history.Push((SelectedObject, SelectedType, SelectedCategory, objectEntriesList.CurrentScrollProgress));
 			}
 
-			_objectData = objectData;
+			SelectedObject = objectData;
 			SetTypeAndCategory(initialSelectedType, 0);
 
 			return true;
@@ -114,8 +113,8 @@ namespace ItemBrowser.UserInterface.Browser {
 			if (!_history.TryPop(out var state))
 				return false;
 			
-			_objectData = state.ObjectData;
-			Main.Log("ObjectEntriesWindow", $"Restoring entry list state for {_objectData.objectID}:{_objectData.variation} ({state.SelectedType}/{state.SelectedCategory}, {state.ScrollProgress * 100f}%)");
+			SelectedObject = state.ObjectData;
+			Main.Log("ObjectEntriesWindow", $"Restoring entry list state for {SelectedObject.objectID}:{SelectedObject.variation} ({state.SelectedType}/{state.SelectedCategory}, {state.ScrollProgress * 100f}%)");
 			SetTypeAndCategory(state.SelectedType, state.SelectedCategory, state.ScrollProgress);
 
 			return true;
@@ -123,7 +122,7 @@ namespace ItemBrowser.UserInterface.Browser {
 
 		public void Clear() {
 			_history.Clear();
-			_objectData = default;
+			SelectedObject = default;
 		}
 		
 		private void AdjustWindowPosition() {
@@ -139,9 +138,9 @@ namespace ItemBrowser.UserInterface.Browser {
 			SelectedType = type;
 			SelectedCategory = Math.Clamp(category, 0, Math.Max(_entries.Count - 1, 0));
 
-			IsSelectedObjectNonObtainable = ObjectUtils.IsNonObtainable(_objectData.objectID, _objectData.variation);
-			var allEntriesOfSelectedType = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(SelectedType, _objectData.objectID, _objectData.variation).ToList();
-			var allEntriesOfOtherType = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(NextType, _objectData.objectID, _objectData.variation).ToList();
+			IsSelectedObjectNonObtainable = ObjectUtils.IsNonObtainable(SelectedObject.objectID, SelectedObject.variation);
+			var allEntriesOfSelectedType = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(SelectedType, SelectedObject.objectID, SelectedObject.variation).ToList();
+			var allEntriesOfOtherType = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(NextType, SelectedObject.objectID, SelectedObject.variation).ToList();
 			
 			_entries = allEntriesOfSelectedType
 				.GroupBy(details => details.Category.GetTitle(IsSelectedObjectNonObtainable))
@@ -149,7 +148,7 @@ namespace ItemBrowser.UserInterface.Browser {
 				.OrderByDescending(entries => entries.First().Category.Priority)
 				.ToList();
 
-			selectedItemSlot.SetObjectData(_objectData);
+			selectedItemSlot.SetObjectData(SelectedObject);
 			TrySelectSelectedItemSlot();
 			
 			var typeHeaderTerm = IsSelectedObjectNonObtainable
@@ -179,7 +178,7 @@ namespace ItemBrowser.UserInterface.Browser {
 				prevTypeButton.SetCategoryAndType(0, 0, NextType, allEntriesOfOtherType.Count, allEntriesOfOtherType.First().Category);
 			}
 			
-			detailsPanel.SetObjectData(_objectData);
+			detailsPanel.SetObjectData(SelectedObject);
 			
 			if (_entries.Count == 0)
 				return;
@@ -209,7 +208,7 @@ namespace ItemBrowser.UserInterface.Browser {
 				prevCategoryButton.SetCategoryAndType(prevCategoryIndex, 0, SelectedType, allEntriesOfSelectedType.Count, prevCategory);
 			}
 			
-			objectEntriesList.SetEntries(_objectData, details, scrollProgress);
+			objectEntriesList.SetEntries(SelectedObject, details, scrollProgress);
 		}
 
 		public void SetCategory(int category) {
