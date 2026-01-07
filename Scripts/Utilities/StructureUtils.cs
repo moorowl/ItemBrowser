@@ -58,6 +58,29 @@ namespace ItemBrowser.Utilities {
 						ScenesThatSpawnInCurrentWorld.Add(name);
 				}
 			}
+
+			foreach (var dungeon in GetAllRandomDungeons()) {
+				foreach (var scene in GetAllScenesInDungeon(dungeon.Entity)) {
+					ScenesThatSpawnInAnyWorld.Add(scene);
+
+					if (CanBiomeGenerate(currentWorldGenType, dungeon.BiomeSpawnEntry.biome.Get(currentWorldGenType)))
+						ScenesThatSpawnInCurrentWorld.Add(scene);
+				}
+			}
+			
+			foreach (var dungeon in GetAllUniqueDungeons()) {
+				foreach (var scene in GetAllScenesInDungeon(dungeon.Entity)) {
+					ScenesThatSpawnInAnyWorld.Add(scene);
+				}
+			}
+			
+			for (var i = 0; i < customScenesTable.scenes.Length; i++) {
+				ref var customScene = ref customScenesTable.scenes[i];
+				var name = GetPersistentSceneName(customScene.sceneName.ToString());
+
+				if (!ScenesThatSpawnInAnyWorld.Contains(name))
+					Main.Log(nameof(StructureUtils), $"Scene {name} doesn't spawn in any world");
+			}
 		}
 		
 		public static string GetPersistentSceneName(string sceneName) {
@@ -86,52 +109,69 @@ namespace ItemBrowser.Utilities {
 				_ => false
 			};
 		}
+
+		private static HashSet<string> GetAllScenesInDungeon(Entity dungeon) {
+			var roomsThatSpawn = new HashSet<RoomFlags>();
+			var scenes = new HashSet<string>();
+					
+			if (EntityUtility.TryGetBuffer<DungeonRoomPlacementBuffer>(dungeon, API.Client.World, out var dungeonRoomPlacementBuffer)) {
+				foreach (var dungeonRoomPlacement in dungeonRoomPlacementBuffer) {
+					var room = dungeonRoomPlacement.Value;
+					if (room.amount.max <= 0)
+						continue;
+
+					roomsThatSpawn.UnionWith(SeparateFlags(room.roomType));
+				}
+			}
+
+			if (EntityUtility.TryGetBuffer<DungeonCustomSceneGroupBuffer>(dungeon, API.Client.World, out var dungeonCustomSceneGroupBuffer)) {
+				foreach (var dungeonCustomSceneGroup in dungeonCustomSceneGroupBuffer) {
+					if (dungeonCustomSceneGroup.maxSpawns <= 0)
+						continue;
+					
+					var spawnsInRooms = SeparateFlags(dungeonCustomSceneGroup.roomType);
+					if (!roomsThatSpawn.Any(x => spawnsInRooms.Contains(x)))
+						continue;
+
+					foreach (var customScene in dungeonCustomSceneGroup.customScenes)
+						scenes.Add(GetPersistentSceneName(customScene.name.ToString()));
+				}
+			}
+			
+			return scenes;
+		}
 		
-		public static HashSet<(Entity Entity, string Name, float SpawnValue, WorldGenerationTypeDependentValue<Biome> Biome)> GetAllRandomDungeons() {
-			var dungeons = new HashSet<(Entity Entity, string Name, float SpawnValue, WorldGenerationTypeDependentValue<Biome> Biome)>();
+		public static HashSet<(Entity Entity, string Name, DungeonSpawnTableBuffer SpawnEntry, DungeonBiomeSpawnTableBuffer BiomeSpawnEntry)> GetAllRandomDungeons() {
+			var dungeons = new HashSet<(Entity Entity, string Name, DungeonSpawnTableBuffer SpawnEntry, DungeonBiomeSpawnTableBuffer BiomeSpawnEntry)>();
 
 			// Biome-specific dungeons
 			var dungeonBiomeSpawnTableBuffer = API.Client.GetEntityQuery(typeof(DungeonBiomeSpawnTableBuffer)).GetSingletonBuffer<DungeonBiomeSpawnTableBuffer>(true);
 			foreach (var biomeSpawnTable in dungeonBiomeSpawnTableBuffer) {
 				foreach (var dungeon in EntityUtility.GetBuffer<DungeonSpawnTableBuffer>(biomeSpawnTable.tableEntity, API.Client.World))
-					dungeons.Add((dungeon.prefabEntity, dungeon.name.ToString(), dungeon.spawnValue, biomeSpawnTable.biome));
+					dungeons.Add((dungeon.prefabEntity, dungeon.name.ToString(), dungeon, biomeSpawnTable));
 			}
 			
 			return dungeons;
 		}
 		
-		public static HashSet<(Entity Entity, string Name)> GetAllUniqueDungeons() {
-			var dungeons = new HashSet<(Entity Entity, string Name)>();
-
-			// Biome-specific dungeons
-			using var dungeonSpawnTableBufferEntities = API.Client.GetEntityQuery(typeof(DungeonSpawnTableBuffer)).ToEntityArray(Allocator.Temp);
-			foreach (var dungeonSpawnTableBufferEntity in dungeonSpawnTableBufferEntities) {
-				foreach (var dungeonSpawnTable in EntityUtility.GetBuffer<DungeonSpawnTableBuffer>(dungeonSpawnTableBufferEntity, API.Client.World))
-					dungeons.Add((dungeonSpawnTable.prefabEntity, dungeonSpawnTable.name.ToString()));
-			}
+		public static HashSet<(Entity Entity, string Name, PugWorldGenCD SpawnEntry)> GetAllUniqueDungeons() {
+			var dungeons = new HashSet<(Entity Entity, string Name, PugWorldGenCD SpawnEntry)>();
 			
-			// Guaranteed dungeons
 			using var pugWorldGenCDs = API.Client.GetEntityQuery(typeof(PugWorldGenCD)).ToComponentDataArray<PugWorldGenCD>(Allocator.Temp);
 			foreach (var pugWorldGenCD in pugWorldGenCDs)
-				dungeons.Add((pugWorldGenCD.entity, pugWorldGenCD.name.ToString()));
+				dungeons.Add((pugWorldGenCD.entity, pugWorldGenCD.name.ToString(), pugWorldGenCD));
 
 			return dungeons;
 		}
-
+		
 		public static HashSet<(Entity Entity, string Name)> GetAllDungeons() {
 			var dungeons = new HashSet<(Entity Entity, string Name)>();
 
-			// Biome-specific dungeons
-			using var dungeonSpawnTableBufferEntities = API.Client.GetEntityQuery(typeof(DungeonSpawnTableBuffer)).ToEntityArray(Allocator.Temp);
-			foreach (var dungeonSpawnTableBufferEntity in dungeonSpawnTableBufferEntities) {
-				foreach (var dungeonSpawnTable in EntityUtility.GetBuffer<DungeonSpawnTableBuffer>(dungeonSpawnTableBufferEntity, API.Client.World))
-					dungeons.Add((dungeonSpawnTable.prefabEntity, dungeonSpawnTable.name.ToString()));
-			}
+			foreach (var dungeon in GetAllRandomDungeons())
+				dungeons.Add((dungeon.Entity, dungeon.Name));
 			
-			// Guaranteed dungeons
-			using var pugWorldGenCDs = API.Client.GetEntityQuery(typeof(PugWorldGenCD)).ToComponentDataArray<PugWorldGenCD>(Allocator.Temp);
-			foreach (var pugWorldGenCD in pugWorldGenCDs)
-				dungeons.Add((pugWorldGenCD.entity, pugWorldGenCD.name.ToString()));
+			foreach (var dungeon in GetAllUniqueDungeons())
+				dungeons.Add((dungeon.Entity, dungeon.Name));
 
 			return dungeons;
 		}
