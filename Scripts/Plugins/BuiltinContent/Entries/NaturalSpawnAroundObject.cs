@@ -19,7 +19,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 		public int SpawnLimit { get; set; }
 		public (float Min, float Max) SpawnLimitReachedCooldown { get; set; }
 		public Season? SpawnsInSeason { get; set; }
-		public Biome? SpawnsInBiome { get; set; }
+		public List<Biome> SpawnsInBiomes { get; set; } = new();
 		public bool NeedToBeInsideBiome { get; set; }
 		public Tileset? SpawnsInTileset { get; set; }
 		
@@ -32,47 +32,39 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 						continue;
 
 					foreach (var spawn in spawnAroundObjectAuthoring.spawnEntries) {
-						var spawnsInBiomes = spawn.spawnsInBiome.ToList();
-						if (spawnsInBiomes.Count == 0)
-							spawnsInBiomes.Add(Biome.None);
-						
 						if (spawn.spawnCrittersInsteadOfObject) {
 							foreach (var critter in allCritters) {
-								foreach (var biome in critter.Biomes) {
-									foreach (var tileset in critter.Tilesets) {
-										var entry = new NaturalSpawnAroundObject {
-											Result = (critter.Id, 0),
-											Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData.objectID, objectData.variation)),
-											DespawnRadius = spawn.critterDespawnDistance,
-											SpawnRadius = spawn.maxSpawnDistance,
-											SpawnCooldown = (spawn.minSpawnCooldown, spawn.maxSpawnCooldown),
-											SpawnLimit = spawn.limitNumberSpawned,
-											SpawnLimitReachedCooldown = (spawn.minReachedLimitCooldown, spawn.maxReachedLimitCooldown),
-											SpawnsInSeason = spawn.onlySpawnsInSeason != Season.None ? spawn.onlySpawnsInSeason : null,
-											SpawnsInBiome = biome != Biome.None ? biome : null,
-											NeedToBeInsideBiome = spawn.playerNeedsToBeInsideBiome,
-											SpawnsInTileset = tileset != Tileset.MAX_VALUE ? tileset : null
-										};
-										registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
-									}
+								foreach (var tileset in critter.Tilesets) {
+									var entry = new NaturalSpawnAroundObject {
+										Result = (critter.Id, 0),
+										Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData.objectID, objectData.variation)),
+										DespawnRadius = spawn.critterDespawnDistance,
+										SpawnRadius = spawn.maxSpawnDistance,
+										SpawnCooldown = (spawn.minSpawnCooldown, spawn.maxSpawnCooldown),
+										SpawnLimit = spawn.limitNumberSpawned,
+										SpawnLimitReachedCooldown = (spawn.minReachedLimitCooldown, spawn.maxReachedLimitCooldown),
+										SpawnsInSeason = spawn.onlySpawnsInSeason != Season.None ? spawn.onlySpawnsInSeason : null,
+										SpawnsInBiomes = critter.Biomes,
+										NeedToBeInsideBiome = spawn.playerNeedsToBeInsideBiome,
+										SpawnsInTileset = tileset != Tileset.MAX_VALUE ? tileset : null
+									};
+									registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
 								}
 							}
 						} else {
-							foreach (var biome in spawnsInBiomes) {
-								var entry = new NaturalSpawnAroundObject {
-									Result = (spawn.objectToSpawn.objectID, ObjectUtils.GetPrimaryVariation(spawn.objectToSpawn.objectID, spawn.objectToSpawn.variation)),
-									Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData.objectID, objectData.variation)),
-									DespawnRadius = spawn.critterDespawnDistance,
-									SpawnRadius = spawn.maxSpawnDistance,
-									SpawnCooldown = (spawn.minSpawnCooldown, spawn.maxSpawnCooldown),
-									SpawnLimit = spawn.limitNumberSpawned,
-									SpawnLimitReachedCooldown = (spawn.minReachedLimitCooldown, spawn.maxReachedLimitCooldown),
-									SpawnsInSeason = spawn.onlySpawnsInSeason != Season.None ? spawn.onlySpawnsInSeason : null,
-									SpawnsInBiome = biome != Biome.None ? biome : null,
-									NeedToBeInsideBiome = spawn.playerNeedsToBeInsideBiome
-								};
-								registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
-							}
+							var entry = new NaturalSpawnAroundObject {
+								Result = (spawn.objectToSpawn.objectID, ObjectUtils.GetPrimaryVariation(spawn.objectToSpawn.objectID, spawn.objectToSpawn.variation)),
+								Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData.objectID, objectData.variation)),
+								DespawnRadius = spawn.critterDespawnDistance,
+								SpawnRadius = spawn.maxSpawnDistance,
+								SpawnCooldown = (spawn.minSpawnCooldown, spawn.maxSpawnCooldown),
+								SpawnLimit = spawn.limitNumberSpawned,
+								SpawnLimitReachedCooldown = (spawn.minReachedLimitCooldown, spawn.maxReachedLimitCooldown),
+								SpawnsInSeason = spawn.onlySpawnsInSeason != Season.None ? spawn.onlySpawnsInSeason : null,
+								SpawnsInBiomes = spawn.spawnsInBiome.ToList(),
+								NeedToBeInsideBiome = spawn.playerNeedsToBeInsideBiome
+							};
+							registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
 						}
 					}
 				}

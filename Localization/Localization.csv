@@ -252,7 +252,7 @@ ItemBrowser:MoreInfo/NaturalSpawnRespawn_6	Text		- Chance decay: {0}
 ItemBrowser:MoreInfo/NaturalSpawnRespawn_7	Text		- Max. spawns per tile: {0}												
 ItemBrowser:MoreInfo/NaturalSpawnRespawn_8	Text		- Max. spawns per event: {0}												
 ItemBrowser:MoreInfo/NaturalSpawnRespawn_9	Text		- Min. suitable tiles: {0}												
-ItemBrowser:MoreInfo/NaturalSpawnAroundObject_0_SpecificBiome	Text		Spawns periodically around {0}, in {1}												
+ItemBrowser:MoreInfo/NaturalSpawnAroundObject_0_SpecificBiome	Text		Spawns periodically around {0}, in any of the following biomes:												
 ItemBrowser:MoreInfo/NaturalSpawnAroundObject_0_AnyBiome	Text		Spawns periodically around {0}, in any biome												
 ItemBrowser:MoreInfo/NaturalSpawnAroundObject_0_SpecificTile	Text		Spawns periodically around {0}, on {1}												
 ItemBrowser:MoreInfo/NaturalSpawnAroundObject_1	Text		Player must be within the biome												
@@ -263,6 +263,7 @@ ItemBrowser:MoreInfo/NaturalSpawnAroundObject_5	Text		- Despawn radius: {0}
 ItemBrowser:MoreInfo/NaturalSpawnAroundObject_6	Text		- Spawn limit (within radius): {0}												
 ItemBrowser:MoreInfo/NaturalSpawnAroundObject_7	Text		- Spawn cooldown: {0}-{1} sec												
 ItemBrowser:MoreInfo/NaturalSpawnAroundObject_8	Text		- Spawn cooldown after reaching limit: {0}-{1} sec												
+ItemBrowser:MoreInfo/NaturalSpawnAroundObject_9	Text		- {0}												
 ItemBrowser:MoreInfo/TerrainGeneration_0	Text		Generates in {0}												
 ItemBrowser:MoreInfo/TerrainGeneration_1	Text		Found embedded within {0}												
 ItemBrowser:MoreInfo/Drops_0	Text		Dropped by {0}												

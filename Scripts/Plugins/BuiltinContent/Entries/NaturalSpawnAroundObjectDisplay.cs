@@ -41,9 +41,9 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 			plusTextRight.gameObject.SetActive(false);
 			plusTextLeft.gameObject.SetActive(false);
 			
-			if (Entry.SpawnsInBiome != null) {
+			if (Entry.SpawnsInBiomes.Count > 0) {
 				biomeOrTilesetSlot.gameObject.SetActive(true);
-				biomeOrTilesetSlot.DisplayedObject = new DisplayedObject.BiomeIcon(Entry.SpawnsInBiome.Value);
+				biomeOrTilesetSlot.DisplayedObject = new DisplayedObject.BiomeIcon(Entry.SpawnsInBiomes.ToArray());
 				plusTextRight.gameObject.SetActive(true);
 			}
 			if (Entry.SpawnsInTileset != null) {
@@ -52,7 +52,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 				plusTextRight.gameObject.SetActive(true);
 			}
 			if (Entry.SpawnsInSeason != null) {
-				if (Entry.SpawnsInBiome == null && Entry.SpawnsInBiome == null) {
+				if (Entry.SpawnsInBiomes.Count == 0) {
 					biomeOrTilesetSlot.gameObject.SetActive(true);
 					biomeOrTilesetSlot.DisplayedObject = new DisplayedObject.SeasonIcon(Entry.SpawnsInSeason.Value);
 					plusTextRight.gameObject.SetActive(true);
@@ -65,16 +65,25 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 		}
 
 		private void RenderMoreInfo() {
-			if (Entry.SpawnsInBiome != null) {
+			if (Entry.SpawnsInBiomes.Count > 0) {
 				MoreInfo.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_0_SpecificBiome",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(Entry.Entity.Id, Entry.Entity.Variation),
-						API.Localization.GetLocalizedTerm($"BiomeNames/{Entry.SpawnsInBiome}")
+						ObjectUtils.GetLocalizedDisplayNameOrDefault(Entry.Entity.Id, Entry.Entity.Variation)
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtils.DescriptionColor
 				});
+
+				foreach (var biome in Entry.SpawnsInBiomes) {
+					MoreInfo.AddLine(new TextAndFormatFields {
+						text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_9",
+						formatFields = new[] {
+							$"BiomeNames/{biome}"
+						},
+						color = UserInterfaceUtils.DescriptionColor
+					});
+				}
 			} else if (Entry.SpawnsInTileset != null) {
 				MoreInfo.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_0_SpecificTile",
