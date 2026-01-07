@@ -274,7 +274,6 @@ ItemBrowser:MoreInfo/Drops_1_ForOne	Text		- {0}% chance of being dropped at leas
 ItemBrowser:MoreInfo/Drops_1_PerRoll	Text		- {0}% chance of being dropped per roll, in {1} rolls												
 ItemBrowser:MoreInfo/Drops_2	Text		Can only drop when {0} is the closest biome out of Azeos' Wilderness, The Sunken Sea and The Desert of Beginnings												
 ItemBrowser:MoreInfo/Drops_3	Text		Can only drop during {0}												
-ItemBrowser:MoreInfo/Drops_4	Text		Drop chances, rolls and amounts are based on a player count of {0}												
 ItemBrowser:MoreInfo/Drops_5	Text		Only found in the following scenes:												
 ItemBrowser:MoreInfo/Drops_6	Text		- {0}												
 ItemBrowser:MoreInfo/Loot_0	Text		Looted from {0}												
@@ -403,10 +402,8 @@ ItemBrowser:MiscellaneousDesc/FallenRockEvent	Text		Falls from the ceiling durin
 ItemBrowser:MiscellaneousDesc/OctopusTentacleEvent	Text		Appears from the water rarely while exploring The Sunken Sea												
 ItemBrowser:MiscellaneousDesc/BombScarabEvent	Text		Appears from the ground rarely while exploring The Desert of Beginnings												
 ItemBrowser:MiscellaneousDesc/SnarePlant	Text		Occasionally planted by {0}												
-ItemBrowser:ToggleBrowserPC	Text		Item Browser: Toggle browser												
-ItemBrowser:ShowUsagesPC	Text		Item Browser: Show usages												
-ItemBrowser:ShowSourcesPC	Text		Item Browser: Show sources												
-ItemBrowser:FavoritePC	Text		Item Browser: Add to favorites												
+ItemBrowser:MiscellaneousDesc/CoreBoss	Text		Contained inside the Crystal Meteorite												
+ItemBrowser:MiscellaneousDesc/WallBoss	Text		Spawned during world generation												
 ItemBrowser:FactionNames/None	Text		None												
 ItemBrowser:FactionNames/Larva	Text		Larva												
 ItemBrowser:FactionNames/Caveling	Text		Caveling												
@@ -436,3 +433,5 @@ ItemBrowser:TerritoryType/BlueSlime	Text		Blue slime territory
 ItemBrowser:TerritoryType/Larva	Text		Larva territory												
 ItemBrowser:TerritoryType/Caveling	Text		Caveling territory												
 ItemBrowser:TerritoryType/NatureCaveling	Text		Wilderness caveling territory												
+ItemBrowser:DynamicValues/PlayerCountAndWorldMode	Text		Values are affected by world mode and player count												
+ItemBrowser:DynamicValues/PlayerCount	Text		Values are affected by player count												

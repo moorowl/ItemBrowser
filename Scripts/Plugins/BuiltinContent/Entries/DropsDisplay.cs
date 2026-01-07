@@ -111,41 +111,35 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 					color = UserInterfaceUtils.DescriptionColor
 				});
 			}
-
-			var playerCount = WorldUtils.ClientPlayerCount;
-			if (Entry.OnlyDropsInBiome != Biome.None || Entry.OnlyDropsInSeason != Season.None || playerCount > 1) {
+			
+			if (Entry.OnlyDropsInBiome != Biome.None) {
 				MoreInfo.AddPadding();
+				MoreInfo.AddLine(new TextAndFormatFields {
+					text = "ItemBrowser:MoreInfo/Drops_2",
+					formatFields = new[] {
+						$"BiomeNames/{Entry.OnlyDropsInBiome}"
+					},
+					color = UserInterfaceUtils.DescriptionColor
+				});
+			}
 
-				if (Entry.OnlyDropsInBiome != Biome.None) {
-					MoreInfo.AddLine(new TextAndFormatFields {
-						text = "ItemBrowser:MoreInfo/Drops_2",
-						formatFields = new[] {
-							$"BiomeNames/{Entry.OnlyDropsInBiome}"
-						},
-						color = UserInterfaceUtils.DescriptionColor
-					});	
-				}
-				
-				if (Entry.OnlyDropsInSeason != Season.None) {
-					MoreInfo.AddLine(new TextAndFormatFields {
-						text = "ItemBrowser:MoreInfo/Drops_3",
-						formatFields = new[] {
-							$"Seasons/{Entry.OnlyDropsInSeason}"
-						},
-						color = UserInterfaceUtils.DescriptionColor
-					});	
-				}
-
-				if (playerCount > 1) {
-					MoreInfo.AddLine(new TextAndFormatFields {
-						text = "ItemBrowser:MoreInfo/Drops_4",
-						formatFields = new[] {
-							playerCount.ToString()
-						},
-						dontLocalizeFormatFields = true,
-						color = UserInterfaceUtils.DescriptionColor
-					});	
-				}
+			if (Entry.OnlyDropsInSeason != Season.None) {
+				MoreInfo.AddPadding();
+				MoreInfo.AddLine(new TextAndFormatFields {
+					text = "ItemBrowser:MoreInfo/Drops_3",
+					formatFields = new[] {
+						$"Seasons/{Entry.OnlyDropsInSeason}"
+					},
+					color = UserInterfaceUtils.DescriptionColor
+				});	
+			}
+			
+			if (Entry.IsAffectedByPlayerCount || Entry.IsAffectedByWorldMode) {
+				MoreInfo.AddPadding();
+				MoreInfo.AddLine(new TextAndFormatFields {
+					text = Entry.IsAffectedByPlayerCount && Entry.IsAffectedByWorldMode ? "ItemBrowser:DynamicValues/PlayerCountAndWorldMode" : "ItemBrowser:DynamicValues/PlayerCount",
+					color = UserInterfaceUtils.DescriptionColor
+				});	
 			}
 		}
 		

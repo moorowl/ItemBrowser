@@ -25,6 +25,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 		public Season OnlyDropsInSeason { get; set; }
 		public bool IsFromGuaranteedPool { get; set; }
 		public bool IsFromTableWithGuaranteedPool { get; set; }
+		public bool IsAffectedByPlayerCount { get; set; }
+		public bool IsAffectedByWorldMode { get; set; }
 		public List<(string Name, int Amount)> FoundInScenes { get; set; } = new();
 
 		public virtual bool Equals(Drops other) {
@@ -42,7 +44,9 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 			       && OnlyDropsInBiome == other.OnlyDropsInBiome
 			       && OnlyDropsInSeason == other.OnlyDropsInSeason
 			       && IsFromGuaranteedPool == other.IsFromGuaranteedPool
-			       && IsFromTableWithGuaranteedPool == other.IsFromTableWithGuaranteedPool;
+			       && IsFromTableWithGuaranteedPool == other.IsFromTableWithGuaranteedPool
+			       && IsAffectedByPlayerCount == other.IsAffectedByPlayerCount
+			       && IsAffectedByWorldMode == other.IsAffectedByWorldMode;
 		}
 		
 		public override int GetHashCode() {
@@ -59,6 +63,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 			hashCode.Add((int) OnlyDropsInSeason);
 			hashCode.Add(IsFromGuaranteedPool);
 			hashCode.Add(IsFromTableWithGuaranteedPool);
+			hashCode.Add(IsAffectedByPlayerCount);
+			hashCode.Add(IsAffectedByWorldMode);
 			return hashCode.ToHashCode();
 		}
 
@@ -162,7 +168,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 									var scaledAmount = LootUtils.GetMultiplayerScaledAmount(drop.amount, drop.multiplayerAmountAdditionScaling);
 									return (scaledAmount, scaledAmount);
 								},
-								Rolls = () => (1, 1)
+								Rolls = () => (1, 1),
+								IsAffectedByPlayerCount = drop.multiplayerAmountAdditionScaling > 0
 							};
 							AddNormalOrSceneEntry(entry.Result.Id, entry.Result.Variation, optionalSceneName, entry);
 						}
@@ -170,7 +177,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 					
 					// Drops from table
 					if (EntityUtility.TryGetComponentData<DropsLootFromLootTableCD>(entity, world, out var dropsLootFromLootTableCD)) {
-						var isBoss = PugDatabase.HasComponent<BossCD>(objectData);
+						var isBoss = EntityUtility.HasComponentData<BossCD>(entity, world);
 						foreach (var drop in LootUtils.GetLootTableContents(dropsLootFromLootTableCD.lootTableID)) {
 							var entry = new Drops {
 								Result = (drop.ObjectId, 0),
@@ -181,7 +188,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 								Rolls = () => isBoss ? drop.CalculateRollsForBosses() : drop.CalculateRolls(),
 								OnlyDropsInBiome = drop.OnlyDropsInBiome,
 								IsFromGuaranteedPool = drop.IsFromGuaranteedPool,
-								IsFromTableWithGuaranteedPool = drop.TableHasGuaranteedPool
+								IsFromTableWithGuaranteedPool = drop.TableHasGuaranteedPool,
+								IsAffectedByWorldMode = isBoss
 							};
 							AddNormalOrSceneEntry(entry.Result.Id, entry.Result.Variation, optionalSceneName, entry);
 						}
@@ -246,7 +254,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 										return (scaledAmount, scaledAmount);
 									},
 									Rolls = () => (1, 1),
-									OnlyDropsInSeason = group.season
+									OnlyDropsInSeason = group.season,
+									IsAffectedByPlayerCount = drop.multiplayerAmountAdditionScaling > 0
 								};
 								AddNormalEntry(entry.Result.Id, entry.Result.Variation, entry);
 							}
