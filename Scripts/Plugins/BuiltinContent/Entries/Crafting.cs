@@ -117,7 +117,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 						RequiresObjectNearby = parchmentRecipe.requiresNearbyObject
 					};
 					registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
-					registry.Register(ObjectEntryType.Usage, entry.Station, 0, entry);
+					registry.Register(ObjectEntryType.Usage, entry.Recipe, 0, entry);
 					foreach (var ingredient in ObjectUtils.GroupAndSumObjects(objectToCraftInfo.requiredObjectsToCraft))
 						registry.Register(ObjectEntryType.Usage, ingredient.objectID, 0, entry);
 				}
