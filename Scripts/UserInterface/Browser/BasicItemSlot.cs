@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using ItemBrowser.Api;
 using ItemBrowser.Api.Entries;
 using ItemBrowser.Utilities;
 using PlayerEquipment;
 using Pug.UnityExtensions;
+using PugMod;
 using UnityEngine;
 
 namespace ItemBrowser.UserInterface.Browser {
@@ -13,6 +16,8 @@ namespace ItemBrowser.UserInterface.Browser {
 		private ColorReplacer colorReplacer;
 		[SerializeField]
 		private Sprite[] rarityBorders;
+		[SerializeField]
+		private GameObject favoritedBorder;
 		[SerializeField]
 		private bool preferSmallIcons;
 		[SerializeField]
@@ -37,17 +42,25 @@ namespace ItemBrowser.UserInterface.Browser {
 			objectID = DisplayedObject.ContainedObject.objectID,
 			variation = DisplayedObject.ContainedObject.variation
 		};
+		public bool IsDiscoveredTemporarily => Time.time <= _temporaryShowUndiscoveredObjectUntil;
+		public bool IsDiscovered => !Options.DefaultDiscoveredFilter
+		                            || DisplayedObject.ContainedObject.objectID == ObjectID.None
+		                            || IsDiscoveredTemporarily
+		                            || ObjectUtils.HasBeenDiscovered(DisplayedObject.ContainedObject.objectID, DisplayedObject.ContainedObject.variation, true);
 
 		private BoxCollider _boxCollider;
 		private UIScrollWindow _scrollWindow;
 		private Transform _displayTransform;
+		
+		private float _temporaryShowUndiscoveredObjectUntil;
+		private bool _wasDiscovered;
 		
 		public override float localScrollPosition => transform.localPosition.y + (_displayTransform != null ? _displayTransform.localPosition.y : -0.625f);
 		private bool ShowHoverWindow => _scrollWindow == null || _scrollWindow.IsShowingPosition(localScrollPosition);
 		public override bool isVisibleOnScreen => ShowHoverWindow && base.isVisibleOnScreen;
 		public override UIScrollWindow uiScrollWindow => _scrollWindow;
 		
-		public static bool CanCheatInObjects => Options.CheatMode && (Manager.saves.IsCreativeModeCharacter() || Manager.main.player.adminPrivileges >= 1);
+		public static bool CanCheatInObjects => Options.CheatMode && CheatModeButton.CanBeToggled;
 		
 		protected override void Awake() {
 			base.Awake();
@@ -67,10 +80,17 @@ namespace ItemBrowser.UserInterface.Browser {
 
 			_displayedObject.Update(this);
 			
-			if (highlightBorder != null) {
+			if (favoritedBorder != null) {
 				UpdateFavoriting();
-				highlightBorder.gameObject.SetActive(IsFavorited);
+				favoritedBorder.gameObject.SetActive(IsFavorited);
 			}
+
+			var isDiscovered = IsDiscovered;
+			if (isDiscovered != _wasDiscovered)
+				UpdateVisuals();
+
+			if (IsSelected)
+				UpdateCheatObjectIn();
 		}
 
 		private void UpdateFavoriting() {
@@ -90,6 +110,16 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 		}
 
+		private void UpdateCheatObjectIn() {
+			var containedObjectData = _displayedObject.ContainedObject.objectData;
+			if (containedObjectData.objectID == ObjectID.None || !InputHandler.IsSpawnItemPressed || !CanCheatInObjects)
+				return;
+			
+			var player = Manager.main.player;
+			player.playerCommandSystem.CreateAndDropEntity(containedObjectData.objectID, player.WorldPosition, CanPickUpTen(containedObjectData) ? 10 : 1, player.entity, containedObjectData.variation);
+			UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.AddObjectToInventory, this);
+		}
+
 		protected virtual void OnFavoritedStateChanged() { }
 
 		public override void OnSelected() {
@@ -104,16 +134,8 @@ namespace ItemBrowser.UserInterface.Browser {
 		public override void OnLeftClicked(bool mod1, bool mod2) {
 			base.OnLeftClicked(mod1, mod2);
 
-			var input = Manager.input.singleplayerInputModule;
-			var containedObjectData = _displayedObject.ContainedObject.objectData;
-			
-			if (containedObjectData.objectID != ObjectID.None && input.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_HALF) && CanCheatInObjects) {
-				var pickUpTen = mod1 && PugDatabase.GetObjectInfo(containedObjectData.objectID, containedObjectData.variation) is { isStackable: true };
-
-				var player = Manager.main.player;
-				player.playerCommandSystem.CreateAndDropEntity(containedObjectData.objectID, player.WorldPosition, pickUpTen ? 10 : 1, player.entity, containedObjectData.variation);
-				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.AddObjectToInventory, this);
-				
+			if (!IsDiscovered && !IsDiscoveredTemporarily) {
+				SetDiscoveredTemporarily();
 				return;
 			}
 
@@ -124,14 +146,33 @@ namespace ItemBrowser.UserInterface.Browser {
 		public override void OnRightClicked(bool mod1, bool mod2) {
 			base.OnRightClicked(mod1, mod2);
 
+			if (!IsDiscovered && !IsDiscoveredTemporarily) {
+				SetDiscoveredTemporarily();
+				return;
+			}
+
 			if (linksUsage)
 				_displayedObject.ShowEntries(this, ObjectEntryType.Usage);
 		}
 
+		private void SetDiscoveredTemporarily() {
+			_temporaryShowUndiscoveredObjectUntil = Time.time + 10f;
+		}
+
 		public override TextAndFormatFields GetHoverTitle() {
+			if (!IsDiscovered) {
+				return new TextAndFormatFields {
+					text = "ItemBrowser:Undiscovered"
+				};
+			}
+			
 			var title = _displayedObject.GetHoverTitle(this);
 			var visualObject = _displayedObject.VisualObject;
 			var amount = _displayedObject.Amount;
+			var isDiscovered = IsDiscovered;
+
+			if (!IsDiscovered)
+				title.text = API.Localization.GetLocalizedTerm("ItemBrowser:Undiscovered");
 			
 			if (showAmountInTitle && visualObject.objectID != ObjectID.None && amount.Max > 1) {
 				return new TextAndFormatFields {
@@ -141,7 +182,7 @@ namespace ItemBrowser.UserInterface.Browser {
 						amount.Min != amount.Max ? $"{amount.Min}-{amount.Max}" : amount.Min.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = Manager.text.GetRarityColor(PugDatabase.GetObjectInfo(visualObject.objectID).rarity)
+					color = isDiscovered ? Manager.text.GetRarityColor(PugDatabase.GetObjectInfo(visualObject.objectID).rarity) : Color.white
 				};
 			}
 
@@ -149,6 +190,9 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 		
 		public override List<TextAndFormatFields> GetHoverDescription() {
+			if (!IsDiscovered)
+				return new List<TextAndFormatFields>();
+			
 			var lines = _displayedObject.GetHoverDescription(this) ?? new List<TextAndFormatFields>();
 			
 			var containedObjectData = _displayedObject.ContainedObject.objectData;
@@ -160,19 +204,21 @@ namespace ItemBrowser.UserInterface.Browser {
 					});	
 				}
 				
-				if (CanCheatInObjects) {
-					lines.Add(new TextAndFormatFields {
-						text = "ItemBrowser:CheatModeEnabled",
-						color = Manager.ui.brokenColor
-					});
-				}
+				if (linksSource && ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, containedObjectData).Any())
+					UserInterfaceUtils.AppendButtonHint(lines, "ItemBrowser:ButtonHint/ViewSource", "UIInteract");
+				
+				if (linksUsage && ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Usage, containedObjectData).Any())
+					UserInterfaceUtils.AppendButtonHint(lines, "ItemBrowser:ButtonHint/ViewUsage", "UISecondInteract");
+				
+				if (CanCheatInObjects)
+					UserInterfaceUtils.AppendButtonHint(lines, CanPickUpTen(containedObjectData) ? "ItemBrowser:ButtonHint/GiveTen" : "ItemBrowser:ButtonHint/GiveOne", "ControlMapper/ItemBrowser:SpawnItem");
 			}
 			
 			return lines;
 		}
 		
 		public override List<TextAndFormatFields> GetHoverStats(bool previewReinforced) {
-			return _displayedObject.GetHoverStats(this, previewReinforced);
+			return !IsDiscovered ? new List<TextAndFormatFields>() : _displayedObject.GetHoverStats(this, previewReinforced);
 		}
 		
 		public override bool GetDurabilityOrFullnessOrXp(out int durability, out int maxDurability, out AmountType amountType) {
@@ -219,7 +265,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		protected override ContainedObjectsBuffer GetSlotObject() {
-			return _displayedObject.ContainedObject;
+			return IsDiscovered ? _displayedObject.ContainedObject : default;
 		}
 		
 		public override UIelement GetAdjacentUIElement(Direction.Id dir, Vector3 currentPosition) {
@@ -228,8 +274,8 @@ namespace ItemBrowser.UserInterface.Browser {
 
 		public void UpdateVisuals() {
 			background.sprite = rarityBorders[0];
-			if (highlightBorder != null)
-				highlightBorder.gameObject.SetActive(false);
+			if (favoritedBorder != null)
+				favoritedBorder.gameObject.SetActive(false);
 
 			var visualObject = DisplayedObject.VisualObject;
 			RenderAmountNumberRange(DisplayedObject.Amount);
@@ -243,7 +289,7 @@ namespace ItemBrowser.UserInterface.Browser {
 				return;
 			}
 
-			if (!PugDatabase.TryGetObjectInfo(visualObject.objectID, out var objectInfo, visualObject.variation)) {
+			if (!PugDatabase.TryGetObjectInfo(visualObject.objectID, out var objectInfo, visualObject.variation) || !IsDiscovered) {
 				SetMissingIcon();
 				return;
 			}
@@ -308,6 +354,12 @@ namespace ItemBrowser.UserInterface.Browser {
 			var equipmentSlotType = PlayerController.GetEquippedSlotTypeForObjectType(objectType, default, default, default);
 
 			return objectType != ObjectType.ThrowingWeapon && CarriedEquipmentSlotTypes.Contains(equipmentSlotType);
+		}
+		
+		private static bool CanPickUpTen(ObjectDataCD objectData) {
+			return InputHandler.IsPickUpTenHeld && PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation) is {
+				isStackable: true
+			};
 		}
 	}
 }
