@@ -49,6 +49,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 										SpawnsInTileset = tileset != Tileset.MAX_VALUE ? tileset : null
 									};
 									registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
+									registry.Register(ObjectEntryType.Usage, entry.Entity.Id, entry.Entity.Variation, entry);
 								}
 							}
 						} else {
@@ -65,6 +66,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 								NeedToBeInsideBiome = spawn.playerNeedsToBeInsideBiome
 							};
 							registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
+							registry.Register(ObjectEntryType.Usage, entry.Entity.Id, entry.Entity.Variation, entry);
 						}
 					}
 				}
