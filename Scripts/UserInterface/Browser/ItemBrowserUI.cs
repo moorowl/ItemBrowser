@@ -11,7 +11,9 @@ namespace ItemBrowser.UserInterface.Browser {
 	public class ItemBrowserUI : ItemBrowserWindow {
 		public static event Action<ItemBrowserUI> OnInit;
 		public static event Action<ItemBrowserUI> OnUninit;
-		
+
+		[SerializeField]
+		private Transform windows;
 		[SerializeField]
 		private ObjectListContainerWindow objectListContainerWindow;
 		[SerializeField]
@@ -38,8 +40,10 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 			
 			UpdateScale();
-			HideMapAndInventoryIfShowing();
+			HideMapIfShowing();
 			PlayToggleSound();
+			
+			Manager.input.SetActiveInputField(null);
 		}
 
 		protected override void OnHide() {
@@ -89,7 +93,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		private void LateUpdate() {
 			UpdateScale();
 			UpdateGoBack();
-			HideMapAndInventoryIfShowing();
+			HideMapIfShowing();
 			UpdateSwapToInventory();
 
 			if (Manager.main.player != null && Manager.main.player.guestMode)
@@ -97,7 +101,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		private void UpdateScale() {
-			transform.localScale = Manager.ui.CalcGameplayUITargetScaleMultiplier();
+			windows.localScale = Manager.ui.CalcGameplayUITargetScaleMultiplier();
 		}
 		
 		private void UpdateGoBack() {
@@ -110,19 +114,14 @@ namespace ItemBrowser.UserInterface.Browser {
 
 		private void UpdateSwapToInventory() {
 			var player = Manager.main.player;
-			if (player.guestMode)
-				return;
-
-			if (player.inputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.TOGGLE_INVENTORY)) {
-				player.OpenPlayerInventory();
-				IsShowing = false;
-			}
+			if (!player.guestMode && player.inputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.TOGGLE_INVENTORY))
+				if (Manager.ui.isPlayerInventoryShowing)
+					player.CloseAnyOpenInventory();
+				else
+					player.OpenPlayerInventory();
 		}
 		
-		private static void HideMapAndInventoryIfShowing() {
-			if (Manager.ui.isAnyInventoryShowing)
-				Manager.ui.HideAllInventoryAndCraftingUI();
-			
+		private static void HideMapIfShowing() {
 			if (Manager.ui.isShowingMap)
 				Manager.ui.HideMap();
 		}
@@ -202,7 +201,21 @@ namespace ItemBrowser.UserInterface.Browser {
 					__result = true;
 			}
 			
-			[HarmonyPatch(typeof(InGameButtonHintsUI), "LateUpdate")]
+			[HarmonyPatch(typeof(ItemSlotsBarUI), "Update")]
+			[HarmonyPostfix]
+			private static void ItemSlotsBarUI_Update(ItemSlotsBarUI __instance) {
+				if (ItemBrowserAPI.ItemBrowserUI != null && ItemBrowserAPI.ItemBrowserUI.IsShowing && !Manager.ui.isPlayerInventoryShowing && !__instance.itemSlotsRoot.activeSelf && !__instance.isHintHotbar)
+					__instance.itemSlotsRoot.SetActive(true);
+			}
+			
+			[HarmonyPatch(typeof(ShortCutsWindow), "LateUpdate")]
+			[HarmonyPostfix]
+			private static void ShortCutsWindow_LateUpdate(ShortCutsWindow __instance) {
+				if (ItemBrowserAPI.ItemBrowserUI != null && ItemBrowserAPI.ItemBrowserUI.IsShowing)
+					__instance.HideUI();
+			}
+			
+			/*[HarmonyPatch(typeof(InGameButtonHintsUI), "LateUpdate")]
 			[HarmonyPrefix]
 			private static bool InGameButtonHintsUI_LateUpdate(InGameButtonHintsUI __instance) {
 				// Hide button hints in bottom right
@@ -211,6 +224,13 @@ namespace ItemBrowser.UserInterface.Browser {
 				
 				__instance.container.SetActive(false);
 				return false;
+			}*/
+			
+			[HarmonyPatch(typeof(UIManager), "get_isAnyInventoryShowing")]
+			[HarmonyPostfix]
+			private static void UIManager_get_isAnyInventoryShowing(UIManager __instance, ref bool __result) {
+				if (ItemBrowserAPI.ItemBrowserUI != null && ItemBrowserAPI.ItemBrowserUI.IsShowing)
+					__result = true;
 			}
 		}
 	}
