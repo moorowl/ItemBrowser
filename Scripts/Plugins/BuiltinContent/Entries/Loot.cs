@@ -65,12 +65,14 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 				
 				void AddEntryFromScene(ObjectID id, int variation, string sceneName, Loot entry) {
 					foreach (var existingEntry in entriesToAdd) {
-						if (existingEntry.Id == id && existingEntry.Variation == variation && existingEntry.Entry.Equals(entry) && (existingEntry.Entry.FoundInScenes.Count > 0 || existingEntry.Entry.FoundInDungeons.Count > 0)) {
-							var existingScene = existingEntry.Entry.FoundInScenes.FirstOrDefault(x => x.Name == sceneName);
-							if (existingScene.Name != null)
-								existingScene.Amount += 1;
-							else
-								existingEntry.Entry.FoundInScenes.Add((sceneName, 1));
+						if (existingEntry.Id == id && existingEntry.Variation == variation && existingEntry.Entry.Equals(entry)) {
+							if (existingEntry.Entry.FoundInScenes.Count > 0) {
+								var existingScene = existingEntry.Entry.FoundInScenes.FirstOrDefault(x => x.Name == sceneName);
+								if (existingScene.Name != null)
+									existingScene.Amount += 1;
+								else
+									existingEntry.Entry.FoundInScenes.Add((sceneName, 1));	
+							}
 							
 							return;
 						}
@@ -82,7 +84,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 				
 				void AddEntryFromDungeon(ObjectID id, int variation, string dungeonName, Loot entry) {
 					foreach (var existingEntry in entriesToAdd) {
-						if (existingEntry.Id == id && existingEntry.Variation == variation && existingEntry.Entry.Equals(entry) && (existingEntry.Entry.FoundInScenes.Count > 0 || existingEntry.Entry.FoundInDungeons.Count > 0)) {
+						if (existingEntry.Id == id && existingEntry.Variation == variation && existingEntry.Entry.Equals(entry) && existingEntry.Entry.FoundInDungeons.Count > 0) {
 							var existingDungeon = existingEntry.Entry.FoundInDungeons.FirstOrDefault(x => x.Name == dungeonName);
 							if (existingDungeon.Name != null)
 								existingDungeon.Amount += 1;
