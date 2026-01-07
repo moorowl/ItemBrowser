@@ -51,6 +51,18 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 					Term = "ItemBrowser:MiscellaneousDesc/SnarePlant"
 				});
 				
+				// Core commander
+				AddEntry(new Miscellaneous {
+					Result = (ObjectID.CoreBoss, 0, 1),
+					Term = "ItemBrowser:MiscellaneousDesc/CoreBoss"
+				});
+				
+				// Urschleim
+				AddEntry(new Miscellaneous {
+					Result = (ObjectID.WallBoss, 0, 1),
+					Term = "ItemBrowser:MiscellaneousDesc/WallBoss"
+				});
+				
 				// Boss adds
 				// Hive Mother
 				foreach (var boss in new[] { ObjectID.LarvaHiveBoss, ObjectID.LarvaHiveHalloweenBoss }) {
