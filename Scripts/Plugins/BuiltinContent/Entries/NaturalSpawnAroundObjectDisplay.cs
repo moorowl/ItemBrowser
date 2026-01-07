@@ -113,62 +113,60 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 					color = UserInterfaceUtils.DescriptionColor
 				});
 			}
-
-			if (Options.ShowTechnicalInfo) {
-				MoreInfo.AddPadding();
+			
+			MoreInfo.AddPadding();
+			MoreInfo.AddLine(new TextAndFormatFields {
+				text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_3",
+				color = UserInterfaceUtils.DescriptionColor
+			});
+			
+			MoreInfo.AddLine(new TextAndFormatFields {
+				text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_4",
+				formatFields = new[] {
+					Entry.SpawnRadius.ToString(LocalizationManager.CurrentCulture)
+				},
+				dontLocalizeFormatFields = true,
+				color = UserInterfaceUtils.DescriptionColor
+			});
+			if (Entry.DespawnRadius > 0f) {
 				MoreInfo.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_3",
-					color = UserInterfaceUtils.DescriptionColor
-				});
-				
-				MoreInfo.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_4",
+					text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_5",
 					formatFields = new[] {
-						Entry.SpawnRadius.ToString(LocalizationManager.CurrentCulture)
+						Entry.DespawnRadius.ToString(LocalizationManager.CurrentCulture)
+					},
+					dontLocalizeFormatFields = true,
+					color = UserInterfaceUtils.DescriptionColor
+				});	
+			}
+			if (Entry.SpawnLimit > 0) {
+				MoreInfo.AddLine(new TextAndFormatFields {
+					text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_6",
+					formatFields = new[] {
+						Entry.SpawnLimit.ToString()
+					},
+					dontLocalizeFormatFields = true,
+					color = UserInterfaceUtils.DescriptionColor
+				});	
+			}
+			MoreInfo.AddLine(new TextAndFormatFields {
+				text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_7",
+				formatFields = new[] {
+					Entry.SpawnCooldown.Min.ToString(LocalizationManager.CurrentCulture),
+					Entry.SpawnCooldown.Max.ToString(LocalizationManager.CurrentCulture)
+				},
+				dontLocalizeFormatFields = true,
+				color = UserInterfaceUtils.DescriptionColor
+			});
+			if (Entry.SpawnLimit > 0 && Entry.SpawnLimitReachedCooldown.Max > 0f) {
+				MoreInfo.AddLine(new TextAndFormatFields {
+					text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_8",
+					formatFields = new[] {
+						Entry.SpawnLimitReachedCooldown.Min.ToString(LocalizationManager.CurrentCulture),
+						Entry.SpawnLimitReachedCooldown.Max.ToString(LocalizationManager.CurrentCulture)
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtils.DescriptionColor
 				});
-				if (Entry.DespawnRadius > 0f) {
-					MoreInfo.AddLine(new TextAndFormatFields {
-						text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_5",
-						formatFields = new[] {
-							Entry.DespawnRadius.ToString(LocalizationManager.CurrentCulture)
-						},
-						dontLocalizeFormatFields = true,
-						color = UserInterfaceUtils.DescriptionColor
-					});	
-				}
-				if (Entry.SpawnLimit > 0) {
-					MoreInfo.AddLine(new TextAndFormatFields {
-						text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_6",
-						formatFields = new[] {
-							Entry.SpawnLimit.ToString()
-						},
-						dontLocalizeFormatFields = true,
-						color = UserInterfaceUtils.DescriptionColor
-					});	
-				}
-				MoreInfo.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_7",
-					formatFields = new[] {
-						Entry.SpawnCooldown.Min.ToString(LocalizationManager.CurrentCulture),
-						Entry.SpawnCooldown.Max.ToString(LocalizationManager.CurrentCulture)
-					},
-					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
-				});
-				if (Entry.SpawnLimit > 0 && Entry.SpawnLimitReachedCooldown.Max > 0f) {
-					MoreInfo.AddLine(new TextAndFormatFields {
-						text = "ItemBrowser:MoreInfo/NaturalSpawnAroundObject_8",
-						formatFields = new[] {
-							Entry.SpawnLimitReachedCooldown.Min.ToString(LocalizationManager.CurrentCulture),
-							Entry.SpawnLimitReachedCooldown.Max.ToString(LocalizationManager.CurrentCulture)
-						},
-						dontLocalizeFormatFields = true,
-						color = UserInterfaceUtils.DescriptionColor
-					});
-				}
 			}
 		}
 	}

@@ -103,46 +103,44 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 					});
 				}
 			}
-
-			if (Options.ShowTechnicalInfo) {
-				MoreInfo.AddPadding();
-				MoreInfo.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_5",
-					color = UserInterfaceUtils.DescriptionColor
-				});
-				MoreInfo.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_6",
-					formatFields = new[] {
-						Entry.SpawnCheck.spawnChanceDecay.ToString(LocalizationManager.CurrentCulture)
-					},
-					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
-				});
-				MoreInfo.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_7",
-					formatFields = new[] {
-						Entry.SpawnCheck.maxSpawnPerTile.GetValueForCurrentPlatform().ToString(LocalizationManager.CurrentCulture)
-					},
-					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
-				});
-				MoreInfo.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_8",
-					formatFields = new[] {
-						Entry.SpawnCheck.maxSpawnsPerRespawn.ToString()
-					},
-					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
-				});
-				MoreInfo.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_9",
-					formatFields = new[] {
-						Entry.SpawnCheck.minTilesRequired.ToString(LocalizationManager.CurrentCulture)
-					},
-					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
-				});
-			}
+			
+			MoreInfo.AddPadding();
+			MoreInfo.AddLine(new TextAndFormatFields {
+				text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_5",
+				color = UserInterfaceUtils.DescriptionColor
+			});
+			MoreInfo.AddLine(new TextAndFormatFields {
+				text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_6",
+				formatFields = new[] {
+					Entry.SpawnCheck.spawnChanceDecay.ToString(LocalizationManager.CurrentCulture)
+				},
+				dontLocalizeFormatFields = true,
+				color = UserInterfaceUtils.DescriptionColor
+			});
+			MoreInfo.AddLine(new TextAndFormatFields {
+				text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_7",
+				formatFields = new[] {
+					Entry.SpawnCheck.maxSpawnPerTile.GetValueForCurrentPlatform().ToString(LocalizationManager.CurrentCulture)
+				},
+				dontLocalizeFormatFields = true,
+				color = UserInterfaceUtils.DescriptionColor
+			});
+			MoreInfo.AddLine(new TextAndFormatFields {
+				text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_8",
+				formatFields = new[] {
+					Entry.SpawnCheck.maxSpawnsPerRespawn.ToString()
+				},
+				dontLocalizeFormatFields = true,
+				color = UserInterfaceUtils.DescriptionColor
+			});
+			MoreInfo.AddLine(new TextAndFormatFields {
+				text = "ItemBrowser:MoreInfo/NaturalSpawnRespawn_9",
+				formatFields = new[] {
+					Entry.SpawnCheck.minTilesRequired.ToString(LocalizationManager.CurrentCulture)
+				},
+				dontLocalizeFormatFields = true,
+				color = UserInterfaceUtils.DescriptionColor
+			});
 		}
 	}
 }

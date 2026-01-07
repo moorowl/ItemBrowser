@@ -82,7 +82,7 @@ namespace ItemBrowser.UserInterface.Browser {
 					}
 				};
 
-				if (Options.ShowTechnicalInfo) {
+				if (InputHandler.IsShowTechnicalInfoHeld) {
 					lines.Add(new TextAndFormatFields {
 						text = $"{(int) _objectData.objectID}:{_objectData.variation}",
 						dontLocalize = true
@@ -171,7 +171,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
-				if (Options.ShowTechnicalInfo) {
+				if (InputHandler.IsShowTechnicalInfoHeld) {
 					return new List<TextAndFormatFields> {
 						new() {
 							text = _tag.ToString(),
@@ -314,7 +314,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 			
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
-				if (Options.ShowTechnicalInfo) {
+				if (InputHandler.IsShowTechnicalInfoHeld) {
 					return new List<TextAndFormatFields> {
 						new() {
 							text = _biome.ToString(),
@@ -362,7 +362,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 			
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
-				if (Options.ShowTechnicalInfo) {
+				if (InputHandler.IsShowTechnicalInfoHeld) {
 					return new List<TextAndFormatFields> {
 						new() {
 							text = _season.ToString(),

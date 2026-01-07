@@ -15,7 +15,6 @@ namespace ItemBrowser {
 		private static RadicalMenu _settingsMenu;
 		
 		public static bool CheatMode { get; set; }
-		public static bool ShowTechnicalInfo { get; set; }
 		public static bool ShowSourceMod { get; set; }
 		public static bool DefaultDiscoveredFilter { get; set; }
 		public static bool DefaultTechnicalFilter { get; set; }
@@ -38,7 +37,6 @@ namespace ItemBrowser {
 		
 		public static void ResetToDefault() {
 			CheatMode = true;
-			ShowTechnicalInfo = false;
 			ShowSourceMod = true;
 			DefaultDiscoveredFilter = false;
 			DefaultTechnicalFilter = true;
@@ -85,7 +83,6 @@ namespace ItemBrowser {
 			return new SerializedData {
 				Version = CurrentVersion,
 				CheatMode = CheatMode,
-				ShowTechnicalInfo = ShowTechnicalInfo,
 				ShowSourceMod = ShowSourceMod,
 				DefaultDiscoveredFilter = DefaultDiscoveredFilter,
 				DefaultTechnicalFilter = DefaultTechnicalFilter,
@@ -98,7 +95,6 @@ namespace ItemBrowser {
 
 		private static void DeserializeData(SerializedData data) {
 			CheatMode = data.CheatMode;
-			ShowTechnicalInfo = data.ShowTechnicalInfo;
 			ShowSourceMod = data.ShowSourceMod;
 			DefaultDiscoveredFilter = data.DefaultDiscoveredFilter;
 			DefaultTechnicalFilter = data.DefaultTechnicalFilter;
@@ -116,7 +112,6 @@ namespace ItemBrowser {
 
 			public int Version;
 			public bool CheatMode;
-			public bool ShowTechnicalInfo;
 			public bool ShowSourceMod;
 			public bool DefaultDiscoveredFilter;
 			public bool DefaultTechnicalFilter;
