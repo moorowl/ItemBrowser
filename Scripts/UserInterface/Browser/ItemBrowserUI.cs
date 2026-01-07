@@ -15,19 +15,31 @@ namespace ItemBrowser.UserInterface.Browser {
 		[SerializeField]
 		private Transform windows;
 		[SerializeField]
+		private GameObject tileGridPrefab;
+		[SerializeField]
 		private ObjectListContainerWindow objectListContainerWindow;
 		[SerializeField]
 		private ObjectEntriesWindow objectEntriesWindow;
 
 		private bool _entriesOpenedOutsideOfBrowser;
+		private GameObject _tileGrid;
+		private Transform _tileGridRenderAnchor;
 
 		private void Awake() {
 			gameObject.SetActive(false);
 			OnInit?.Invoke(this);
+
+			_tileGridRenderAnchor = Manager.camera.GetRenderAnchor();
+			_tileGrid = Instantiate(tileGridPrefab, _tileGridRenderAnchor);
 		}
 		
 		private void OnDestroy() {
 			OnUninit?.Invoke(this);
+			
+			if (_tileGrid != null) {
+				Destroy(_tileGrid);
+				Manager.camera.ReturnRenderAnchor(_tileGridRenderAnchor);
+			}
 		}
 
 		protected override void OnShow(bool isFirstTimeShowing) {

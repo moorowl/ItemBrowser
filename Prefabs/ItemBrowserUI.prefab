@@ -10162,6 +10162,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   windows: {fileID: 3896036731359748844}
+  tileGridPrefab: {fileID: 292433013509838209, guid: 334859e529234b7429d6ff38574c466f,
+    type: 3}
   objectListContainerWindow: {fileID: 574952710470399417}
   objectEntriesWindow: {fileID: 5042083103881810582}
 --- !u!1 &4012969505573735715

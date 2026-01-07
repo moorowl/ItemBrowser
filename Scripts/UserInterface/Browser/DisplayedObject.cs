@@ -294,34 +294,42 @@ namespace ItemBrowser.UserInterface.Browser {
 		
 		public class BiomeIcon : DisplayedObject {
 			public override ContainedObjectsBuffer VisualObject => new() {
-				objectData = _objectData
+				objectData = _objectsToDisplay.CurrentObjectData
 			};
 			
-			private readonly Biome _biome;
-			private readonly ObjectDataCD _objectData;
+			private readonly Biome[] _biomes;
+			private readonly CyclingObjectData _objectsToDisplay;
 			
-			public BiomeIcon(Biome biome) {
-				_biome = biome;
-				_objectData = new ObjectDataCD {
-					objectID = GetBiomeIcon(_biome)
-				};
+			public BiomeIcon(params Biome[] biomes) {
+				_biomes = biomes;
+				_objectsToDisplay = new CyclingObjectData(_biomes.Select(biome => new ObjectDataCD {
+					objectID = GetBiomeIcon(biome)
+				}));
 			}
 			
 			public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
-				return new TextAndFormatFields {
-					text = $"BiomeNames/{_biome}"
-				};
+				if (_biomes.Length > 0) {
+					return new TextAndFormatFields {
+						text = $"BiomeNames/{_biomes[0]}"
+					};	
+				}
+
+				return base.GetHoverTitle(slot);
 			}
 			
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
-				if (InputHandler.IsShowTechnicalInfoHeld) {
-					return new List<TextAndFormatFields> {
-						new() {
-							text = _biome.ToString(),
-							dontLocalize = true
-						}
-					};
+				if (_biomes.Length > 1) {
+					var lines = new List<TextAndFormatFields>();
+
+					for (var i = 1; i < _biomes.Length; i++) {
+						lines.Add(new TextAndFormatFields {
+							text = $"BiomeNames/{_biomes[i]}"
+						});
+					}
+
+					return lines;
 				}
+				
 				return base.GetHoverDescription(slot);
 			}
 

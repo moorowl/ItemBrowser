@@ -21,10 +21,12 @@ namespace ItemBrowser {
 		private const PlayerInput.InputType ShowUsagesInput = (PlayerInput.InputType) 39002;
 		private const PlayerInput.InputType ShowTechnicalInfoInput = (PlayerInput.InputType) 39003;
 		private const PlayerInput.InputType SpawnItemInput = (PlayerInput.InputType) 39004;
+		private const PlayerInput.InputType ToggleTileGridInput = (PlayerInput.InputType) 39005;
 
 		public static bool IsShowTechnicalInfoHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(ShowTechnicalInfoInput);
 		public static bool IsSpawnItemPressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(SpawnItemInput);
 		public static bool IsPickUpTenHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_10);
+		public static bool IsToggleTileGridPressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(ToggleTileGridInput);
 		
 		[HarmonyPatch(typeof(InputManager), "LateUpdate")]
 		[HarmonyPostfix]
@@ -78,6 +80,10 @@ namespace ItemBrowser {
 				.SetCategory(ModCategory)
 				.SetDefaultKeyboardBinding(KeyboardKeyCode.LeftShift)
 				.SetDefaultControllerBinding(14)
+			);
+			InputAdder.AddAction(__instance, new InputAdder.ActionConfiguration((int) ToggleTileGridInput, "ItemBrowser:ToggleTileGrid")
+				.SetCategory(ModCategory)
+				.SetDefaultKeyboardBinding(KeyboardKeyCode.F6, ModifierKey.Shift)
 			);
 		}
 	}
