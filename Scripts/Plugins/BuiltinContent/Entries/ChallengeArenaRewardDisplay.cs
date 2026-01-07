@@ -54,9 +54,10 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 
 		private void RenderMoreInfo() {
 			var showPoolTypeText = Entry.IsFromTableWithGuaranteedPool;
-			var rolls = Entry.Rolls;
+			var rolls = UserInterfaceUtils.FormatAmountOrRollsRange(Entry.Rolls);
 			var chanceForOne = UserInterfaceUtils.FormatChance(Entry.ChanceForOne);
 			var chancePerRoll = UserInterfaceUtils.FormatChance(Entry.Chance);
+			var amount = UserInterfaceUtils.FormatAmountOrRollsRange(Entry.Amount);
 			
 			MoreInfo.AddLine(new TextAndFormatFields {
 				text = showPoolTypeText ? (Entry.IsFromGuaranteedPool ? "ItemBrowser:MoreInfo/ChallengeArenaReward_0_GuaranteedPool" : "ItemBrowser:MoreInfo/ChallengeArenaReward_0_RandomPool") : "ItemBrowser:MoreInfo/ChallengeArenaReward_0",
@@ -67,7 +68,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 				MoreInfo.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser:MoreInfo/ChallengeArenaReward_1_ForOne",
 					formatFields = new[] {
-						chanceForOne
+						chanceForOne,
+						amount
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtils.DescriptionColor
@@ -76,7 +78,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 					text = "ItemBrowser:MoreInfo/ChallengeArenaReward_1_PerRoll",
 					formatFields = new[] {
 						chancePerRoll,
-						rolls.Min != rolls.Max ? $"{rolls.Min}-{rolls.Max}" : $"{rolls.Max}"
+						amount,
+						rolls
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtils.DescriptionColor
@@ -85,7 +88,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 				MoreInfo.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser:MoreInfo/ChallengeArenaReward_1",
 					formatFields = new[] {
-						chanceForOne
+						chanceForOne,
+						amount
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtils.DescriptionColor

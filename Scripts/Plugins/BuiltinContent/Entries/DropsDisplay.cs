@@ -73,6 +73,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 			var rolls = UserInterfaceUtils.FormatAmountOrRollsRange(Entry.Rolls());
 			var chanceForOne = UserInterfaceUtils.FormatChance(Entry.ChanceForOne());
 			var chancePerRoll = UserInterfaceUtils.FormatChance(Entry.Chance);
+			var amount = UserInterfaceUtils.FormatAmountOrRollsRange(Entry.Amount());
 
 			MoreInfo.AddLine(new TextAndFormatFields {
 				text = showPoolTypeText ? (Entry.IsFromGuaranteedPool ? "ItemBrowser:MoreInfo/Drops_0_GuaranteedPool" : "ItemBrowser:MoreInfo/Drops_0_RandomPool") : "ItemBrowser:MoreInfo/Drops_0",
@@ -87,7 +88,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 				MoreInfo.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser:MoreInfo/Drops_1_ForOne",
 					formatFields = new[] {
-						chanceForOne
+						chanceForOne,
+						amount
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtils.DescriptionColor
@@ -96,6 +98,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 					text = "ItemBrowser:MoreInfo/Drops_1_PerRoll",
 					formatFields = new[] {
 						chancePerRoll,
+						amount,
 						rolls
 					},
 					dontLocalizeFormatFields = true,
@@ -105,7 +108,8 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 				MoreInfo.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser:MoreInfo/Drops_1",
 					formatFields = new[] {
-						chanceForOne
+						chanceForOne,
+						amount
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtils.DescriptionColor

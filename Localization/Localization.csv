@@ -269,9 +269,9 @@ ItemBrowser:MoreInfo/TerrainGeneration_1	Text		Found embedded within {0}
 ItemBrowser:MoreInfo/Drops_0	Text		Dropped by {0}												
 ItemBrowser:MoreInfo/Drops_0_RandomPool	Text		Dropped by {0} (secondary pool)												
 ItemBrowser:MoreInfo/Drops_0_GuaranteedPool	Text		Dropped by {0} (primary pool)												
-ItemBrowser:MoreInfo/Drops_1	Text		{0}% chance												
-ItemBrowser:MoreInfo/Drops_1_ForOne	Text		- {0}% chance of being dropped at least once, on average												
-ItemBrowser:MoreInfo/Drops_1_PerRoll	Text		- {0}% chance of being dropped per roll, in {1} rolls												
+ItemBrowser:MoreInfo/Drops_1	Text		{0}% chance for {1}												
+ItemBrowser:MoreInfo/Drops_1_ForOne	Text		- {0}% chance for {1} being dropped at least once, on average												
+ItemBrowser:MoreInfo/Drops_1_PerRoll	Text		- {0}% chance for {1} being dropped per roll, in {2} rolls												
 ItemBrowser:MoreInfo/Drops_2	Text		Can only drop when {0} is the closest biome out of Azeos' Wilderness, The Sunken Sea and The Desert of Beginnings												
 ItemBrowser:MoreInfo/Drops_3	Text		Can only drop during {0}												
 ItemBrowser:MoreInfo/Drops_5	Text		Only found in the following scenes:												
@@ -279,9 +279,9 @@ ItemBrowser:MoreInfo/Drops_6	Text		- {0}
 ItemBrowser:MoreInfo/Loot_0	Text		Looted from {0}												
 ItemBrowser:MoreInfo/Loot_0_RandomPool	Text		Looted from {0} (secondary pool)												
 ItemBrowser:MoreInfo/Loot_0_GuaranteedPool	Text		Looted from {0} (primary pool)												
-ItemBrowser:MoreInfo/Loot_1	Text		{0}% chance												
-ItemBrowser:MoreInfo/Loot_1_ForOne	Text		- {0}% chance of being dropped at least once, on average												
-ItemBrowser:MoreInfo/Loot_1_PerRoll	Text		- {0}% chance of being dropped per roll, in {1} rolls												
+ItemBrowser:MoreInfo/Loot_1	Text		{0}% chance for {1}												
+ItemBrowser:MoreInfo/Loot_1_ForOne	Text		- {0}% chance for {1} being dropped at least once, on average												
+ItemBrowser:MoreInfo/Loot_1_PerRoll	Text		- {0}% chance for {1} being dropped per roll, in {2} rolls												
 ItemBrowser:MoreInfo/Loot_2	Text		Can only drop when {0} is the closest biome out of Azeos' Wilderness, The Sunken Sea and The Desert of Beginnings												
 ItemBrowser:MoreInfo/Loot_3	Text		Only found in the following scenes:												
 ItemBrowser:MoreInfo/Loot_4	Text		- {0}												
@@ -293,13 +293,13 @@ ItemBrowser:MoreInfo/StructureContents_2_Dungeon	Text		Contains a varying amount
 ItemBrowser:MoreInfo/ChallengeArenaReward_0	Text		Reward chest contents after completing a challenge arena												
 ItemBrowser:MoreInfo/ChallengeArenaReward_0_RandomPool	Text		Reward chest contents after completing a challenge arena (secondary pool)												
 ItemBrowser:MoreInfo/ChallengeArenaReward_0_GuaranteedPool	Text		Reward chest contents after completing a challenge arena (primary pool)												
-ItemBrowser:MoreInfo/ChallengeArenaReward_1	Text		{0}% chance												
-ItemBrowser:MoreInfo/ChallengeArenaReward_1_ForOne	Text		- {0}% chance of being dropped at least once, on average												
-ItemBrowser:MoreInfo/ChallengeArenaReward_1_PerRoll	Text		- {0}% chance of being dropped per roll, in {1} rolls												
+ItemBrowser:MoreInfo/ChallengeArenaReward_1	Text		{0}% chance for {1}												
+ItemBrowser:MoreInfo/ChallengeArenaReward_1_ForOne	Text		- {0}% chance for {1} being dropped at least once, on average												
+ItemBrowser:MoreInfo/ChallengeArenaReward_1_PerRoll	Text		- {0}% chance for {1} being dropped per roll, in {2} rolls												
 ItemBrowser:MoreInfo/ChallengeArenaReward_1_BraveMerchant	Text		({0}% if the Brave Merchant is already active in the world)												
 ItemBrowser:MoreInfo/ChallengeArenaReward_2	Text		Can only drop when {0} is the closest biome out of Azeos' Wilderness, The Sunken Sea and The Desert of Beginnings												
 ItemBrowser:MoreInfo/MerchantSpawning_0	Text		Placing a {0} inside a habitable room causes the {1} to move in												
-ItemBrowser:MoreInfo/Breeding_0	Text		A {0} may be produced by two {1}s after they have both eaten enough and are next to each other												
+ItemBrowser:MoreInfo/Breeding_0	Text		Produced by two {0}s after they have both eaten enough and are next to each other												
 ItemBrowser:MoreInfo/Breeding_1	Text		{0} meals required												
 ItemBrowser:MoreInfo/CreatureSummoning_0_SummonArea	Text		Summoned by placing a {0} on (or near) the {1}												
 ItemBrowser:MoreInfo/CreatureSummoning_0_LureWithBait	Text		Summoned by placing a {0} nearby												

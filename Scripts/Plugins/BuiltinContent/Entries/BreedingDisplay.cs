@@ -28,7 +28,6 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 			MoreInfo.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser:MoreInfo/Breeding_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(Entry.ChildType),
 					ObjectUtils.GetLocalizedDisplayNameOrDefault(Entry.ParentType)
 				},
 				dontLocalizeFormatFields = true,
