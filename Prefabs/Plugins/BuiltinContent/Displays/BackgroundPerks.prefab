@@ -176,7 +176,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.25, y: 1.25, z: 1}
+  m_Size: {x: 1.25, y: 1.25, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2743709327592948624
 MonoBehaviour:
@@ -391,14 +391,6 @@ MonoBehaviour:
   onElementDeselectedEvent:
     m_PersistentCalls:
       m_Calls: []
-  topMostUIElements:
-  - {fileID: 2743709327592948624}
-  - {fileID: 8110691323894934873}
-  - {fileID: 1175822458289469767}
-  bottomMostUIElements:
-  - {fileID: 2743709327592948624}
-  - {fileID: 8110691323894934873}
-  - {fileID: 1175822458289469767}
   moreInfoButton: {fileID: 1175822458289469767}
   background: {fileID: 2743709327592948624}
   backgroundIcon: {fileID: 3586304549750692920}

@@ -152,7 +152,7 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
     supportColorTags: 0
     sortingLayer: -2147483648
-    orderInLayer: 16
+    orderInLayer: 46
     maskInteraction: 0
   styleOverrides: []
   usePooledResources: 1
@@ -216,18 +216,6 @@ MonoBehaviour:
   onElementDeselectedEvent:
     m_PersistentCalls:
       m_Calls: []
-  topMostUIElements:
-  - {fileID: 1175822458289469767}
-  - {fileID: 9122015134071768588}
-  - {fileID: 6592173165259997750}
-  - {fileID: 675542583684446733}
-  - {fileID: 4999015797303377124}
-  bottomMostUIElements:
-  - {fileID: 1175822458289469767}
-  - {fileID: 9122015134071768588}
-  - {fileID: 6592173165259997750}
-  - {fileID: 675542583684446733}
-  - {fileID: 4999015797303377124}
   moreInfoButton: {fileID: 1175822458289469767}
   bigMaterialSlot: {fileID: 9122015134071768588}
   smallMaterialSlots:

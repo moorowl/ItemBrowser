@@ -84,7 +84,7 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
     supportColorTags: 0
     sortingLayer: -2147483648
-    orderInLayer: 16
+    orderInLayer: 46
     maskInteraction: 0
   styleOverrides: []
   usePooledResources: 1
@@ -267,7 +267,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.25, y: 1.25, z: 1}
+  m_Size: {x: 1.25, y: 1.25, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6480347422562913632
 MonoBehaviour:
@@ -497,14 +497,6 @@ MonoBehaviour:
   onElementDeselectedEvent:
     m_PersistentCalls:
       m_Calls: []
-  topMostUIElements:
-  - {fileID: 6480347422562913632}
-  - {fileID: 8110691323894934873}
-  - {fileID: 1175822458289469767}
-  bottomMostUIElements:
-  - {fileID: 6480347422562913632}
-  - {fileID: 8110691323894934873}
-  - {fileID: 1175822458289469767}
   moreInfoButton: {fileID: 1175822458289469767}
   resultSlot: {fileID: 8110691323894934873}
   chanceText: {fileID: 1849748499764583067}

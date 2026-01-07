@@ -122,7 +122,7 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
     supportColorTags: 0
     sortingLayer: -2147483648
-    orderInLayer: 16
+    orderInLayer: 46
     maskInteraction: 0
   styleOverrides: []
   usePooledResources: 1
@@ -211,7 +211,7 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
     supportColorTags: 0
     sortingLayer: -2147483648
-    orderInLayer: 16
+    orderInLayer: 46
     maskInteraction: 0
   styleOverrides: []
   usePooledResources: 1
@@ -274,18 +274,6 @@ MonoBehaviour:
   onElementDeselectedEvent:
     m_PersistentCalls:
       m_Calls: []
-  topMostUIElements:
-  - {fileID: 9122015134071768588}
-  - {fileID: 7358497181786891696}
-  - {fileID: 2554256920150867968}
-  - {fileID: 8110691323894934873}
-  - {fileID: 1175822458289469767}
-  bottomMostUIElements:
-  - {fileID: 9122015134071768588}
-  - {fileID: 7358497181786891696}
-  - {fileID: 2554256920150867968}
-  - {fileID: 8110691323894934873}
-  - {fileID: 1175822458289469767}
   moreInfoButton: {fileID: 1175822458289469767}
   resultSlot: {fileID: 8110691323894934873}
   biomeOrTilesetSlot: {fileID: 7358497181786891696}
@@ -293,7 +281,6 @@ MonoBehaviour:
   entitySlot: {fileID: 9122015134071768588}
   plusTextRight: {fileID: 5028056675760490915}
   plusTextLeft: {fileID: 5081220125647391253}
-  moreInfoOffsetFromSlot: 1.1125
 --- !u!1001 &2795889677246832141
 PrefabInstance:
   m_ObjectHideFlags: 0
