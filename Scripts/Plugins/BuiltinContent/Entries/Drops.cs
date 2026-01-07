@@ -189,6 +189,7 @@ namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 								OnlyDropsInBiome = drop.OnlyDropsInBiome,
 								IsFromGuaranteedPool = drop.IsFromGuaranteedPool,
 								IsFromTableWithGuaranteedPool = drop.TableHasGuaranteedPool,
+								IsAffectedByPlayerCount = isBoss,
 								IsAffectedByWorldMode = isBoss
 							};
 							AddNormalOrSceneEntry(entry.Result.Id, entry.Result.Variation, optionalSceneName, entry);
