@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ItemBrowser.Plugins.BuiltinContent.Entries {
 	public record TerritoryContents : ObjectEntry {
-		public override ObjectEntryCategory Category => new("ItemBrowser:ObjectEntry/TerritoryContents", "ItemBrowser:ObjectEntry/Territory_NonObtainable", ObjectID.GroundSlipperySlime, Priorities.TerritoryContents);
+		public override ObjectEntryCategory Category => new("ItemBrowser:ObjectEntry/TerritoryContents", "ItemBrowser:ObjectEntry/TerritoryContents_NonObtainable", ObjectID.GroundSlipperySlime, Priorities.TerritoryContents);
 		
 		public (ObjectID Id, int Variation) Result { get; set; }
 		public TerritoryType Territory { get; set; }
