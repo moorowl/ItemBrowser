@@ -66,7 +66,7 @@ namespace ItemBrowser.Api.Entries {
 				};
 
 				return (objectData, prefabData.ObjectInfo.prefabInfos[0].ecsPrefab);
-			}).Where(entry => ObjectUtils.IsPrimaryVariation(entry.objectData.objectID, entry.objectData.variation) && !ObjectUtils.GetCategories(entry.objectData.objectID).Contains("NonObtainable/Deprecated") && !(ItemBrowserAPI.IsTechnicalItem(entry.objectData) || ItemBrowserAPI.IsTechnicalCreature(entry.objectData))).ToList();
+			}).Where(entry => ObjectUtils.IsPrimaryVariation(entry.objectData.objectID, entry.objectData.variation) && !ObjectUtils.GetCategories(entry.objectData.objectID).Contains("NonObtainable/Deprecated")).ToList();
 
 			foreach (var provider in providers) {
 				try {
@@ -81,7 +81,9 @@ namespace ItemBrowser.Api.Entries {
 		private static ObjectID TryReplaceObjectID(ObjectID id) {
 			return id switch {
 				ObjectID.GiantMushroom => ObjectID.GiantMushroom2,
+				ObjectID.AmberLarva => ObjectID.AmberLarva2,
 				ObjectID.OldRebreather => ObjectID.OldSporeMask,
+				ObjectID.Gravestone => ObjectID.PlayerGrave,
 				_ => id
 			};
 		}
