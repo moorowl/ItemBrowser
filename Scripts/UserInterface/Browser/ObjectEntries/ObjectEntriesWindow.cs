@@ -182,8 +182,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			
 			if (_entries.Count == 0)
 				return;
-
-			Debug.Log(category.ToString());
+			
 			var details = _entries[category];
 			if (details.Count == 0)
 				return;
