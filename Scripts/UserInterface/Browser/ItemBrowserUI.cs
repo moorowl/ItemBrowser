@@ -246,6 +246,17 @@ namespace ItemBrowser.UserInterface.Browser {
 				if (ItemBrowserAPI.ItemBrowserUI != null && ItemBrowserAPI.ItemBrowserUI.IsShowing)
 					__result = true;
 			}
+			
+			[HarmonyPatch(typeof(UIScrollWindow), "UpdateScroll")]
+			[HarmonyPrefix]
+			private static bool UIScrollWindow_UpdateScroll(UIScrollWindow __instance) {
+				// Disable scrolling in other windows
+				// TODO this could probably be optimized
+				if (ItemBrowserAPI.ItemBrowserUI != null && ItemBrowserAPI.ItemBrowserUI.IsShowing && __instance.GetComponentInParent<ItemBrowserWindow>() == null)
+					return false;
+
+				return true;
+			}
 		}
 	}
 }
