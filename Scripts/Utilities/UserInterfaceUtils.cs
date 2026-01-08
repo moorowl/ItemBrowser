@@ -35,6 +35,9 @@ namespace ItemBrowser.Utilities {
 		}
 
 		public static string FormatChance(float chance) {
+			if (chance < 0.001f)
+				return (chance * 100f).ToString("0.###");
+				
 			return (chance * 100f).ToString("0.##");
 		}
 
