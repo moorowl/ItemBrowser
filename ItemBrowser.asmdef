@@ -15,7 +15,8 @@
         "Unity.Physics.Hybrid",
         "Unity.Properties",
         "Unity.Transforms",
-        "PugMod.SDK"
+        "PugMod.SDK",
+        "NaughtyAttributes.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -184,7 +185,11 @@
         "ZipSaveFolder.dll",
         "0Harmony.dll",
         "modio.UnityPlugin.dll",
-        "NaughtyAttributes.Editor.dll"
+        "NaughtyAttributes.Editor.dll",
+        "ScriptableData.dll",
+        "Pug.Automation.Authoring.dll",
+        "PugText.Editor.dll",
+        "Pug.Automation.Components.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [],

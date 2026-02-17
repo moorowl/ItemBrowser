@@ -1,0 +1,222 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7619364250426032249
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1998180733502995083}
+  - component: {fileID: 4110807777040707743}
+  - component: {fileID: 8403514857321991495}
+  - component: {fileID: -9162145014549215935}
+  - component: {fileID: 2704068075528076183}
+  - component: {fileID: 182935645385102627}
+  - component: {fileID: 6566272666655113943}
+  - component: {fileID: -5935899922985573432}
+  - component: {fileID: 2954466873636940885}
+  - component: {fileID: 1574355171122771096}
+  m_Layer: 0
+  m_Name: Runes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1998180733502995083
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4110807777040707743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SummonArea
+  appliesToVariation: 0
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SummonArea_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 2607542fae213c045b9f3ab31743ddd0, type: 3}
+  showNameNote: 1
+  nameNote: Names/SlimeBoss
+--- !u!114 &8403514857321991495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SummonArea
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SummonArea_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 39831f9fb0a9be3439d0f120b72a498b, type: 3}
+  showNameNote: 1
+  nameNote: Names/LarvaBoss
+--- !u!114 &-9162145014549215935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SummonArea
+  appliesToVariation: 2
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SummonArea_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 70eb7321ccbf3c644a01bae6617d766f, type: 3}
+  showNameNote: 1
+  nameNote: Names/LarvaHiveBoss
+--- !u!114 &2704068075528076183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SummonArea
+  appliesToVariation: 3
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SummonArea_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 122df8bff3ea49943982c0fb03ddbf79, type: 3}
+  showNameNote: 1
+  nameNote: Names/PoisonSlimeBoss
+--- !u!114 &182935645385102627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SummonArea
+  appliesToVariation: 4
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SummonArea_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 3aadbb8772b4ebc4ba11c75883a1990b, type: 3}
+  showNameNote: 1
+  nameNote: Names/ShamanBoss
+--- !u!114 &6566272666655113943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SummonArea
+  appliesToVariation: 5
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SummonArea_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: ac8cfdec6f39ad546b9b3a588dffd18d, type: 3}
+  showNameNote: 1
+  nameNote: Names/SlipperySlimeBoss
+--- !u!114 &-5935899922985573432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SummonArea
+  appliesToVariation: 6
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SummonArea_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 0f133fcbac01549448965f845b6a8c55, type: 3}
+  showNameNote: 1
+  nameNote: Names/LavaSlimeBoss
+--- !u!114 &2954466873636940885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SummonArea
+  appliesToVariation: 7
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SummonArea_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 191259733ceed5e4c9e6316ccd00ab43, type: 3}
+  showNameNote: 1
+  nameNote: Names/GiantCicadaBoss
+--- !u!114 &1574355171122771096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619364250426032249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SummonArea
+  appliesToVariation: 8
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SummonArea_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 8afae4ea4f15b8c4cac3e5d881b66c90, type: 3}
+  showNameNote: 1
+  nameNote: Names/RobotBoss

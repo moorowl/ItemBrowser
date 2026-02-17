@@ -7,11 +7,8 @@ using UnityEngine;
 
 namespace ItemBrowser.Api.Entries {
 	public class ObjectEntryRegistry {
-		private readonly Dictionary<ObjectDataCD, EntryLookup>[] _entries = new[] {
-			new Dictionary<ObjectDataCD, EntryLookup>(),
-			new Dictionary<ObjectDataCD, EntryLookup>()
-		};
-		
+		private readonly Dictionary<ObjectDataCD, EntryLookup>[] _entries = { new(), new() };
+
 		public IEnumerable<ObjectEntry> GetAllEntries(ObjectEntryType type, ObjectID id, int variation) {
 			var objectData = new ObjectDataCD {
 				objectID = id,
@@ -35,10 +32,10 @@ namespace ItemBrowser.Api.Entries {
 		public IEnumerable<T> GetEntries<T>(ObjectEntryType type, ObjectDataCD objectData) where T : ObjectEntry {
 			return GetEntries<T>(type, objectData.objectID, objectData.variation);
 		}
-		
+
 		public void Register(ObjectEntryType type, ObjectID id, int variation, ObjectEntry entry) {
 			id = TryReplaceObjectID(id);
-			if (id == ObjectID.None || !ObjectUtils.IsPrimaryVariation(id, variation) || (type == ObjectEntryType.Source && ObjectUtils.GetCategories(id).Contains("NonObtainable/Deprecated")))
+			if (id == ObjectID.None || !ObjectUtils.IsPrimaryVariation(id, variation) || (type == ObjectEntryType.Source && ItemBrowserAPI.IsDeprecatedObject(id, variation)))
 				return;
 			
 			var objectData = new ObjectDataCD {
@@ -59,20 +56,26 @@ namespace ItemBrowser.Api.Entries {
 			foreach (var entries in _entries)
 				entries.Clear();
 
-			var allObjects = DatabaseConversionUtility.GetPrefabList(Manager.ecs.pugDatabase).Select(prefabData => {
-				var objectData = new ObjectData {
-					objectID = prefabData.ObjectInfo.objectID,
-					variation = prefabData.ObjectInfo.variation
-				};
+			var allObjects = DatabaseConversionUtility.GetPrefabList(Manager.ecs.pugDatabase)
+				.Select(prefabData => {
+					var objectData = new ObjectData {
+						objectID = prefabData.ObjectInfo.objectID,
+						variation = prefabData.ObjectInfo.variation
+					};
 
-				return (objectData, prefabData.ObjectInfo.prefabInfos[0].ecsPrefab);
-			}).Where(entry => ObjectUtils.IsPrimaryVariation(entry.objectData.objectID, entry.objectData.variation) && !ObjectUtils.GetCategories(entry.objectData.objectID).Contains("NonObtainable/Deprecated")).ToList();
+					return (objectData, prefabData.ObjectInfo.prefabInfos[0].ecsPrefab);
+				})
+				.Where(entry => {
+					var isTechnicalOrDeprecated = ItemBrowserAPI.IsTechnicalObject(entry.objectData) || ItemBrowserAPI.IsDeprecatedObject(entry.objectData);
+					return ObjectUtils.IsPrimaryVariation(entry.objectData) && !isTechnicalOrDeprecated;
+				})
+				.ToList();
 
 			foreach (var provider in providers) {
 				try {
 					provider.Register(this, allObjects);
 				} catch (Exception ex) {
-					Main.Log("ObjectEntryRegistry", $"Error while registering entries from provider {provider.GetType().GetNameChecked()}");
+					Main.Log(nameof(ObjectEntryRegistry), $"Error while registering entries from provider {provider.GetType().GetNameChecked()}");
 					Debug.LogException(ex);
 				}
 			}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ItemBrowser.Utilities.DataStructures.SortingAndFiltering {
 	public class Filter<T> {

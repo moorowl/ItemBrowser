@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using PugProperties;
+using Pug.Properties;
 using Unity.Collections;
 using Unity.Entities;
 

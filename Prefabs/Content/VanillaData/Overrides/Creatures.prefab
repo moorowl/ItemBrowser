@@ -1,0 +1,663 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &826315427197413774
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 518672385782017046}
+  - component: {fileID: 7518678236929979923}
+  - component: {fileID: 5633481588859927500}
+  - component: {fileID: 5895797814223130875}
+  - component: {fileID: 4331545116110330923}
+  - component: {fileID: 3680621529332235174}
+  - component: {fileID: 2239446544660725011}
+  - component: {fileID: 3932200414229584169}
+  - component: {fileID: 3139546514201843067}
+  - component: {fileID: 6107715258155142895}
+  - component: {fileID: 4300002831952470284}
+  - component: {fileID: 8294109953380686460}
+  - component: {fileID: 35968435555096105}
+  - component: {fileID: 7600308322835125824}
+  - component: {fileID: 6251333415287849661}
+  - component: {fileID: 2148911333320363661}
+  - component: {fileID: 2990385814261194773}
+  - component: {fileID: 8394887737619597913}
+  - component: {fileID: 1527782462196635359}
+  - component: {fileID: -5192580555167480276}
+  - component: {fileID: -3965205074686327615}
+  - component: {fileID: 3471317881543500589}
+  - component: {fileID: -6775824509470096418}
+  - component: {fileID: 5909780678100067952}
+  - component: {fileID: 7618548849435319627}
+  - component: {fileID: 6667085043080172554}
+  - component: {fileID: 8355728574425411346}
+  - component: {fileID: 3836084653753719105}
+  - component: {fileID: 488091574697585237}
+  - component: {fileID: 2612439464272336853}
+  - component: {fileID: 7336504151999819895}
+  m_Layer: 0
+  m_Name: Creatures
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &518672385782017046
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7518678236929979923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: CoreBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/CoreBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 73a2f7594f60e9148aff81cdf98e1aa0, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &5633481588859927500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: HydraBossNature
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/HydraBossNature
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: ecdd65d543290834fbe6c41d2ddfb2a8, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &5895797814223130875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: HydraBossSea
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/HydraBossSea
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: d470ba630641de5439c72636944d56e8, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &4331545116110330923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: HydraBossDesert
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/HydraBossDesert
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: b53737a74ff13e04aabbcfbca6f46114, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &3680621529332235174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: GiantCicadaBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/GiantCicadaBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 28235d0acf18b4746abc7b2d426ceb1a, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &2239446544660725011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SlimeBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/SlimeBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 2dc02b3ac35fe8845b183b1d5f13abbc, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &3932200414229584169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: PoisonSlimeBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/PoisonSlimeBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 063ffdea2e5a7854fa23b2d75d8ea417, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &3139546514201843067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SlipperySlimeBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/SlipperySlimeBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 291c35d5905a9ac4bb70bdfdf8e11f15, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &6107715258155142895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: LavaSlimeBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/LavaSlimeBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: dc5139c9aaf44a9468e67fbf571d0d27, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &4300002831952470284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: BossLarva
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/LarvaBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: eece52cdf24daa24d87861b99d5e4896, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &8294109953380686460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: LarvaHiveBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/LarvaHiveBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: da080d18c687cb54aa9000e571401ce5, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &35968435555096105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: LarvaHiveHalloweenBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/LarvaHiveHalloweenBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 3d5ba20cefdf8644eb93cfd5a6ea2c5f, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &7600308322835125824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: BirdBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/BirdBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: dab80fd271021f54b8a1246471c250e1, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &6251333415287849661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: BirdBoss
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/BirdBoss_1
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 620654c04423c92458d9e5d70a4d808e, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &2148911333320363661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: ShamanBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/ShamanBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 53c74b09f51536544951658057d7e3ac, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &2990385814261194773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: OctopusBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/OctopusBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 5e847ef97ebb36a4899fbcd94f59bb87, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &8394887737619597913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: ScarabBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/ScarabBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: e36e85e422aa97c4c8d5b7382322e5fb, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &1527782462196635359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SnakeBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/SnakeBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: affadf17df2791b4d9670550db0dbbc6, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &-5192580555167480276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: WallBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/WallBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: a869815205671c44190f03c36ccd70c0, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &-3965205074686327615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: Larva
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/Larva_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &3471317881543500589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: Larva
+  appliesToVariation: 2
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/Larva_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &-6775824509470096418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: BigLarva
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/BigLarva_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &5909780678100067952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: BigLarva
+  appliesToVariation: 2
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/BigLarva_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &7618548849435319627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: NatureCicadaEnemy
+  appliesToVariation: 0
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/NatureCicadaEnemy_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: fe7019727462433438b08f9019261959, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &6667085043080172554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: KingSlime
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/KingSlime
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: e8e9391fe46d8b64f9955ac798e4ec21, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &8355728574425411346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: LarvaHiveEgg
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/HiveEgg
+  overrideIcon: 1
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &3836084653753719105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: OctopusTentacle
+  appliesToVariation: 0
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/OctopusTentacle_0
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &488091574697585237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SnakeBossSegment
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/SnakeBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: affadf17df2791b4d9670550db0dbbc6, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &2612439464272336853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: RobotBoss
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/RobotBoss
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 3338ab729da789c43b8ff331488a2b4c, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &7336504151999819895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826315427197413774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: HydraBossVoid
+  appliesToVariation: 0
+  overrideName: 1
+  name: Names/HydraBossVoid
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 1ca1a9eb25cdae3439df823e80a9178e, type: 3}
+  showNameNote: 0
+  nameNote: 

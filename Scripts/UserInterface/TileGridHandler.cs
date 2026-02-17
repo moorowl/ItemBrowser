@@ -3,10 +3,8 @@ using UnityEngine;
 
 namespace ItemBrowser.UserInterface {
 	public class TileGridHandler : MonoBehaviour {
-		[SerializeField]
-		private GameObject root;
-		[SerializeField]
-		private float yRenderOffset = 5f;
+		public GameObject root;
+		public float yRenderOffset = 5f;
 
 		public bool IsShowing { get; private set; }
 

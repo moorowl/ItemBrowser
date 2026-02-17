@@ -9,20 +9,14 @@ namespace ItemBrowser.UserInterface {
 	public class SnapPoint : MonoBehaviour {
 		private static readonly List<SnapPoint> ActiveSnapPoints = new();
 		
-		[SerializeField]
-		private List<string> tags;
-
-		[SerializeField] 
-		private bool useCustomSnapRules;
-		[SerializeField]
+		public List<string> tags;
+		public bool useCustomSnapRules;
 		[ShowIf("useCustomSnapRules")]
-		private float angleWeight = 0.5f;
-		[SerializeField]
+		public float angleWeight = 0.5f;
 		[ShowIf("useCustomSnapRules")]
-		private float distanceWeight = 0.5f;
+		public float distanceWeight = 0.5f;
 		[ShowIf("useCustomSnapRules")]
-		[SerializeField]
-		private float coneThreshold = 0.2f;
+		public float coneThreshold = 0.2f;
 
 		public UIelement AttachedElement { get; private set; }
 		public BoxCollider Collider { get; private set; }

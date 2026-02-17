@@ -57,7 +57,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2038570228256021254}
   m_Layer: 0
-  m_Name: root
+  m_Name: Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 8344556793877374076}
   - component: {fileID: 3989286529281753976}
   m_Layer: 0
-  m_Name: cellGrid
+  m_Name: CellGrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 1025250916828139224}
   - component: {fileID: 8481903838681514591}
   m_Layer: 0
-  m_Name: tileGrid
+  m_Name: TileGrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -244,7 +244,7 @@ SpriteRenderer:
   m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 97080026f0c6d8d41bb7ca91e677e608, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.025}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.023529412}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2

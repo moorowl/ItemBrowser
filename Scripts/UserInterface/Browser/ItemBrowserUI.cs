@@ -1,29 +1,30 @@
 ﻿using System;
+using System.Collections.Generic;
 using HarmonyLib;
 using ItemBrowser.Api;
-using ItemBrowser.Api.Entries;
 using ItemBrowser.Utilities;
+using Pug.UnityExtensions;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 // ReSharper disable InconsistentNaming
 
 namespace ItemBrowser.UserInterface.Browser {
-	public class ItemBrowserUI : ItemBrowserWindow {
+	public class ItemBrowserUI : ItemBrowserView {
 		public static event Action<ItemBrowserUI> OnInit;
 		public static event Action<ItemBrowserUI> OnUninit;
-
-		[SerializeField]
-		private Transform windows;
-		[SerializeField]
-		private GameObject tileGridPrefab;
-		[SerializeField]
-		private ObjectListContainerWindow objectListContainerWindow;
-		[SerializeField]
-		private ObjectEntriesWindow objectEntriesWindow;
-
-		private bool _entriesOpenedOutsideOfBrowser;
+		
+		public Transform root;
+		public GameObject background;
+		public GameObject tileGridPrefab;
+		public MainView mainView;
+		public DetailsView detailsView;
+		
 		private GameObject _tileGrid;
 		private Transform _tileGridRenderAnchor;
+
+		private float _timeToAutoUpdateObjectsToHighlightInInventory;
+		public HashSet<ObjectID> _objectsToHighlightInInventory = new();
 
 		private void Awake() {
 			gameObject.SetActive(false);
@@ -46,9 +47,9 @@ namespace ItemBrowser.UserInterface.Browser {
 			Manager.ui.DeselectAnySelectedUIElement();
 			
 			if (isFirstTimeShowing) {
-				objectListContainerWindow.IsShowing = true;
-				objectListContainerWindow.SetItemsTab();
-				objectEntriesWindow.IsShowing = false;
+				mainView.IsShowing = true;
+				mainView.SwapToItemsTab();
+				detailsView.IsShowing = false;
 			}
 			
 			UpdateScale();
@@ -60,44 +61,41 @@ namespace ItemBrowser.UserInterface.Browser {
 
 		protected override void OnHide() {
 			PlayToggleSound();
-			_entriesOpenedOutsideOfBrowser = false;
+			UpdateObjectsToHighlightInInventory();
 		}
 
-		public bool ShowObjectEntries(ObjectDataCD objectData, ObjectEntryType type) {
-			if (!IsShowing && objectData.Equals(objectEntriesWindow.SelectedObject)) {
+		public bool ShowDetails(ObjectDataCD objectData, DetailsTab initialTab) {
+			if (!IsShowing && objectData.Equals(detailsView.SelectedObject)) {
 				IsShowing = true;
-			} else if (!objectEntriesWindow.PushObjectData(objectData, type, false)) {
+			} else if (!detailsView.PushState(objectData, initialTab)) {
 				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.NoSourcesOrUsages, this);
 				return false;
 			}
-
-			_entriesOpenedOutsideOfBrowser = !IsShowing;
-
+			
 			IsShowing = true;
-			objectListContainerWindow.IsShowing = false;
-			objectEntriesWindow.IsShowing = true;
+			mainView.IsShowing = false;
+			detailsView.IsShowing = true;
 			
 			UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.GenericOpen, this);
 
 			return true;
 		}
 		
-		public void ShowObjectList() {
+		public void ShowGrid() {
 			IsShowing = true;
-			objectListContainerWindow.IsShowing = true;
-			objectEntriesWindow.IsShowing = false;
-			objectEntriesWindow.Clear();
-			_entriesOpenedOutsideOfBrowser = false;
+			mainView.IsShowing = true;
+			detailsView.IsShowing = false;
+			detailsView.ClearState();
 		}
 
 		public void GoBack() {
 			if (Manager.input.textInputIsActive) {
 				Manager.input.activeInputField.Deactivate(true);
-			} else if (objectEntriesWindow.HasAnyHistory) {
-				objectEntriesWindow.PopObjectData();
+			} else if (detailsView.HasPreviousStates) {
+				detailsView.PopState();
 				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.GenericClose, this);
-			} else if (objectEntriesWindow.IsShowing) {
-				ShowObjectList();
+			} else if (detailsView.IsShowing) {
+				ShowGrid();
 				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.GenericClose, this);
 			} else {
 				IsShowing = false;
@@ -110,16 +108,22 @@ namespace ItemBrowser.UserInterface.Browser {
 			HideMapIfShowing();
 			UpdateSwapToInventory();
 
+			if (Time.time >= _timeToAutoUpdateObjectsToHighlightInInventory) {
+				UpdateObjectsToHighlightInInventory();
+				_timeToAutoUpdateObjectsToHighlightInInventory = Time.time + Random.Range(1f, 2f);
+			}
+
 			if (Manager.main.player != null && Manager.main.player.guestMode)
 				IsShowing = false;
 		}
 
 		private void UpdateScale() {
-			windows.localScale = Manager.ui.CalcGameplayUITargetScaleMultiplier();
+			root.localScale = Manager.ui.CalcGameplayUITargetScaleMultiplier();
+			background.SetActive(!Manager.prefs.hideInGameUI);
 		}
 		
 		private void UpdateGoBack() {
-			if (Manager.menu.IsAnyMenuActive() || Manager.input.textInputIsActive)
+			if (Manager.menu.IsAnyMenuActive() || Manager.input.textInputIsActive || ReferenceEquals(Manager.input.activeInputField, Manager.ui.chatWindow))
 				return;
 
 			if (Manager.input.IsMenuStartButtonDown() || Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.CANCEL))
@@ -133,6 +137,20 @@ namespace ItemBrowser.UserInterface.Browser {
 					player.CloseAnyOpenInventory();
 				else
 					player.OpenPlayerInventory();
+		}
+
+		private void UpdateObjectsToHighlightInInventory() {
+			_objectsToHighlightInInventory.Clear();
+
+			if (mainView.gridWithItemsView.searchInput.HighlightSearchResults) {
+				foreach (var objectData in mainView.gridWithItemsView.FilteredObjects)
+					_objectsToHighlightInInventory.Add(objectData.objectID);
+			}
+			
+			if (mainView.gridWithCreaturesView.searchInput.HighlightSearchResults) {
+				foreach (var objectData in mainView.gridWithCreaturesView.FilteredObjects)
+					_objectsToHighlightInInventory.Add(objectData.objectID);
+			}
 		}
 		
 		private static void HideMapIfShowing() {
@@ -198,6 +216,45 @@ namespace ItemBrowser.UserInterface.Browser {
 						__instance.ReleaseGrabbedItemBackToInventory();
 				}
 			}
+			
+			[HarmonyPatch(typeof(UIMouse), "UpdateSlotHighlights")]
+			[HarmonyPostfix]
+			private static void UIMouse_UpdateSlotHighlights(UIMouse __instance) {
+				if (ItemBrowserAPI.ItemBrowserUI != null) {
+					var objectsToHighlight = ItemBrowserAPI.ItemBrowserUI._objectsToHighlightInInventory;
+					
+					if (Manager.ui.isChestInventoryUIShowing)
+						TryHighlightItemSlots(Manager.ui.chestInventoryUI.itemSlots, objectsToHighlight);
+
+					if (Manager.ui.isPlayerInventoryShowing) {
+						TryHighlightItemSlots(Manager.ui.playerInventoryUI.itemSlots, objectsToHighlight);
+
+						foreach (var pouchInventory in ((InventoryUI) Manager.ui.playerInventoryUI).pouchSlotsContainers)
+							TryHighlightItemSlots(pouchInventory.itemSlots, objectsToHighlight);
+					}
+
+					if (Manager.ui.itemSlotsBar.isShowing)
+						TryHighlightItemSlots(Manager.ui.itemSlotsBar.itemSlots, objectsToHighlight);
+				}
+			}
+
+			private static void TryHighlightItemSlots(List<SlotUIBase> itemSlots, HashSet<ObjectID> objectsToHighlight) {
+				foreach (var slot in itemSlots) {
+					if (slot.highlightBorder == null || slot.icon == null || !slot.isShowing)
+						continue;
+
+					var highlightAnyItem = objectsToHighlight.Count > 0;
+					var highlightThisItem = objectsToHighlight.Contains(slot.GetContainedObject().objectID);
+
+					if (highlightAnyItem) {
+						slot.highlightBorder.gameObject.SetActive(highlightThisItem);
+						slot.icon.SetAlpha(highlightThisItem ? 1f : 0.2f);
+					} else {
+						slot.highlightBorder.gameObject.SetActive(false);
+						slot.icon.SetAlpha(1f);
+					}
+				}
+			}
 
 			[HarmonyPatch(typeof(SendClientInputSystem), "PlayerInteractionBlocked")]
 			[HarmonyPostfix]
@@ -229,17 +286,6 @@ namespace ItemBrowser.UserInterface.Browser {
 					__instance.HideUI();
 			}
 			
-			/*[HarmonyPatch(typeof(InGameButtonHintsUI), "LateUpdate")]
-			[HarmonyPrefix]
-			private static bool InGameButtonHintsUI_LateUpdate(InGameButtonHintsUI __instance) {
-				// Hide button hints in bottom right
-				if (ItemBrowserAPI.ItemBrowserUI != null && !ItemBrowserAPI.ItemBrowserUI.IsShowing)
-					return true;
-				
-				__instance.container.SetActive(false);
-				return false;
-			}*/
-			
 			[HarmonyPatch(typeof(UIManager), "get_isAnyInventoryShowing")]
 			[HarmonyPostfix]
 			private static void UIManager_get_isAnyInventoryShowing(UIManager __instance, ref bool __result) {
@@ -251,8 +297,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			[HarmonyPrefix]
 			private static bool UIScrollWindow_UpdateScroll(UIScrollWindow __instance) {
 				// Disable scrolling in other windows
-				// TODO this could probably be optimized
-				if (ItemBrowserAPI.ItemBrowserUI != null && ItemBrowserAPI.ItemBrowserUI.IsShowing && __instance.GetComponentInParent<ItemBrowserWindow>() == null)
+				if (ItemBrowserAPI.ItemBrowserUI != null && ItemBrowserAPI.ItemBrowserUI.IsShowing && !IsInsideView(__instance))
 					return false;
 
 				return true;

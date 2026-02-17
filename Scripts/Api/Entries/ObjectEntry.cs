@@ -1,5 +1,23 @@
-﻿namespace ItemBrowser.Api.Entries {
+﻿using System;
+using System.Collections.Generic;
+using ItemBrowser.Api.Entries.Requirements;
+using ItemBrowser.UserInterface.Browser;
+
+namespace ItemBrowser.Api.Entries {
 	public abstract record ObjectEntry {
 		public abstract ObjectEntryCategory Category { get; }
+		
+		public virtual Type Renderer => typeof(BasicEntriesListRenderer);
+
+		private readonly List<ObjectEntryRequirement> _requirements = new();
+		public IEnumerable<ObjectEntryRequirement> Requirements => _requirements;
+
+		public void AddRequirement(ObjectEntryRequirement requirement) {
+			_requirements.Add(requirement);
+		}
+
+		public EntriesListRenderer CreateRenderer() {
+			return (EntriesListRenderer) Activator.CreateInstance(Renderer);
+		}
 	}
 }

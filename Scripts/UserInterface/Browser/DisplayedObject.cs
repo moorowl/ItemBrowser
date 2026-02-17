@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Api;
-using ItemBrowser.Api.Entries;
 using ItemBrowser.Utilities;
 using PugTilemap;
 using UnityEngine;
@@ -11,11 +10,11 @@ namespace ItemBrowser.UserInterface.Browser {
 	public abstract class DisplayedObject {
 		public virtual ContainedObjectsBuffer ContainedObject => default;
 		public virtual ContainedObjectsBuffer VisualObject => ContainedObject;
-		public virtual (int Min, int Max) Amount => (ContainedObject.amount, ContainedObject.amount);
+		public virtual (int Min, int Max) Amount => ContainedObject.objectID == ObjectID.None ? (VisualObject.amount, VisualObject.amount) : (ContainedObject.amount, ContainedObject.amount);
 			
 		public virtual void Update(SlotUIBase slot) { }
 		
-		public virtual bool ShowEntries(SlotUIBase slot, ObjectEntryType type) {
+		public virtual bool ShowDetails(SlotUIBase slot, DetailsTab initialTab) {
 			return false;
 		}
 
@@ -31,38 +30,49 @@ namespace ItemBrowser.UserInterface.Browser {
 			return null;
 		}
 		
-		public class Static : DisplayedObject {
+		public class Basic : DisplayedObject {
 			public override ContainedObjectsBuffer ContainedObject => new() {
-				objectData = _objectData
+				objectData = _objectsToDisplay.CurrentObjectData
 			};
 			public override (int Min, int Max) Amount { get; } = (1, 1);
+			
+			private readonly CyclingObjectData _objectsToDisplay;
 
-			private readonly ObjectDataCD _objectData;
+			public Basic(ObjectDataCD objectData) {
+				_objectsToDisplay = new CyclingObjectData(new ObjectDataCD[] {
+					objectData
+				});
 
-			public Static(ObjectDataCD objectData) {
-				_objectData = objectData;
-				Amount = (_objectData.amount, _objectData.amount);
+				Amount = (objectData.amount, objectData.amount);
 			}
 			
-			public Static(ObjectDataCD objectData, (int Min, int Max) amount) : this(objectData) {
+			public Basic(ObjectDataCD objectData, (int Min, int Max) amount) : this(objectData) {
 				Amount = amount;
 			}
 			
-			public Static(ObjectDataCD objectData, int amount) : this(objectData) {
+			public Basic(ObjectDataCD objectData, int amount) : this(objectData) {
 				Amount = (amount, amount);
 			}
 			
-			public override bool ShowEntries(SlotUIBase slot, ObjectEntryType type) {
-				return ItemBrowserAPI.ItemBrowserUI.ShowObjectEntries(_objectData, type);
+			public Basic(params ObjectDataCD[] objectData) {
+				_objectsToDisplay = new CyclingObjectData(objectData);
+			}
+			
+			public override void Update(SlotUIBase slot) {
+				_objectsToDisplay.Update(slot);
+			}
+			
+			public override bool ShowDetails(SlotUIBase slot, DetailsTab initialTab) {
+				return ItemBrowserAPI.ItemBrowserUI.ShowDetails(_objectsToDisplay.CurrentObjectData, initialTab);
 			}
 
 			public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
 				var objectName = new TextAndFormatFields {
-					text = ObjectUtils.GetLocalizedDisplayNameOrDefault(_objectData.objectID, _objectData.variation),
+					text = ObjectUtils.GetLocalizedDisplayNameOrDefault(_objectsToDisplay.CurrentObjectData),
 					dontLocalize = true
 				};
 
-				var objectInfo = PugDatabase.GetObjectInfo(_objectData.objectID);
+				var objectInfo = PugDatabase.GetObjectInfo(_objectsToDisplay.CurrentObjectData.objectID);
 				if (objectInfo != null)
 					objectName.color = Manager.text.GetRarityColor(objectInfo.rarity);
 
@@ -70,9 +80,10 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
-				var term = ObjectUtils.GetInternalName(_objectData.objectID);
+				var objectData = _objectsToDisplay.CurrentObjectData;
+				var term = ObjectUtils.GetInternalName(objectData);
 
-				var nameTermOverride = Manager.ui.itemOverridesTable.GetNameTermOverride(_objectData);
+				var nameTermOverride = Manager.ui.itemOverridesTable.GetNameTermOverride(objectData);
 				if (nameTermOverride != null)
 					term = nameTermOverride;
 
@@ -81,24 +92,24 @@ namespace ItemBrowser.UserInterface.Browser {
 						text = $"Items/{term}Desc"
 					}
 				};
-
+				
 				if (InputHandler.IsShowTechnicalInfoHeld) {
 					lines.Add(new TextAndFormatFields {
-						text = $"{(int) _objectData.objectID}:{_objectData.variation}",
+						text = $"{(int) objectData.objectID}:{objectData.variation}",
 						dontLocalize = true
 					});
 					lines.Add(new TextAndFormatFields {
-						text = ObjectUtils.GetInternalName(_objectData.objectID),
+						text = ObjectUtils.GetInternalName(objectData.objectID),
 						dontLocalize = true
 					});
-					if (PugDatabase.TryGetComponent<TileCD>(_objectData, out var tileCD)) {
+					if (PugDatabase.TryGetComponent<TileCD>(objectData, out var tileCD)) {
 						var isBlock = TileUtils.IsBlock(tileCD.tileType, (Tileset) tileCD.tileset);
 						lines.Add(new TextAndFormatFields {
 							text = isBlock ? $"{(Tileset) tileCD.tileset} ({TileType.wall} / {TileType.ground})" : $"{(Tileset) tileCD.tileset} ({tileCD.tileType})",
 							dontLocalize = true
 						});
 					}
-					var prefabInfo = PugDatabase.GetObjectInfo(_objectData.objectID, _objectData.variation).prefabInfos[0];
+					var prefabInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).prefabInfos[0];
 					if (prefabInfo.ecsPrefab != null) {
 						lines.Add(new TextAndFormatFields {
 							text = $"{prefabInfo.ecsPrefab.gameObject.name}",
@@ -113,13 +124,28 @@ namespace ItemBrowser.UserInterface.Browser {
 					}
 				}
 
-				if (_objectData.objectID != ObjectID.None && Options.ShowSourceMod) {
-					var associatedMod = ModUtils.GetAssociatedMod(_objectData);
+				if (objectData.objectID != ObjectID.None && Options.Instance.ShowSourceMod) {
+					var associatedMod = ModUtils.GetAssociatedMod(objectData);
 					lines.Add(new TextAndFormatFields {
 						text = ModUtils.GetDisplayName(associatedMod),
 						dontLocalize = true,
 						color = UserInterfaceUtils.DescriptionColor
 					});
+				}
+				
+				if (ItemBrowserAPI.IsItemIndexed(objectData) && !ObjectUtils.IsNonObtainable(objectData)) {
+					ObjectUtils.GetTotalAmountInInventoryAndNearbyChests(Manager.main.player, objectData, out var inInventory, out var inNearbyChests);
+					
+					if (inInventory > 0 || inNearbyChests > 0) {
+						lines.Add(new TextAndFormatFields {
+							text = "ItemBrowser-General/AmountInInventory",
+							formatFields = new[] {
+								(inInventory + inNearbyChests).ToString()
+							},
+							dontLocalizeFormatFields = true,
+							color = Color.white * 0.95f
+						});
+					}
 				}
 
 				return lines;
@@ -128,7 +154,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			public override List<TextAndFormatFields> GetHoverStats(SlotUIBase slot, bool previewReinforced) {
 				var lines = slot.GetHoverStats(ContainedObject, previewReinforced, false);
 
-				var displayNameNote = ObjectUtils.GetUnlocalizedDisplayNameNote(_objectData.objectID, _objectData.variation);
+				var displayNameNote = ObjectUtils.GetUnlocalizedDisplayNameNote(_objectsToDisplay.CurrentObjectData);
 				if (displayNameNote == null)
 					return lines;
 				
@@ -166,20 +192,34 @@ namespace ItemBrowser.UserInterface.Browser {
 
 			public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
 				return new TextAndFormatFields {
-					text = $"ItemBrowser:ObjectCategoryNames/{_tag}"
+					text = $"ItemBrowser-ObjectCategoryNames/{_tag}"
 				};
 			}
 
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
+				var lines = new List<TextAndFormatFields>();
+				
 				if (InputHandler.IsShowTechnicalInfoHeld) {
-					return new List<TextAndFormatFields> {
-						new() {
-							text = _tag.ToString(),
-							dontLocalize = true
-						}
-					};
+					lines.Add(new TextAndFormatFields {
+						text = _tag.ToString(),
+						dontLocalize = true
+					});
 				}
-				return base.GetHoverDescription(slot);
+				
+				ObjectUtils.GetTotalAmountInInventoryAndNearbyChests(Manager.main.player, _tag, out var inInventory, out var inNearbyChests);
+				
+				if (inInventory > 0 || inNearbyChests > 0) {
+					lines.Add(new TextAndFormatFields {
+						text = "ItemBrowser-General/AmountInInventory",
+						formatFields = new[] {
+							(inInventory + inNearbyChests).ToString()
+						},
+						dontLocalizeFormatFields = true,
+						color = Color.white * 0.95f
+					});
+				}
+				
+				return lines;
 			}
 
 			private static IEnumerable<ObjectDataCD> GetObjectsToDisplay(ObjectCategoryTag tag) {
@@ -204,18 +244,18 @@ namespace ItemBrowser.UserInterface.Browser {
 			private readonly TileType _tileType;
 			private readonly Tileset _tileset;
 			private readonly CyclingObjectData _visualObjects;
-			private readonly Static _staticObject;
+			private readonly Basic _staticObject;
 
 			public Tile(TileType tileType, Tileset? tileset = null) {
 				_tileType = tileType;
 				_tileset = tileset ?? Tileset.MAX_VALUE;
 
 				if (tileset == null) {
-					_visualObjects = new CyclingObjectData(GetObjectsToDisplay(_tileType));
+					_visualObjects = new CyclingObjectData(GetObjectsToDisplay(_tileType).OrderBy(objectData => PugDatabase.TryGetComponent<LevelCD>(objectData, out var levelCD) ? levelCD.level : 0));
 				} else {
 					var objectInfo = PugDatabase.TryGetTileItemInfo(_tileType == TileType.ground ? TileType.wall : _tileType, (int) tileset);
 					if (objectInfo != null) {
-						_staticObject = new Static(new ObjectDataCD {
+						_staticObject = new Basic(new ObjectDataCD {
 							objectID = objectInfo.objectID,
 							variation = objectInfo.variation
 						});
@@ -227,8 +267,8 @@ namespace ItemBrowser.UserInterface.Browser {
 				_visualObjects?.Update(slot);
 			}
 			
-			public override bool ShowEntries(SlotUIBase slot, ObjectEntryType type) {
-				return _staticObject != null && _staticObject.ShowEntries(slot, type);
+			public override bool ShowDetails(SlotUIBase slot, DetailsTab initialTab) {
+				return _staticObject != null && _staticObject.ShowDetails(slot, initialTab);
 			}
 
 			public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
@@ -306,31 +346,40 @@ namespace ItemBrowser.UserInterface.Browser {
 					objectID = GetBiomeIcon(biome)
 				}));
 			}
-			
-			public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
-				if (_biomes.Length > 0) {
-					return new TextAndFormatFields {
-						text = $"BiomeNames/{_biomes[0]}"
-					};	
-				}
 
-				return base.GetHoverTitle(slot);
+			public override void Update(SlotUIBase slot) {
+				_objectsToDisplay.Update(slot);
+			}
+
+			public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
+				if (_biomes.Length > 1) {
+					return new TextAndFormatFields {
+						text = $"ItemBrowser-General/MultipleBiomes"
+					};
+				}
+				
+				return new TextAndFormatFields {
+					text = $"BiomeNames/{_biomes[0]}"
+				};
 			}
 			
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
-				if (_biomes.Length > 1) {
-					var lines = new List<TextAndFormatFields>();
-
-					for (var i = 1; i < _biomes.Length; i++) {
-						lines.Add(new TextAndFormatFields {
-							text = $"BiomeNames/{_biomes[i]}"
-						});
-					}
-
+				var lines = new List<TextAndFormatFields>();
+				if (_biomes.Length <= 1)
 					return lines;
+
+				foreach (var biome in _biomes) {
+					lines.Add(new TextAndFormatFields {
+						text = "- {0}",
+						formatFields = new[] {
+							$"BiomeNames/{biome}"
+						},
+						dontLocalize = true,
+						color = GetBiomeIcon(biome) == _objectsToDisplay.CurrentObjectData.objectID ? Color.white * 0.99f : UserInterfaceUtils.DescriptionColor
+					});
 				}
-				
-				return base.GetHoverDescription(slot);
+
+				return lines;
 			}
 
 			private static ObjectID GetBiomeIcon(Biome biome) {
@@ -343,6 +392,7 @@ namespace ItemBrowser.UserInterface.Browser {
 					Biome.Desert => ObjectID.WallDesertBlock,
 					Biome.Crystal => ObjectID.WallCrystalBlock,
 					Biome.Passage => ObjectID.WallPassageBlock,
+					Biome.Excavation => ObjectID.WallExcavationBlock,
 					_ => ObjectID.WallObsidianBlock
 				};
 			}
@@ -396,7 +446,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		private class CyclingObjectData {
-			private const float DefaultCycleSpeed = 1f;
+			private const float DefaultCycleSpeed = 2f;
 			
 			private readonly List<ObjectDataCD> _objectsToDisplay;
 			private readonly float _cycleSpeed;
@@ -420,13 +470,16 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 			
 			public void Update(SlotUIBase slot) {
+				if (_lastCycledTime == 0f)
+					_lastCycledTime = Time.time;
+				
 				if (Time.time >= _lastCycledTime + _cycleSpeed) {
 					_currentObjectDataIndex++;
 					if (_currentObjectDataIndex >= _objectsToDisplay.Count)
 						_currentObjectDataIndex = 0;
 
 					_lastCycledTime = Time.time;
-					if (slot is BasicItemSlot basicItemSlot)
+					if (slot is ItemBrowserSlot basicItemSlot)
 						basicItemSlot.UpdateVisuals();
 				}
 			}

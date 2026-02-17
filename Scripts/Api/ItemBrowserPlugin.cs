@@ -26,6 +26,9 @@ namespace ItemBrowser.Api {
 				
 				foreach (var overrides in gameObject.GetComponents<ObjectNameAndIconOverride>())
 					registry.AddObjectNameAndIconOverride(overrides);
+				
+				if (gameObject.TryGetComponent<PooledElement>(out var pooledElement))
+					registry.AddPooledElement(pooledElement);
 			}
 		}
 	}

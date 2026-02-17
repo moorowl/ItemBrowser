@@ -21,19 +21,19 @@ public class Main : IMod {
 
 		var modInfo = API.ModLoader.LoadedMods.FirstOrDefault(modInfo => modInfo.Handlers.Contains(this));
 		AssetBundle = modInfo!.AssetBundles[0];
-		
-		Options.EarlyInit();
 	}
 
 	public void Init() {
-		Options.Init();
+		Options.Instance.Init();
 		ItemBrowserAPI.Init();
 		ModUtils.InitOnModLoad();
 	}
 
 	public void Shutdown() { }
 
-	public void Update() { }
+	public void Update() {
+		Options.Instance.Update();
+	}
 
 	public void ModObjectLoaded(Object obj) { }
 

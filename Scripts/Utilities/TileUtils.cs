@@ -26,11 +26,11 @@ namespace ItemBrowser.Utilities {
 		
 		public static string GetLocalizedDisplayName(TileType tileType, Tileset? tileset) {
 			if (tileset == null)
-				return API.Localization.GetLocalizedTerm($"ItemBrowser:AnyTileType/{tileType}");
+				return API.Localization.GetLocalizedTerm($"ItemBrowser-AnyTileType/{tileType}");
 
 			if (IsBlock(tileType, tileset.Value, out var wallObjectId, out _)) {
 				return string.Format(
-					API.Localization.GetLocalizedTerm(tileType == TileType.wall ? "ItemBrowser:WallBlockSuffix" : "ItemBrowser:GroundBlockSuffix"),
+					API.Localization.GetLocalizedTerm(tileType == TileType.wall ? "ItemBrowser-General/WallBlockSuffix" : "ItemBrowser-General/GroundBlockSuffix"),
 					ObjectUtils.GetLocalizedDisplayNameOrDefault(wallObjectId)
 				);
 			}

@@ -351,6 +351,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: ui_icon_requirement
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3fb11915db653d40bbb26134ffe4468
+      internalID: 118495685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -372,6 +394,7 @@ TextureImporter:
       ui_icon_filter: -392396922
       ui_icon_help: 1986276185
       ui_icon_help_old: -2036461585
+      ui_icon_requirement: 118495685
       ui_icon_settings: 160195236
       ui_icon_sort: 278813827
       ui_icon_sort_order_asc: 1804492927

@@ -1,134 +1,96 @@
 ﻿using System;
-using System.Collections.Generic;
-using PugMod;
+using ItemBrowser.Api;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace ItemBrowser.Utilities {
 	public static class LootUtils {
-		public readonly struct LootTableDrop {
-			public readonly ObjectID ObjectId;
-			public readonly (int Min, int Max) ObjectAmount;
-			public readonly float Chance;
-			public readonly Biome OnlyDropsInBiome;
-			public readonly bool IsFromGuaranteedPool;
-			public readonly bool TableHasGuaranteedPool;
+		public readonly struct LootTableHelper {
+			public readonly Drop[] GuaranteedPool;
+			public readonly Drop[] RandomPool;
+			public readonly (int Min, int Max) BaseRolls;
 			
-			private readonly (int Min, int Max) _baseRolls;
-			
-			public LootTableDrop(ObjectID objectId, (int, int) objectAmount, (int, int) baseRolls, float chance, Biome onlyDropsInBiome, bool isFromGuaranteedPool, bool tableHasGuaranteedPool) {
-				ObjectId = objectId;
-				ObjectAmount = objectAmount;
-				Chance = chance;
-				OnlyDropsInBiome = onlyDropsInBiome;
-				IsFromGuaranteedPool = isFromGuaranteedPool;
-				TableHasGuaranteedPool = tableHasGuaranteedPool;
+			public LootTableHelper(ref EntityLootTable entityLootTable) {
+				ref var guaranteedLootInfos = ref entityLootTable.guaranteedDropsLootTable;
+				ref var normalLootInfos = ref entityLootTable.lootTable;
 				
-				_baseRolls = baseRolls;
-			}
+				var minRolls = entityLootTable.minUniqueDrops;
+				var maxRolls = entityLootTable.maxUniqueDrops;
+				if (guaranteedLootInfos.Length > 0) {
+					minRolls--;
+					maxRolls--;
+				}
 
-			public float CalculateChanceForOneForBosses(int? playerCountOverride = null) {
-				var (minRolls, maxRolls) = CalculateRollsForBosses(playerCountOverride);
-				var averageRolls = (minRolls + maxRolls) / 2f;
+				GuaranteedPool = new Drop[guaranteedLootInfos.Length];
+				RandomPool = new Drop[normalLootInfos.Length];
+				BaseRolls = (minRolls, maxRolls);
 
-				return 1f - Mathf.Pow(1f - Chance, averageRolls);
-			}
-			
-			public float CalculateChanceForOne() {
-				return CalculateChanceForOneForBosses(1);
-			}
+				var guaranteedTotalWeight = 0f;
+				var normalTotalWeight = 0f;
+				for (var i = 0; i < guaranteedLootInfos.Length; i++) {
+					var entry = guaranteedLootInfos[i];
+					guaranteedTotalWeight += entry.weight;
+				}
+				for (var i = 0; i < normalLootInfos.Length; i++) {
+					var entry = normalLootInfos[i];
+					normalTotalWeight += entry.weight;
+				}
 
-			public (int Min, int Max) CalculateRollsForBosses(int? playerCountOverride = null) {
-				var playerCount = Math.Max(playerCountOverride ?? WorldUtils.ClientPlayerCount, 1);
-
-				var rollsMultiplier = 1f + Math.Max(0, playerCount - 1) * 0.5f;
-				if (WorldUtils.ClientWorldInfo.IsWorldModeEnabled(WorldMode.Hard))
-					rollsMultiplier *= Constants.hardModeBossLootAmountMultiplier;
+				for (var i = 0; i < guaranteedLootInfos.Length; i++) {
+					var entry = guaranteedLootInfos[i];
+					GuaranteedPool[i] = new Drop(
+						this,
+						entry.objectID,
+						(entry.amount.min, entry.amount.max),
+						(1, 1),
+						entry.weight / guaranteedTotalWeight,
+						entry.onlyDropsInBiome,
+						true
+					);
+				}
 				
-				return (
-					(int) Math.Round(_baseRolls.Min * rollsMultiplier),
-					(int) Math.Round(_baseRolls.Max * rollsMultiplier)
-				);
-			}
-			
-			public (int Min, int Max) CalculateRolls() {
-				return CalculateRollsForBosses(1);
-			}
-		}
-
-		public static IEnumerable<LootTableDrop> GetLootTableContents(LootTableID id) {
-			var drops = new List<LootTableDrop>();
-
-			ref var lootTable = ref TryGetLootTable(id, out var exists);
-			if (!exists)
-				return drops;
-
-			ref var guaranteedPool = ref lootTable.guaranteedDropsLootTable;
-			var guaranteedPoolTotalWeight = 0f;
-			ref var normalPool = ref lootTable.lootTable;
-			var normalPoolTotalWeight = 0f;
-
-			var minRolls = lootTable.minUniqueDrops;
-			var maxRolls = lootTable.maxUniqueDrops;
-			if (guaranteedPool.Length > 0) {
-				minRolls--;
-				maxRolls--;
-			}
-
-			for (var i = 0; i < guaranteedPool.Length; i++) {
-				var entry = guaranteedPool[i];
-				guaranteedPoolTotalWeight += entry.weight;
-			}
-			for (var i = 0; i < normalPool.Length; i++) {
-				var entry = normalPool[i];
-				normalPoolTotalWeight += entry.weight;
-			}
-			
-			for (var i = 0; i < guaranteedPool.Length; i++) {
-				var entry = guaranteedPool[i];
-				drops.Add(new LootTableDrop(
-					entry.objectID,
-					(entry.amount.min, entry.amount.max),
-					(1, 1),
-					entry.weight / guaranteedPoolTotalWeight,
-					entry.onlyDropsInBiome,
-					true,
-					true
-				));
-			}
-			
-			for (var i = 0; i < normalPool.Length; i++) {
-				var entry = normalPool[i];
-				drops.Add(new LootTableDrop(
-					entry.objectID,
-					(entry.amount.min, entry.amount.max),
-					(minRolls, maxRolls),
-					entry.weight / normalPoolTotalWeight,
-					entry.onlyDropsInBiome,
-					false,
-					guaranteedPool.Length > 0
-				));
-			}
-			
-			return drops;
-		}
-		
-		private static EntityLootTable _defaultLootTable;
-
-		private static ref EntityLootTable TryGetLootTable(LootTableID id, out bool exists) {
-			ref var lootTables = ref API.Client.GetEntityQuery(typeof(LootTableBankCD)).GetSingleton<LootTableBankCD>().Value.Value.lootTables;
-
-			for (var i = 0; i < lootTables.Length; i++) {
-				if (lootTables[i].lootTableID == id) {
-					exists = true;
-					return ref lootTables[i];
+				for (var i = 0; i < normalLootInfos.Length; i++) {
+					var entry = normalLootInfos[i];
+					RandomPool[i] = new Drop(
+						this,
+						entry.objectID,
+						(entry.amount.min, entry.amount.max),
+						(minRolls, maxRolls),
+						entry.weight / normalTotalWeight,
+						entry.onlyDropsInBiome,
+						false
+					);
 				}
 			}
+			
+			public readonly struct Drop {
+				public readonly LootTableHelper BelongsToLootTable;
+				public readonly ObjectID Item;
+				public readonly (int Min, int Max) Amount;
+				public readonly (int Min, int Max) BaseRolls;
+				public readonly float Chance;
+				public readonly Biome OnlyDropsInBiome;
+				public readonly bool IsFromGuaranteedPool;
 
-			exists = false;
-			return ref _defaultLootTable;
+				public bool IsFromLootTableWithGuaranteedPool => BelongsToLootTable.GuaranteedPool.Length > 0;
+
+				public Drop(LootTableHelper lootTable, ObjectID item, (int, int) amount, (int, int) baseRolls, float chance, Biome onlyDropsInBiome, bool isFromGuaranteedPool) {
+					BelongsToLootTable = lootTable;
+					Item = item;
+					Amount = amount;
+					BaseRolls = baseRolls;
+					Chance = chance;
+					OnlyDropsInBiome = onlyDropsInBiome;
+					IsFromGuaranteedPool = isFromGuaranteedPool;
+				}
+			}
 		}
 
+		public static LootTableHelper GetLootTableHelper(LootTableID id) {
+			ref var entityLootTable = ref ClientWorldStateSystem.TryGetEntityLootTable(id, out var exists);
+			return exists ? new LootTableHelper(ref entityLootTable) : default;
+		}
+		
 		public static float GetChanceForActiveWorld(EnvironmentalSpawnChance chance) {
 			var worldGenSettings = Manager.saves.GetWorldInfo().worldGenerationSettings;
 			
@@ -141,8 +103,39 @@ namespace ItemBrowser.Utilities {
 			};
 		}
 		
+		public static float CalculateChanceForOneForBosses(float baseChance, (int Min, int Max) baseRolls, int? playerCountOverride = null) {
+			var (minRolls, maxRolls) = CalculateRollsForBosses(baseRolls, playerCountOverride);
+			var averageRolls = (minRolls + maxRolls) / 2f;
+
+			return 1f - Mathf.Pow(1f - baseChance, averageRolls);
+		}
+			
+		public static float CalculateChanceForOne(float baseChance, (int Min, int Max) baseRolls) {
+			return CalculateChanceForOneForBosses(baseChance, baseRolls, 1);
+		}
+
+		public static (int Min, int Max) CalculateRollsForBosses((int Min, int Max) baseRolls, int? playerCountOverride = null) {
+			if (baseRolls.Min == 1 && baseRolls.Max == 1)
+				return baseRolls;
+				
+			var playerCount = Math.Max(playerCountOverride ?? ClientWorldStateSystem.PlayerCount, 1);
+
+			var rollsMultiplier = 1f + Math.Max(0, playerCount - 1) * 0.5f;
+			if (ClientWorldStateSystem.WorldInfo.IsWorldModeEnabled(WorldMode.Hard))
+				rollsMultiplier *= Constants.hardModeBossLootAmountMultiplier;
+				
+			return (
+				(int) Math.Round(baseRolls.Min * rollsMultiplier),
+				(int) Math.Round(baseRolls.Max * rollsMultiplier)
+			);
+		}
+			
+		public static (int Min, int Max) CalculateRolls((int Min, int Max) baseRolls) {
+			return CalculateRollsForBosses(baseRolls, 1);
+		}
+		
 		public static int GetMultiplayerScaledAmount(int baseAmount, float multiplayerAmountAdditionScaling, int? playerCountOverride = null) {
-			var playerCount = playerCountOverride ?? WorldUtils.ClientPlayerCount;
+			var playerCount = playerCountOverride ?? ClientWorldStateSystem.PlayerCount;
 			return (int) math.round(baseAmount * (1f + math.max(0, playerCount - 1) * multiplayerAmountAdditionScaling));
 		}
 	}

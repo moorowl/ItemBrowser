@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace ItemBrowser.Utilities {
@@ -17,6 +16,9 @@ namespace ItemBrowser.Utilities {
 		}
 
 		public static void AppendButtonHint(List<TextAndFormatFields> lines, string term, string binding) {
+			if (!Options.Instance.ShowButtonHints)
+				return;
+			
 			var glyph = GetInputGlyph(binding);
 			if (glyph == null)
 				return;
@@ -35,13 +37,14 @@ namespace ItemBrowser.Utilities {
 		}
 
 		public static string FormatChance(float chance) {
-			if (chance < 0.001f)
-				return (chance * 100f).ToString("0.###");
-				
-			return (chance * 100f).ToString("0.##");
+			return chance switch {
+				< 0.0001f => (chance * 100f).ToString("0.####"),
+				< 0.001f => (chance * 100f).ToString("0.###"),
+				_ => (chance * 100f).ToString("0.##")
+			};
 		}
 
-		public static string FormatAmountOrRollsRange((int Min, int Max) amount) {
+		public static string FormatRange((int Min, int Max) amount) {
 			return amount.Min != amount.Max ? $"{amount.Min}-{amount.Max}" : amount.Min.ToString();
 		}
 		
@@ -54,11 +57,27 @@ namespace ItemBrowser.Utilities {
 			element.Select();
 			Manager.ui.mouse.PlaceMousePositionOnSelectedUIElementWhenControlledByJoystick();
 		}
+		
+		public static float CalculateHeight(GameObject gameObject) {
+			var height = 0f;
+
+			foreach (var boxCollider in gameObject.GetComponentsInChildren<BoxCollider>())
+				height = Mathf.Max(height, Mathf.Abs(boxCollider.transform.localPosition.y) + Mathf.Abs(boxCollider.size.y));
+			
+			foreach (var pugText in gameObject.GetComponentsInChildren<PugText>())
+				height = Mathf.Max(height, pugText.dimensions.height - Mathf.Abs((pugText.dimensions.y + pugText.transform.localPosition.y) / 8f));
+
+			return RoundToPixelPerfectPosition.RoundFloat(height);
+		}
+		
+		public static float CalculateHeight(Component component) {
+			return CalculateHeight(component.gameObject);
+		}
 
 		public enum MenuSound {
 			GenericOpen,
 			GenericClose,
-			ChangeTypeOrCategory,
+			ChangeTabOrCategory,
 			AddObjectToInventory,
 			Favorite,
 			Unfavorite,
@@ -67,6 +86,9 @@ namespace ItemBrowser.Utilities {
 		}
 
 		public static void PlaySound(MenuSound sound, MonoBehaviour source) {
+			if (Manager.load.IsScreenBlack())
+				return;
+			
 			switch (sound) {
 				case MenuSound.GenericOpen:
 					AudioManager.SfxUI(SfxID.FIXME_menu_select, 0.6f, false, 1f, 0f);
@@ -74,7 +96,7 @@ namespace ItemBrowser.Utilities {
 				case MenuSound.GenericClose:
 					AudioManager.SfxUI(SfxID.FIXME_menu_select, 0.4f, false, 1f, 0f);
 					break;
-				case MenuSound.ChangeTypeOrCategory:
+				case MenuSound.ChangeTabOrCategory:
 					AudioManager.Sfx(SfxTableID.inventorySFXCreativeModeCategory, source.transform.position);
 					break;
 				case MenuSound.AddObjectToInventory:

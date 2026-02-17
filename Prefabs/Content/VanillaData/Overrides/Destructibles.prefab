@@ -1,0 +1,432 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2478053650025062927
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8128390053464028919}
+  - component: {fileID: 6823121846611670273}
+  - component: {fileID: 1061262087298341543}
+  - component: {fileID: 3894814066970221507}
+  - component: {fileID: 4682401747763164783}
+  - component: {fileID: 5840390512028526778}
+  - component: {fileID: 2225634416679968932}
+  - component: {fileID: 1836198388255361274}
+  - component: {fileID: 6821751037662164367}
+  - component: {fileID: 2907043970092227129}
+  - component: {fileID: 3838542513372921251}
+  - component: {fileID: 8859187788280336927}
+  - component: {fileID: 7706325964851136833}
+  - component: {fileID: 7769587548339290482}
+  - component: {fileID: 1815663698324590449}
+  - component: {fileID: 8133140380506592069}
+  - component: {fileID: 6889770996060984235}
+  - component: {fileID: 3328706866291426525}
+  - component: {fileID: 1029190075529615702}
+  - component: {fileID: 128943787745768493}
+  m_Layer: 0
+  m_Name: Destructibles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8128390053464028919
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6823121846611670273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: WoodenDestructible
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/WoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &1061262087298341543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: WoodenDestructible
+  appliesToVariation: 2
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/WoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &3894814066970221507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: WoodenDestructible
+  appliesToVariation: 3
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/WoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &4682401747763164783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: NatureWoodenDestructible
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/NatureWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &5840390512028526778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: NatureWoodenDestructible
+  appliesToVariation: 2
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/NatureWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &2225634416679968932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: NatureWoodenDestructible
+  appliesToVariation: 3
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/NatureWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &1836198388255361274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SeaWoodenDestructible
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SeaWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &6821751037662164367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SeaWoodenDestructible
+  appliesToVariation: 2
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SeaWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &2907043970092227129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: SeaWoodenDestructible
+  appliesToVariation: 3
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/SeaWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &3838542513372921251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: LavaWoodenDestructible
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/LavaWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &8859187788280336927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: LavaWoodenDestructible
+  appliesToVariation: 2
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/LavaWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &7706325964851136833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: LavaWoodenDestructible
+  appliesToVariation: 3
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/LavaWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &7769587548339290482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: NatureDestructible
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/NatureDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &1815663698324590449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: AFWoodenDestructible
+  appliesToVariation: 1
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/AFWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &8133140380506592069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: AFWoodenDestructible
+  appliesToVariation: 2
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/AFWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &6889770996060984235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: AFWoodenDestructible
+  appliesToVariation: 3
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/AFWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &3328706866291426525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: FallingRockDestructible
+  appliesToVariation: 0
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/FallingRockDestructible_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 7a096ed0099cfee4690ea50e89111456, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &1029190075529615702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: AmberBoulder
+  appliesToVariation: 0
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/AmberBoulder_0
+  overrideIcon: 0
+  icon: {fileID: 21300000, guid: 34a1f4aed20a1f8419fb8d0f488964fa, type: 3}
+  showNameNote: 0
+  nameNote: 
+--- !u!114 &128943787745768493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478053650025062927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f91d821c9d4dfe9ddf9c7c0aca1d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliesTo: FallingExcavationRockDestructible
+  appliesToVariation: 0
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/FallingExcavationRockDestructible_0
+  overrideIcon: 1
+  icon: {fileID: 21300000, guid: 7a096ed0099cfee4690ea50e89111456, type: 3}
+  showNameNote: 0
+  nameNote: 

@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using I2.Loc;
+using ItemBrowser.Api.Entries;
 using ItemBrowser.UserInterface.Browser;
 using ItemBrowser.Utilities;
-using ItemBrowser.Api.Entries;
 using PugMod;
-using PugTilemap;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -15,8 +15,9 @@ using Object = UnityEngine.Object;
 
 namespace ItemBrowser.Api {
 	public static class ItemBrowserAPI {
+		private const string BrowserPrefabPath = "Assets/ItemBrowser/Prefabs/Browser/ItemBrowserUI.prefab";
+		
 		public static event Action OnClientLanguageChanged;
-
 		public static ItemBrowserUI ItemBrowserUI { get; private set; }
 
 		internal static readonly ItemBrowserRegistry Registry = new();
@@ -27,11 +28,6 @@ namespace ItemBrowser.Api {
 
 		internal static void Init() {
 			InitPlugins();
-			
-			OnClientLanguageChanged += () => {
-				if (_hasRegistered)
-					SetupSortingAndFilteringIndexes();
-			};
 		}
 
 		private static void InitPlugins() {
@@ -48,15 +44,15 @@ namespace ItemBrowser.Api {
 
 				if (instance.IsEnabled) {
 					Plugins.Add(instance);
-					Main.Log(nameof(ItemBrowserAPI), $"Added plugin {instance.AssociatedMod}:{type.GetNameChecked()}");
+					Main.Log(nameof(ItemBrowserAPI), $"Added plugin {type.GetNameChecked()} from {instance.AssociatedMod}");
 				} else {
-					Main.Log(nameof(ItemBrowserAPI), $"Ignoring disabled plugin {instance.AssociatedMod}:{type.GetNameChecked()}");
+					Main.Log(nameof(ItemBrowserAPI), $"Skipped disabled plugin {type.GetNameChecked()} from {instance.AssociatedMod}");
 				}
 			}
 		}
 		
 		private static void InitBrowserUI() {
-			var prefab = Main.AssetBundle.LoadAsset<GameObject>("Assets/ItemBrowser/Prefabs/ItemBrowserUI.prefab");
+			var prefab = Main.AssetBundle.LoadAsset<GameObject>(BrowserPrefabPath);
 			ItemBrowserUI = Object.Instantiate(prefab, API.Rendering.UICamera.transform).GetComponent<ItemBrowserUI>();
 			
 			if (!_hasRegistered) {
@@ -81,11 +77,24 @@ namespace ItemBrowser.Api {
 			ObjectEntryRegistry.RegisterFromProviders(Registry.EntryProviders);
 
 			SetupSortingAndFilteringIndexes();
+			OnClientLanguageChanged += SetupSortingAndFilteringIndexes;
+
+			Manager.main.StartCoroutine(TemporarilyShowBrowserToAvoidLagSpikes());
 		}
 
 		private static void UninitBrowserUI() {
 			if (ItemBrowserUI != null)
 				Object.Destroy(ItemBrowserUI);
+
+			OnClientLanguageChanged -= SetupSortingAndFilteringIndexes;
+		}
+
+		private static IEnumerator TemporarilyShowBrowserToAvoidLagSpikes() {
+			ItemBrowserUI.IsShowing = true;
+
+			yield return new WaitForSeconds(0.1f);
+
+			ItemBrowserUI.IsShowing = false;
 		}
 
 		private static void SetupSortingAndFilteringIndexes() {
@@ -98,20 +107,71 @@ namespace ItemBrowser.Api {
 				entry.Filter.SetupIndexedMatches(allObjects);
 		}
 		
-		public static bool IsItemIndexed(ObjectDataCD item) {
-			return Registry.Items.Contains(item);
+		public static bool IsItemIndexed(ObjectDataCD objectData) {
+			return Registry.Items.Contains(objectData);
 		}
 		
-		public static bool IsCreatureIndexed(ObjectDataCD creature) {
-			return Registry.Creatures.Contains(creature);
-		}
-		
-		public static bool IsTechnicalItem(ObjectDataCD item) {
-			return Registry.TechnicalItems.Contains(item);
+		public static bool IsItemIndexed(ObjectID id, int variation = 0) {
+			return IsItemIndexed(new ObjectDataCD {
+				objectID = id,
+				variation = variation
+			});
 		}
 
-		public static bool IsTechnicalCreature(ObjectDataCD creature) {
-			return Registry.TechnicalCreatures.Contains(creature);
+		public static bool IsCreatureIndexed(ObjectDataCD objectData) {
+			return Registry.Creatures.Contains(objectData);
+		}
+		
+		public static bool IsCreatureIndexed(ObjectID id, int variation = 0) {
+			return IsCreatureIndexed(new ObjectDataCD {
+				objectID = id,
+				variation = variation
+			});
+		}
+
+		public static bool IsTechnicalObject(ObjectDataCD objectData) {
+			return Registry.TechnicalObjects.Contains(objectData);
+		}
+		
+		public static bool IsTechnicalObject(ObjectID id, int variation = 0) {
+			return IsTechnicalObject(new ObjectDataCD {
+				objectID = id,
+				variation = variation
+			});
+		}
+
+		public static bool IsDeprecatedObject(ObjectDataCD objectData) {
+			return Registry.DeprecatedObjects.Contains(objectData);
+		}
+		
+		public static bool IsDeprecatedObject(ObjectID id, int variation = 0) {
+			return IsDeprecatedObject(new ObjectDataCD {
+				objectID = id,
+				variation = variation
+			});
+		}
+		
+		public static UIelement GetPooledElement(Type type) {
+			if (Registry.ElementPools.TryGetValue(type, out var pool))
+				return (UIelement) pool.GetFreeComponent(true, true);
+			
+			return null;
+		}
+		
+		public static T GetPooledElement<T>() where T : UIelement {
+			if (Registry.ElementPools.TryGetValue(typeof(T), out var pool))
+				return (T) pool.GetFreeComponent(true, true);
+			
+			return null;
+		}
+		
+		public static void FreePooledElement(UIelement element) {
+			if (Registry.ElementPools.TryGetValue(element.GetType(), out var pool))
+				pool.Free(element);
+		}
+		
+		public static bool IsPooledElement(UIelement element) {
+			return Registry.ElementPools.ContainsKey(element.GetType());
 		}
 		
 		[HarmonyPatch]
@@ -134,8 +194,7 @@ namespace ItemBrowser.Api {
 				if (!__instance.isLocal)
 					return;
 
-				UninitBrowserUI();
-				InitBrowserUI();
+				Manager.main.StartCoroutine(InitBrowserUICoroutine());
 			}
 
 			[HarmonyPatch(typeof(PlayerController), "OnFree")]
@@ -145,6 +204,12 @@ namespace ItemBrowser.Api {
 					return;
 
 				UninitBrowserUI();
+			}
+
+			private static IEnumerator InitBrowserUICoroutine() {
+				// Have to wait for active content bundles to be synced
+				yield return new WaitUntil(() => ClientWorldStateSystem.HasRunAtLeastOnce);
+				
 				InitBrowserUI();
 			}
 		}
