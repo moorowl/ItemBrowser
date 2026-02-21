@@ -15,7 +15,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 		
 		protected override void OnDisable() {
-			_renderer?.ClearList();
+			ClearList();
 		}
 
 		protected override void LateUpdate() {

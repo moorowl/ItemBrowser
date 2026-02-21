@@ -93,7 +93,7 @@ namespace ItemBrowser.UserInterface.Browser {
 					}
 				};
 				
-				if (InputHandler.IsShowTechnicalInfoHeld) {
+				if (InputHelper.IsShowTechnicalInfoHeld) {
 					lines.Add(new TextAndFormatFields {
 						text = $"{(int) objectData.objectID}:{objectData.variation}",
 						dontLocalize = true
@@ -199,7 +199,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
 				var lines = new List<TextAndFormatFields>();
 				
-				if (InputHandler.IsShowTechnicalInfoHeld) {
+				if (InputHelper.IsShowTechnicalInfoHeld) {
 					lines.Add(new TextAndFormatFields {
 						text = _tag.ToString(),
 						dontLocalize = true
@@ -420,7 +420,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 			
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
-				if (InputHandler.IsShowTechnicalInfoHeld) {
+				if (InputHelper.IsShowTechnicalInfoHeld) {
 					return new List<TextAndFormatFields> {
 						new() {
 							text = _season.ToString(),

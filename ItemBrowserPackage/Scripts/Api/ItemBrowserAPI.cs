@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace ItemBrowser.Api {
 	public static class ItemBrowserAPI {
-		private const string BrowserPrefabPath = "Assets/ItemBrowser/Prefabs/Browser/ItemBrowserUI.prefab";
+		private const string BrowserPrefabPath = "Assets/ItemBrowser/ItemBrowserPackage/Prefabs/Browser/ItemBrowserUI.prefab";
 		
 		public static event Action OnClientLanguageChanged;
 		public static ItemBrowserUI ItemBrowserUI { get; private set; }
@@ -53,6 +53,9 @@ namespace ItemBrowser.Api {
 		
 		private static void InitBrowserUI() {
 			var prefab = Main.AssetBundle.LoadAsset<GameObject>(BrowserPrefabPath);
+			if (prefab == null)
+				throw new NullReferenceException($"Failed to load BrowserUI prefab at {BrowserPrefabPath}");
+			
 			ItemBrowserUI = Object.Instantiate(prefab, API.Rendering.UICamera.transform).GetComponent<ItemBrowserUI>();
 			
 			if (!_hasRegistered) {

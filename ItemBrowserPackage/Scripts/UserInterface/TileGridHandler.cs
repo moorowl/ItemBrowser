@@ -14,7 +14,7 @@ namespace ItemBrowser.UserInterface {
 		}
 
 		private void LateUpdate() {
-			if (InputHandler.IsToggleTileGridPressed)
+			if (InputHelper.IsToggleTileGridPressed)
 				IsShowing = !IsShowing;
 			
 			root.SetActive(IsShowing && !Manager.prefs.hideInGameUI);

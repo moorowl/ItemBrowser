@@ -94,7 +94,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		private void UpdateFavoriting() {
 			var input = Manager.input.singleplayerInputModule;
 			
-			if (IsSelected && CanBeFavorited && InputHandler.IsToggleFavoritePressed) {
+			if (IsSelected && CanBeFavorited && InputHelper.IsToggleFavoritePressed) {
 				if (IsFavorited) {
 					UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.Unfavorite, this);
 					Options.Instance.RemoveFavorite(FavoritedKey);
@@ -109,7 +109,7 @@ namespace ItemBrowser.UserInterface.Browser {
 
 		private void UpdateCheatObjectIn() {
 			var containedObjectData = _displayedObject.ContainedObject.objectData;
-			if (containedObjectData.objectID == ObjectID.None || !InputHandler.IsSpawnItemPressed || !CanCheatInObjects)
+			if (containedObjectData.objectID == ObjectID.None || !InputHelper.IsSpawnItemPressed || !CanCheatInObjects)
 				return;
 			
 			var player = Manager.main.player;
@@ -361,7 +361,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 		
 		private static bool CanPickUpStack(ObjectDataCD objectData) {
-			return InputHandler.IsPickUpTenHeld && PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation) is {
+			return InputHelper.IsPickUpTenHeld && PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation) is {
 				isStackable: true
 			};
 		}

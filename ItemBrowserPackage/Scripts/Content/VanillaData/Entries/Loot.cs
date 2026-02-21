@@ -4,7 +4,6 @@ using System.Linq;
 using ItemBrowser.Api;
 using ItemBrowser.Api.Entries;
 using ItemBrowser.Api.Entries.Requirements.Types;
-using ItemBrowser.UserInterface.Browser;
 using ItemBrowser.Utilities.Extensions;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;

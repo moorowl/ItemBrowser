@@ -1,0 +1,10 @@
+{
+	"name": "ck.modding.item-browser",
+	"displayName":"Item Browser",
+	"version": "1.0.0",
+	"unity": "6000.0",
+	"keywords": [],
+	"category": "Modding",
+	"description": "Core Keeper mod that allows you to view every item and creature in the game, including their sources and usages.",
+	"dependencies": {}
+}

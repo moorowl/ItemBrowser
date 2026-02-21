@@ -34,6 +34,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				dontLocalizeFormatFields = true,
 				color = UserInterfaceUtils.DescriptionColor
 			});
+			
+			// 60% chance to inherit the color of a random parent
+			// 40% chance to mutate and be given a random color
+			// - Variation 1: 33.3%
 		}
 	}
 }
