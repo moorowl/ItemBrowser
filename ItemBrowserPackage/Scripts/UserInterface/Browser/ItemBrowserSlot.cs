@@ -136,8 +136,8 @@ namespace ItemBrowser.UserInterface.Browser {
 				return;
 			}
 
-			if (linksSource)
-				_displayedObject.ShowDetails(this, DetailsTab.Sources);
+			if (linksSource && !_displayedObject.ShowDetails(this, DetailsTab.Sources))
+				_displayedObject.ShowDetails(this, DetailsTab.Usages);
 		}
 
 		public override void OnRightClicked(bool mod1, bool mod2) {
@@ -200,13 +200,20 @@ namespace ItemBrowser.UserInterface.Browser {
 						color = Color.yellow
 					});	
 				}
+
+				var hasSources = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, containedObjectData).Any();
+				var hasUsages = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Usage, containedObjectData).Any();
 				
-				if (linksSource && ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, containedObjectData).Any())
+				if (linksSource && hasSources)
 					UserInterfaceUtils.AppendButtonHint(lines, "ItemBrowser-ButtonHints/ViewSource", "UIInteract");
-				
-				if (linksUsage && ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Usage, containedObjectData).Any())
+
+				if (linksUsage && hasUsages) {
+					if (!hasSources && !UserInterfaceUtils.IsUsingMouseAndKeyboard)
+						UserInterfaceUtils.AppendButtonHint(lines, "ItemBrowser-ButtonHints/ViewUsage", "UIInteract");
+
 					UserInterfaceUtils.AppendButtonHint(lines, "ItemBrowser-ButtonHints/ViewUsage", "UISecondInteract");
-				
+				}
+
 				if (CanCheatInObjects)
 					UserInterfaceUtils.AppendButtonHint(lines, CanPickUpStack(containedObjectData) ? "ItemBrowser-ButtonHints/GiveStack" : "ItemBrowser-ButtonHints/GiveOne", "ControlMapper/ItemBrowser-SpawnItem");
 			}
