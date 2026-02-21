@@ -127,44 +127,57 @@ namespace ItemBrowser.Content.VanillaData {
 		private static void AddFilters_Source(ItemBrowserRegistry registry) {
 			// Source
 			const string sourceGroup = "ItemBrowser-Filters/Source";
-			registry.AddItemFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Item_FromMods") {
-				Function = ModUtils.IsModded
-			});
-			registry.AddCreatureFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Creature_FromMods") {
-				Function = objectData => (int) objectData.objectID > Constants.maxNonModdedObjectID
-			});
+
+			var itemsByMod = new Dictionary<string, HashSet<ObjectDataCD>>();
+			var creaturesByMod = new Dictionary<string, HashSet<ObjectDataCD>>();
+			
+			// Setup Mod Name -> Associated items/creatures
 			foreach (var mod in API.ModLoader.LoadedMods.OrderBy(mod => ModUtils.GetDisplayName(mod.ModId))) {
 				var displayName = ModUtils.GetDisplayName(mod.ModId);
-				
-				var objectIds = ModUtils.GetAssociatedObjects(mod.ModId);
-				var itemIds = objectIds
-					.Where(ItemBrowserAPI.IsItemIndexed)
-					.ToList();
-				var creatureIds = objectIds
-					.Where(ItemBrowserAPI.IsCreatureIndexed)
-					.ToList();
+				var associatedObjects = ModUtils.GetAssociatedObjects(mod.ModId);
 
-				if (itemIds.Count > 0) {
-					registry.AddItemFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Item_FromMod") {
-						NameFormatFields = new[] { displayName },
-						LocalizeNameFormatFields = false,
-						DescriptionFormatFields = new[] { displayName },
-						LocalizeDescriptionFormatFields = false,
-						Function = objectData => itemIds.Contains(objectData),
-						Group = sourceGroup
-					});
-				}
+				var associatedItems = associatedObjects.Where(ItemBrowserAPI.IsItemIndexed).ToHashSet();
+				var associatedCreatures = associatedObjects.Where(ItemBrowserAPI.IsCreatureIndexed).ToHashSet();
+
+				if (associatedItems.Count > 0)
+					itemsByMod.TryAdd(displayName, associatedItems);
 				
-				if (creatureIds.Count > 0) {
-					registry.AddCreatureFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Creature_FromMod") {
-						NameFormatFields = new[] { displayName },
-						LocalizeNameFormatFields = false,
-						DescriptionFormatFields = new[] { displayName },
-						LocalizeDescriptionFormatFields = false,
-						Function = objectData => creatureIds.Contains(objectData),
-						Group = sourceGroup
-					});	
-				}
+				if (associatedCreatures.Count > 0)
+					creaturesByMod.TryAdd(displayName, associatedCreatures);
+			}
+			
+			// General modded content filters
+			if (itemsByMod.Count > 0) {
+				registry.AddItemFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Item_FromMods") {
+					Function = ModUtils.IsModded
+				});	
+			}
+			if (creaturesByMod.Count > 0) {
+				registry.AddCreatureFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Creature_FromMods") {
+					Function = ModUtils.IsModded
+				});
+			}
+
+			// Specific mod filters
+			foreach (var (displayName, associatedItems) in itemsByMod) {
+				registry.AddItemFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Item_FromMod") {
+					NameFormatFields = new[] { displayName },
+					LocalizeNameFormatFields = false,
+					DescriptionFormatFields = new[] { displayName },
+					LocalizeDescriptionFormatFields = false,
+					Function = objectData => associatedItems.Contains(objectData),
+					Group = sourceGroup
+				});
+			}
+			foreach (var (displayName, associatedCreatures) in creaturesByMod) {
+				registry.AddCreatureFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Creature_FromMod") {
+					NameFormatFields = new[] { displayName },
+					LocalizeNameFormatFields = false,
+					DescriptionFormatFields = new[] { displayName },
+					LocalizeDescriptionFormatFields = false,
+					Function = objectData => associatedCreatures.Contains(objectData),
+					Group = sourceGroup
+				});
 			}
 		}
 
