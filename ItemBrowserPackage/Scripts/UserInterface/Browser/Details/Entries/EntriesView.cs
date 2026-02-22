@@ -24,11 +24,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		private readonly List<SwapCategoryButton> _categoryButtons = new();
 
 		public int SelectedCategory { get; private set; }
-
-		protected override void OnShow(bool isFirstTimeShowing) {
-			detailsView.TrySelectSelectedObjectSlot();
-		}
-
+		
 		private void LateUpdate() {
 			UpdateControllerInput();
 		}
@@ -75,6 +71,8 @@ namespace ItemBrowser.UserInterface.Browser {
 				_ => 0
 			};
 			SetCategory(category, scrollProgress);
+
+			detailsView.TrySelectSelectedObjectSlot();
 		}
 		
 		public void SetCategory(int category, float scrollProgress = 1f) {

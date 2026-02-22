@@ -68,7 +68,6 @@ namespace ItemBrowser.UserInterface.Browser {
 			if (!IsShowing && objectData.Equals(detailsView.SelectedObject)) {
 				IsShowing = true;
 			} else if (!detailsView.PushState(objectData, initialTab)) {
-				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.NoSourcesOrUsages, this);
 				return false;
 			}
 			

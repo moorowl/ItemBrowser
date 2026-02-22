@@ -58,6 +58,9 @@ namespace ItemBrowser.UserInterface.Browser {
 				foreach (var entry in allUnavailableEntries)
 					AddEntry(entry);	
 			}
+			
+			foreach (var scrollItem in _list.container.GetComponentsInChildren<IScrollItem>())
+				scrollItem.OnScrollWindowChanged(_list.scrollWindow);
 		}
 
 		public override void ClearList() {
@@ -94,10 +97,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			display.SetEntryAndOccupy(_objectData, entry.Entry, moreInfoButton);
 			display.Render();
 			display.RenderDescription();
-
-			foreach (var item in display.GetComponentsInChildren<IScrollItem>())
-				item.OnScrollWindowChanged(_list.scrollWindow);
-
+			
 			AppendRequirements(entry, moreInfoButton);
 
 			var displayHeight = UserInterfaceUtils.CalculateHeight(display);

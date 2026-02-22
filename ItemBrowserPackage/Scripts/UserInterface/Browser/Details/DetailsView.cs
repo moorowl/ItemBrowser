@@ -29,8 +29,6 @@ namespace ItemBrowser.UserInterface.Browser {
 		};
 		
 		protected override void OnShow(bool isFirstTimeShowing) {
-			TrySelectSelectedObjectSlot();
-			
 			if (SelectedObject.objectID != ObjectID.None)
 				ApplyState(GetCurrentState());
 		}
@@ -48,6 +46,9 @@ namespace ItemBrowser.UserInterface.Browser {
 				SwapToNextTab();
 			if (previousTabButton.canBeClicked && inputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.SELECT_PREVIOUS_MAP_MARKER))
 				SwapToPreviousTab();
+
+			if (Manager.ui.currentSelectedUIElement == null || Manager.ui.currentSelectedUIElement is BlockingUIElement)
+				TrySelectSelectedObjectSlot();
 		}
 		
 		public void TrySelectSelectedObjectSlot() {

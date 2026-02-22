@@ -8,14 +8,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		public void SetObjectData(ObjectDataCD objectData) {
 			DisplayedObject = new DisplayedObject.Basic(objectData);
 		}
-
-		protected override void LateUpdate() {
-			base.LateUpdate();
-
-			if ((Manager.ui.currentSelectedUIElement == null || Manager.ui.currentSelectedUIElement is BlockingUIElement) && !UserInterfaceUtils.IsUsingMouseAndKeyboard)
-				UserInterfaceUtils.SelectAndMoveMouseTo(this);
-		}
-
+		
 		public override void OnLeftClicked(bool mod1, bool mod2) {
 			itemBrowserUI.GoBack();
 		}

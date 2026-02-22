@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using ItemBrowser.Api;
 using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Utilities;
 using PlayerState;
 using Rewired;
 using UnityEngine;
@@ -38,11 +39,11 @@ namespace ItemBrowser {
 			if (Manager.ui.currentSelectedUIElement is SlotUIBase slot) {
 				var containedObjectData = slot.GetContainedObject().objectData;
 				if (containedObjectData.objectID != ObjectID.None) {
-					if (input.WasButtonPressedDownThisFrame(ShowSourcesInput))
-						ItemBrowserAPI.ItemBrowserUI.ShowDetails(containedObjectData, DetailsTab.Sources);
+					if (input.WasButtonPressedDownThisFrame(ShowSourcesInput) && !ItemBrowserAPI.ItemBrowserUI.ShowDetails(containedObjectData, DetailsTab.Sources))
+						UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.NoSourcesOrUsages, slot);
 
-					if (input.WasButtonPressedDownThisFrame(ShowUsagesInput))
-						ItemBrowserAPI.ItemBrowserUI.ShowDetails(containedObjectData, DetailsTab.Usages);
+					if (input.WasButtonPressedDownThisFrame(ShowUsagesInput) && !ItemBrowserAPI.ItemBrowserUI.ShowDetails(containedObjectData, DetailsTab.Usages))
+						UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.NoSourcesOrUsages, slot);
 				}
 			}
 		}

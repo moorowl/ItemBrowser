@@ -169,8 +169,14 @@ namespace ItemBrowser.Api {
 		}
 		
 		public static void FreePooledElement(UIelement element) {
-			if (Registry.ElementPools.TryGetValue(element.GetType(), out var pool))
+			if (Registry.ElementPools.TryGetValue(element.GetType(), out var pool)) {
 				pool.Free(element);
+
+				if (Manager.ui.currentSelectedUIElement == element) {
+					Manager.ui.DeselectAnySelectedUIElement();
+					Manager.ui.mouse.UpdateMouseUIInput(out _, out _);
+				}
+			}
 		}
 		
 		public static bool IsPooledElement(UIelement element) {

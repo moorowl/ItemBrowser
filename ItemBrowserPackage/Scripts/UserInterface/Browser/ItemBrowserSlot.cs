@@ -136,8 +136,8 @@ namespace ItemBrowser.UserInterface.Browser {
 				return;
 			}
 
-			if (linksSource && !_displayedObject.ShowDetails(this, DetailsTab.Sources))
-				_displayedObject.ShowDetails(this, DetailsTab.Usages);
+			if (linksSource && !(_displayedObject.ShowDetails(this, DetailsTab.Sources) || (!UserInterfaceUtils.IsUsingMouseAndKeyboard && _displayedObject.ShowDetails(this, DetailsTab.Usages))))
+				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.NoSourcesOrUsages, this);
 		}
 
 		public override void OnRightClicked(bool mod1, bool mod2) {
@@ -148,8 +148,8 @@ namespace ItemBrowser.UserInterface.Browser {
 				return;
 			}
 
-			if (linksUsage)
-				_displayedObject.ShowDetails(this, DetailsTab.Usages);
+			if (linksUsage && !_displayedObject.ShowDetails(this, DetailsTab.Usages))
+				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.NoSourcesOrUsages, this);
 		}
 
 		private void SetDiscoveredTemporarily() {

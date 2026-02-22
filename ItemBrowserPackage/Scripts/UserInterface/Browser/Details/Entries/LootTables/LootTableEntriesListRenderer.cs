@@ -33,6 +33,9 @@ namespace ItemBrowser.UserInterface.Browser {
 				foreach (var item in pool.Entries)
 					AddItem(item);
 			}
+			
+			foreach (var scrollItem in _list.container.GetComponentsInChildren<IScrollItem>())
+				scrollItem.OnScrollWindowChanged(_list.scrollWindow);
 		}
 
 		public override void ClearList() {
@@ -120,9 +123,6 @@ namespace ItemBrowser.UserInterface.Browser {
 					ItemBrowserAPI.FreePooledElement(display);
 				}
 			}
-			
-			foreach (var scrollItem in listItem.GetComponentsInChildren<IScrollItem>())
-				scrollItem.OnScrollWindowChanged(_list.scrollWindow);
 			
 			AddDivider();
 		}
