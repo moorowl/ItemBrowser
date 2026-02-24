@@ -1,9 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ItemBrowser.Api.Entries;
+using PugMod;
 using UnityEngine;
 
 namespace ItemBrowser.UserInterface.Browser {
 	public class EntriesList : UIelement, IScrollable {
+		private static readonly MemberInfo MiScrollable = typeof(UIScrollWindow).GetMembersChecked().FirstOrDefault(x => x.GetNameChecked() == "_scrollable");
+		private static readonly MemberInfo MiUpdateScrollHeight = typeof(UIScrollWindow).GetMembersChecked().FirstOrDefault(x => x.GetNameChecked() == "UpdateScrollHeight");
+		
 		public float dividerPadding = 2f / 16f;
 		public UIScrollWindow scrollWindow;
 		public Transform container;
@@ -37,8 +42,11 @@ namespace ItemBrowser.UserInterface.Browser {
 				return;
 
 			RenderList();
-			
-			scrollWindow.ResetScroll();
+
+            // Update scroll height immediately, since it only happens normally every LateUpdate
+            // Assign scrollable in case Awake hasn't been called on the scroll window yet
+			API.Reflection.SetValue(MiScrollable, scrollWindow, this);
+			API.Reflection.Invoke(MiUpdateScrollHeight, scrollWindow);
 			scrollWindow.SetScrollValue(scrollProgress);
 		}
 
