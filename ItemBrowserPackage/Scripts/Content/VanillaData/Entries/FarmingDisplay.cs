@@ -52,8 +52,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/Farming_1",
 					formatFields = new[] {
-						chanceAtMin.ToString(),
-						chanceAtMax.ToString(),
+						((int) Constants.baseChanceToGainRarePlantPercentage).ToString()
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtils.DescriptionColor
@@ -61,7 +60,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/Farming_3",
 					formatFields = new[] {
-						chanceAtMin.ToString()
+						chanceAtMin.ToString(),
+                        chanceAtMax.ToString()
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtils.DescriptionColor
