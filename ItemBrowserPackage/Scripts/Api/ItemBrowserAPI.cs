@@ -155,9 +155,15 @@ namespace ItemBrowser.Api {
 		}
 		
 		public static UIelement GetPooledElement(Type type) {
-			if (Registry.ElementPools.TryGetValue(type, out var pool))
-				return (UIelement) pool.GetFreeComponent(true, true);
-			
+			if (Registry.ElementPools.TryGetValue(type, out var pool)) {
+				var element = (UIelement) pool.GetFreeComponent(true, true);
+				// Fix for scale being set to zero sometimes?
+				if (Mathf.Approximately(element.transform.localScale.x + element.transform.localScale.y, 0f))
+					element.transform.localScale = Vector3.one;
+				
+				return element;
+			}
+
 			return null;
 		}
 		
@@ -169,14 +175,8 @@ namespace ItemBrowser.Api {
 		}
 		
 		public static void FreePooledElement(UIelement element) {
-			if (Registry.ElementPools.TryGetValue(element.GetType(), out var pool)) {
+			if (Registry.ElementPools.TryGetValue(element.GetType(), out var pool))
 				pool.Free(element);
-
-				if (Manager.ui.currentSelectedUIElement == element) {
-					Manager.ui.DeselectAnySelectedUIElement();
-					Manager.ui.mouse.UpdateMouseUIInput(out _, out _);
-				}
-			}
 		}
 		
 		public static bool IsPooledElement(UIelement element) {

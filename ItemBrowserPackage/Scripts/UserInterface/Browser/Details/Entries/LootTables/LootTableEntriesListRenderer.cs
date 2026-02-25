@@ -41,7 +41,9 @@ namespace ItemBrowser.UserInterface.Browser {
 		public override void ClearList() {
 			TotalHeight = 0f;
 
-			foreach (var element in _activePooledElements) {
+			for (var i = _activePooledElements.Count - 1; i >= 0; i--) {
+				var element = _activePooledElements[i];
+				
 				foreach (var pugText in element.GetComponentsInChildren<PugText>(true)) {
 					var wasActive = pugText.gameObject.activeSelf;
 					pugText.Clear();
