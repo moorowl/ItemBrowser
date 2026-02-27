@@ -74,7 +74,8 @@ namespace ItemBrowser.Content.VanillaData {
 				new CookingIngredient.Provider(),
 				new TerritoryContents.Provider(),
 				new SeedExtracting.Provider(),
-				new CritterCatching.Provider()
+				new CritterCatching.Provider(),
+				new PetTalents.Provider()
 			};
 			
 			foreach (var provider in providers)

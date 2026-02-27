@@ -32,7 +32,8 @@
 		public const int StructureContents = 5100;
 		public const int TerritoryContents = 5000;
 		public const int UpgradeMaterial = 4900;
-		public const int PrimaryLootTable = 4800;
+		public const int PetTalents = 4800;
+		public const int PrimaryLootTable = 4700;
 		public const int Miscellaneous = 0;
 	}
 }
