@@ -23,6 +23,27 @@ namespace ItemBrowser.Utilities {
 		public static bool IsBlock(TileType tileType, Tileset tileset) {
 			return IsBlock(tileType, tileset, out _, out _);
 		}
+
+		public static bool TryGetAssociatedObject(TileType tileType, Tileset tileset, out ObjectDataCD objectData) {
+			objectData = default;
+			
+			if (IsBlock(tileType, tileset, out var wallObject, out _)) {
+				objectData = new ObjectDataCD {
+					objectID = wallObject
+				};
+			} else {
+				var associatedObjectInfo = PugDatabase.TryGetTileItemInfo(tileType, (int) tileset);
+				if (associatedObjectInfo == null)
+					return false;
+				
+				objectData = new ObjectDataCD {
+					objectID = associatedObjectInfo.objectID,
+					variation = associatedObjectInfo.variation
+				};
+			}
+		
+			return true;
+		}
 		
 		public static string GetLocalizedDisplayName(TileType tileType, Tileset? tileset) {
 			if (tileset == null)

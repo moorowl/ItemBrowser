@@ -38,6 +38,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								ItemSalvaged = objectData.objectID
 							};
 							registry.Register(ObjectEntryType.Source, entry.Result, 0, entry);
+							registry.Register(ObjectEntryType.Usage, entry.ItemSalvaged, 0, entry);
 						}
 					}
 				}

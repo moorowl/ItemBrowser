@@ -41,8 +41,9 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						
 						foreach (var variation in variations) {
 							foreach (var tileset in tilesets) {
+								var resultingObject = TryReplaceResultingObject(spawn.objectID);
 								var entry = new NaturalSpawnRespawn {
-									Result = (TryReplaceResultingObject(spawn.objectID), variation.value),
+									Result = (resultingObject, ObjectUtils.GetPrimaryVariation(resultingObject, variation.value)),
 									Type = spawn.spawnType,
 									AmountToSpawn = spawn.amount,
 									TilesetToSpawnOn = tileset == Tileset.MAX_VALUE ? null : tileset,
@@ -52,6 +53,9 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 									SpawnCheck = respawnData.spawnCheck
 								};
 								registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
+
+								if (TileUtils.TryGetAssociatedObject(respawnData.spawnCheck.tileType, tileset, out var tileObjectData))
+									registry.Register(ObjectEntryType.Usage, tileObjectData.objectID, ObjectUtils.GetPrimaryVariation(tileObjectData), entry);
 							}
 						}
 					}
