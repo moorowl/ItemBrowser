@@ -92,11 +92,13 @@ namespace ItemBrowser.Utilities {
 		}
 		
 		public static float GetChanceForActiveWorld(EnvironmentalSpawnChance chance) {
-			var worldGenSettings = Manager.saves.GetWorldInfo().worldGenerationSettings;
+			// GetWorldInfo will return null when playing on a server
+			var worldInfo = Manager.saves.GetWorldInfo();
+			var worldGenSettings = worldInfo?.worldGenerationSettings;
 			
 			return chance.source switch {
 				EnvironmentalSpawnChance.Source.Constant => chance.constantValue.GetValueForCurrentPlatform(),
-				EnvironmentalSpawnChance.Source.WorldGenSetting => worldGenSettings.Count == 0
+				EnvironmentalSpawnChance.Source.WorldGenSetting => worldGenSettings == null || worldGenSettings.Count == 0
 					? chance.worldGenDependentValue.GetValue(WorldGenerationSettingLevel.Normal)
 					: chance.worldGenDependentValue.GetValue(worldGenSettings[(int) chance.worldGenDependentValue.worldGenSetting].level),
 				_ => throw new ArgumentOutOfRangeException()
