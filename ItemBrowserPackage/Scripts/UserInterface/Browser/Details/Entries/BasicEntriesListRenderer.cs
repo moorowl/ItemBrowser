@@ -89,7 +89,6 @@ namespace ItemBrowser.UserInterface.Browser {
 			_activePooledElements.Add(display);
 
 			var moreInfoButton = ItemBrowserAPI.GetPooledElement<EntryDescriptionButton>();
-			_activePooledElements.Add(moreInfoButton);
 
 			foreach (var pugText in display.GetComponentsInChildren<PugText>(true)) {
 				if (pugText.renderOnStart)
@@ -109,6 +108,11 @@ namespace ItemBrowser.UserInterface.Browser {
 
 			moreInfoButton.transform.SetParent(_list.container);
 			moreInfoButton.transform.localPosition = new Vector3(5.125f, display.transform.localPosition.y, 0f);
+
+			if (moreInfoButton.LineCount <= 1)
+				ItemBrowserAPI.FreePooledElement(moreInfoButton);
+			else
+				_activePooledElements.Add(moreInfoButton);
 
 			AddDivider();
 		}

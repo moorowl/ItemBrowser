@@ -5,6 +5,8 @@ namespace ItemBrowser.UserInterface.Browser {
 	public class EntryDescriptionButton : ItemBrowserButton {
 		private readonly List<TextAndFormatFields> _lines = new();
 		
+		public int LineCount => _lines.Count;
+		
 		public void AddLine(TextAndFormatFields line) {
 			_lines.Add(line);
 		}

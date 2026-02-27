@@ -110,8 +110,6 @@ namespace ItemBrowser.UserInterface.Browser {
 					var moreInfoButton = ItemBrowserAPI.GetPooledElement<EntryDescriptionButton>();
 					moreInfoButton.transform.SetParent(_list.container);
 					moreInfoButton.transform.localPosition = new Vector3(5.125f, listItem.transform.localPosition.y, 0f);
-					_activePooledElements.Add(moreInfoButton);
-
 					moreInfoButton.Clear();
 
 					display.SetEntryAndOccupy(default, entry, moreInfoButton);
@@ -121,6 +119,11 @@ namespace ItemBrowser.UserInterface.Browser {
 						.OrderBy(requirement => requirement.IsFulfilled ? 1 : 0)
 						.ToList();
 					AppendRequirements((entry, requirements, requirements.All(requirement => requirement.IsFulfilled)), moreInfoButton);
+					
+					if (moreInfoButton.LineCount <= 1)
+						ItemBrowserAPI.FreePooledElement(moreInfoButton);
+					else
+						_activePooledElements.Add(moreInfoButton);
 
 					ItemBrowserAPI.FreePooledElement(display);
 				}
