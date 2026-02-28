@@ -12,6 +12,7 @@ namespace ItemBrowser.Api {
 		public static BlobAssetReference<CustomSceneTableBlob> CustomSceneTable;
 		public static NativeHashSet<DataBlockAddress> ActivatedContentBundles;
 		public static BlobAssetReference<LootTableBankBlob> LootTableBank;
+		public static BlobAssetReference<PugDatabase.PugDatabaseBank> PugDatabaseBank;
 		public static int PlayerCount;
 		public static bool HasRunAtLeastOnce;
 		
@@ -29,6 +30,7 @@ namespace ItemBrowser.Api {
 			state.RequireForUpdate<WorldInfoCD>();
 			state.RequireForUpdate<ActivatedContentBundlesBuffer>();
 			state.RequireForUpdate<LootTableBankCD>();
+			state.RequireForUpdate<PugDatabase.DatabaseBankCD>();
 		}
 
 		public void OnUpdate(ref SystemState state) {
@@ -53,6 +55,8 @@ namespace ItemBrowser.Api {
 					ActivatedContentBundles.Add(activatedContentBundles.ContentBundle);
 
 				LootTableBank = SystemAPI.GetSingleton<LootTableBankCD>().Value;
+
+				PugDatabaseBank = SystemAPI.GetSingleton<PugDatabase.DatabaseBankCD>().databaseBankBlob;
 
 				// Update PlayerCount
 				PlayerCount = _playerCountQuery.CalculateEntityCount();

@@ -133,7 +133,7 @@ namespace ItemBrowser.UserInterface.Browser {
 					});
 				}
 				
-				if (ItemBrowserAPI.IsItemIndexed(objectData) && !ObjectUtils.IsNonObtainable(objectData)) {
+				if (ItemBrowserAPI.IsItemIndexed(objectData)) {
 					ObjectUtils.GetTotalAmountInInventoryAndNearbyChests(Manager.main.player, objectData, out var inInventory, out var inNearbyChests);
 					
 					if (inInventory > 0 || inNearbyChests > 0) {

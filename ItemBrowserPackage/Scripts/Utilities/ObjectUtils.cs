@@ -54,12 +54,8 @@ namespace ItemBrowser.Utilities {
 		private static readonly Dictionary<ObjectID, HashSet<string>> Categories = new();
 		private static readonly Dictionary<ObjectDataCD, int> PrimaryVariations = new();
 		private static readonly Dictionary<ObjectDataCD, HashSet<string>> AssociatedConditionCategories = new();
-
-		private static readonly MemberInfo MiObjectPrefabEntityLookup = typeof(PugDatabase).GetMembersChecked().FirstOrDefault(x => x.GetNameChecked() == "objectPrefabEntityLookup");
-		private static Dictionary<ObjectDataCD, Entity> ObjectPrefabEntityLookupRef;
 		
 		internal static void InitOnWorldLoad() {
-			ObjectPrefabEntityLookupRef = (Dictionary<ObjectDataCD, Entity>) API.Reflection.GetValue(MiObjectPrefabEntityLookup, null);
 			SetupDisplayNamesAndCategories();
 		}
 		
@@ -356,7 +352,8 @@ namespace ItemBrowser.Utilities {
 			if (PugDatabase.HasComponent<DontSerializeCD>(objectData) && !PugDatabase.HasComponent<TileCD>(objectData) && !PugDatabase.HasComponent<TileCD>(objectData) && objectInfo.objectType is not ObjectType.Creature or ObjectType.Critter)
 				return true;
 			
-			if (ObjectPrefabEntityLookupRef.TryGetValue(objectData, out var primaryPrefabEntity)) {
+			var primaryPrefabEntity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, ClientWorldStateSystem.PugDatabaseBank, objectData.variation);
+			if (primaryPrefabEntity != Entity.Null) {
 				if (EntityUtility.IsComponentEnabled<IndestructibleCD>(primaryPrefabEntity, API.Client.World))
 					return true;
 				
