@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 845fe13b9ab74d33ab51a2ac54962ffe, type: 3}
+  m_Name: TextBackground
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: -8033123201929906953
+    m_high: 1598572555086229672
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: -7992631312283421857
+      m_high: -4646464828906576901
+  colorVariable:
+    m_address:
+      m_low: -7420744377503508778
+      m_high: 8850711894795496489
+  colorReplacement: {r: 0.27450982, g: 0.24705882, b: 0.20784314, a: 0}
+  references:
+    version: 2
+    RefIds: []

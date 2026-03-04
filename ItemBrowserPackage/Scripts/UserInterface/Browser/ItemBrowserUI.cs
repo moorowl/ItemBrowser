@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using ItemBrowser.Api;
+using ItemBrowser.Api.Themes;
 using ItemBrowser.Utilities;
 using Pug.UnityExtensions;
+using PugMod;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -19,28 +22,90 @@ namespace ItemBrowser.UserInterface.Browser {
 		public GameObject tileGridPrefab;
 		public MainView mainView;
 		public DetailsView detailsView;
+
+		public ItemBrowserTheme CurrentTheme { get; private set; }
+		private List<ItemBrowserTheme> _allThemes;
+		private readonly List<ThemedRenderer> _themedRenderers = new();
 		
 		private GameObject _tileGrid;
 		private Transform _tileGridRenderAnchor;
 
 		private float _timeToAutoUpdateObjectsToHighlightInInventory;
-		public HashSet<ObjectID> _objectsToHighlightInInventory = new();
+		private readonly HashSet<ObjectID> _objectsToHighlightInInventory = new();
 
 		private void Awake() {
 			gameObject.SetActive(false);
 			OnInit?.Invoke(this);
 
+			UpdateThemeOrdering();
+			var currentThemeIndex = _allThemes.FindIndex(theme => theme.Address == Options.Instance.Theme);
+			ApplyTheme(_allThemes[currentThemeIndex > -1 ? currentThemeIndex : 0]);
+			
 			_tileGridRenderAnchor = Manager.camera.GetRenderAnchor();
 			_tileGrid = Instantiate(tileGridPrefab, _tileGridRenderAnchor);
+
+			ThemedRenderer.OnEnabled += AddThemedRenderer;
+			ThemedRenderer.OnDisabled += RemoveThemedRenderer;
+			ItemBrowserAPI.OnClientLanguageChanged += UpdateThemeOrdering;
 		}
 		
 		private void OnDestroy() {
+			ThemedRenderer.OnEnabled -= AddThemedRenderer;
+			ThemedRenderer.OnDisabled -= RemoveThemedRenderer;
+			ItemBrowserAPI.OnClientLanguageChanged -= UpdateThemeOrdering;
+			
 			OnUninit?.Invoke(this);
 			
 			if (_tileGrid != null) {
 				Destroy(_tileGrid);
 				Manager.camera.ReturnRenderAnchor(_tileGridRenderAnchor);
 			}
+		}
+		
+		private void UpdateThemeOrdering() {
+			_allThemes = ItemBrowserAPI.Registry.Themes.Values
+				.OrderBy(theme => theme.DisplayOrder)
+				.ThenBy(theme => API.Localization.GetLocalizedTerm(theme.Term) ?? theme.Term)
+				.ToList();
+		}
+
+		private void ApplyTheme(ItemBrowserTheme theme) {
+			CurrentTheme = theme;
+			Options.Instance.Theme = CurrentTheme.Address;
+			
+			foreach (var themedRenderer in _themedRenderers)
+				ApplyTheme(themedRenderer);
+		}
+		
+		private void ApplyTheme(ThemedRenderer themedRenderer) {
+			themedRenderer.Apply(CurrentTheme.Address, CurrentTheme.SpriteReplacements, CurrentTheme.ColorReplacements);
+		}
+		
+		public void SwapToNextTheme() {
+			ApplyTheme(_allThemes[GetNextThemeIndex(1)]);
+		}
+
+		public void SwapToPreviousTheme() {
+			ApplyTheme(_allThemes[GetNextThemeIndex(-1)]);
+		}
+		
+		private int GetNextThemeIndex(int offset) {
+			var index = _allThemes.FindIndex(theme => theme.Address == CurrentTheme.Address) + offset;
+			if (index >= _allThemes.Count)
+				index = 0;
+			if (index < 0)
+				index = _allThemes.Count - 1;
+
+			return index;
+		}
+		
+		private void AddThemedRenderer(ThemedRenderer themedRenderer) {
+			_themedRenderers.Add(themedRenderer);
+			ApplyTheme(themedRenderer);
+		}
+		
+		private void RemoveThemedRenderer(ThemedRenderer themedRenderer) {
+			_themedRenderers.Remove(themedRenderer);
 		}
 
 		protected override void OnShow(bool isFirstTimeShowing) {

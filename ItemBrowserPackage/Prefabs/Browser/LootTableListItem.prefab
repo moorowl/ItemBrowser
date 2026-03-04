@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7601454757216726814}
   - component: {fileID: 1849748499764583067}
+  - component: {fileID: 7772578886199911264}
   m_Layer: 5
   m_Name: chanceForOneText
   m_TagString: Untagged
@@ -89,6 +90,23 @@ MonoBehaviour:
   styleOverrides: []
   usePooledResources: 1
   freeResourcesOnDisable: 0
+--- !u!114 &7772578886199911264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 484533336232675403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c83d7333f1ca40958b32766e529e8e50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pugText: {fileID: 1849748499764583067}
+  colorVariable:
+    m_address:
+      m_low: 6049584317689111203
+      m_high: -5022214645077494629
 --- !u!1 &857540428272161707
 GameObject:
   m_ObjectHideFlags: 0
@@ -99,6 +117,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4986868686675315420}
   - component: {fileID: 2114294532298361894}
+  - component: {fileID: 6407872291889746004}
   m_Layer: 5
   m_Name: chancePerRollStrike
   m_TagString: Untagged
@@ -176,6 +195,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6407872291889746004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857540428272161707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 222ca7d0476f4283ae138e779b93cb9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 2114294532298361894}
+  spriteVariable:
+    m_address:
+      m_low: 0
+      m_high: 0
+  colorVariable:
+    m_address:
+      m_low: 6049584317689111203
+      m_high: -5022214645077494629
 --- !u!1 &2223030861499904107
 GameObject:
   m_ObjectHideFlags: 0
@@ -186,6 +226,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4388970411113350390}
   - component: {fileID: 2072649948985531966}
+  - component: {fileID: 1433908734739463446}
   m_Layer: 5
   m_Name: chancePerRollText
   m_TagString: Untagged
@@ -265,6 +306,23 @@ MonoBehaviour:
   styleOverrides: []
   usePooledResources: 1
   freeResourcesOnDisable: 0
+--- !u!114 &1433908734739463446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2223030861499904107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c83d7333f1ca40958b32766e529e8e50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pugText: {fileID: 2072649948985531966}
+  colorVariable:
+    m_address:
+      m_low: 6049584317689111203
+      m_high: -5022214645077494629
 --- !u!1 &3328460702821144274
 GameObject:
   m_ObjectHideFlags: 0
@@ -310,6 +368,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5531953805384935068}
   - component: {fileID: 7254805639166091877}
+  - component: {fileID: 7248645039998758477}
   m_Layer: 5
   m_Name: chanceForOneStrike
   m_TagString: Untagged
@@ -387,6 +446,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7248645039998758477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3434557811948940177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 222ca7d0476f4283ae138e779b93cb9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 7254805639166091877}
+  spriteVariable:
+    m_address:
+      m_low: 0
+      m_high: 0
+  colorVariable:
+    m_address:
+      m_low: 6049584317689111203
+      m_high: -5022214645077494629
 --- !u!1 &8293567690633022509
 GameObject:
   m_ObjectHideFlags: 0

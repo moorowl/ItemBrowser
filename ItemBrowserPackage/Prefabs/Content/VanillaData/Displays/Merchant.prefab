@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4612271691769664271}
   - component: {fileID: 6180688613032874669}
+  - component: {fileID: 8824010170823838440}
   m_Layer: 5
   m_Name: costText
   m_TagString: Untagged
@@ -89,6 +90,23 @@ MonoBehaviour:
   styleOverrides: []
   usePooledResources: 1
   freeResourcesOnDisable: 0
+--- !u!114 &8824010170823838440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2618930747030231853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c83d7333f1ca40958b32766e529e8e50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pugText: {fileID: 6180688613032874669}
+  colorVariable:
+    m_address:
+      m_low: 6049584317689111203
+      m_high: -5022214645077494629
 --- !u!1 &3328460702821144274
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,6 +232,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6049538207960116481}
   - component: {fileID: 3356847330932819227}
+  - component: {fileID: 4803525373429481454}
   m_Layer: 5
   m_Name: ancientCoinIcon
   m_TagString: Untagged
@@ -291,6 +310,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4803525373429481454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8666056716745082203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 222ca7d0476f4283ae138e779b93cb9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 3356847330932819227}
+  spriteVariable:
+    m_address:
+      m_low: 0
+      m_high: 0
+  colorVariable:
+    m_address:
+      m_low: 6049584317689111203
+      m_high: -5022214645077494629
 --- !u!1001 &2795889677246832141
 PrefabInstance:
   m_ObjectHideFlags: 0

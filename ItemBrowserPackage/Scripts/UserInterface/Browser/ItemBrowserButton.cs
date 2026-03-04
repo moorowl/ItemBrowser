@@ -40,8 +40,13 @@ namespace ItemBrowser.UserInterface.Browser {
 
 		public override void OnRightClicked(bool mod1, bool mod2) {
 			base.OnRightClicked(mod1, mod2);
-			
-			if (onRightClick != null && onRightClick.GetPersistentEventCount() > 0 && canBeClicked && playClickSoundEffect)
+
+			if (onRightClick != null && onRightClick.GetPersistentEventCount() > 0)
+				TryPlayClickSound();
+		}
+
+		protected void TryPlayClickSound() {
+			if (canBeClicked && playClickSoundEffect)
 				AudioManager.SfxUI(Manager.audio.InspectorFriendlySfxIDToSfxID(clickSoundEffect), clickSoundPitch, false, 1f, 0f);
 		}
 

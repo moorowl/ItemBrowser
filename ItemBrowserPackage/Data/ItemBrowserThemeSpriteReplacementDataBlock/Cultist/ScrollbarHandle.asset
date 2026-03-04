@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ba3e3a55e443c9800509fca63b1f14, type: 3}
+  m_Name: ScrollbarHandle
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: 6747681401449324732
+    m_high: -5458875074324087013
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: -728205848100429888
+      m_high: -5786310624215552600
+  spriteVariable:
+    m_address:
+      m_low: 501105685668662884
+      m_high: 2077347911554621819
+  spriteReplacement: {fileID: 615080262, guid: a7f537f77d841474e8e99f49920d7686, type: 3}
+  references:
+    version: 2
+    RefIds: []

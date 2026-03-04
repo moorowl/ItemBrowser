@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ba3e3a55e443c9800509fca63b1f14, type: 3}
+  m_Name: SlotFavoritedBorder 1
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: -6830679907609714063
+    m_high: -6084545278222878856
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: -9050936610157048095
+      m_high: 4485489967121712840
+  spriteVariable:
+    m_address:
+      m_low: 3883434070761142081
+      m_high: -8617059438831264693
+  spriteReplacement: {fileID: 962627438, guid: 0edebcc3ebd4f464dba2bcd21c8a3590, type: 3}
+  references:
+    version: 2
+    RefIds: []

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ba3e3a55e443c9800509fca63b1f14, type: 3}
+  m_Name: Tab 1
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: -1052498417725507609
+    m_high: -2989533158696186135
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: 5590223260710197539
+      m_high: -3198203154689367221
+  spriteVariable:
+    m_address:
+      m_low: 8107660842353312774
+      m_high: -8910479502843076791
+  spriteReplacement: {fileID: 847757023, guid: 76ee984c925b437459e6c07173e0901b, type: 3}
+  references:
+    version: 2
+    RefIds: []

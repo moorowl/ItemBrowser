@@ -15,6 +15,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		public ColorReplacer colorReplacer;
 		public Sprite[] rarityBorders;
 		public GameObject favoritedBorder;
+		public SpriteRenderer missingIcon;
 		public bool preferSmallIcons;
 		public bool linksSource;
 		public bool linksUsage;
@@ -294,16 +295,17 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 
 			if (!PugDatabase.TryGetObjectInfo(visualObject.objectID, out var objectInfo, visualObject.variation) || !IsDiscovered) {
-				SetMissingIcon();
+				SetMissingIcon(true);
 				return;
 			}
 
 			var iconToUse = ObjectUtils.GetIcon(visualObject.objectData, preferSmallIcons);
 			if (iconToUse == null) {
-				SetMissingIcon();
+				SetMissingIcon(true);
 				return;
 			}
 
+			SetMissingIcon(false);
 			icon.sprite = iconToUse;
 			icon.transform.localPosition = objectInfo.iconOffset;
 			
@@ -322,6 +324,12 @@ namespace ItemBrowser.UserInterface.Browser {
 			var rarityIndex = (int) objectInfo.rarity;
 			if (rarityIndex >= 0 && rarityIndex < rarityBorders.Length)
 				background.sprite = rarityBorders[rarityIndex];
+		}
+
+		private void SetMissingIcon(bool isVisible) {
+			if (missingIcon != null)
+				missingIcon.gameObject.SetActive(isVisible);
+			icon.gameObject.SetActive(!isVisible);
 		}
 		
 		private bool RenderAmountNumberRange((int Min, int Max) amount) {

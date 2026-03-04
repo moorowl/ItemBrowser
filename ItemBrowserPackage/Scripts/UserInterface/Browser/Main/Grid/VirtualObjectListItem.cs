@@ -10,9 +10,13 @@ namespace ItemBrowser.UserInterface.Browser {
 	public class VirtualObjectListItem : ItemBrowserSlot {
 		public FiltersPanel filtersPanel;
 		public GridView gridView;
+
+		private ObjectDataCD _previousObjectData;
 		
 		public void SetObjectData(ObjectData objectData, VirtualObjectList craftingSelectorUI) {
-			DisplayedObject = new DisplayedObject.Basic(objectData);
+			if (!_previousObjectData.EqualsExact(objectData))
+				DisplayedObject = new DisplayedObject.Basic(objectData);
+
 			slotsUIContainer = craftingSelectorUI;
 		}
 

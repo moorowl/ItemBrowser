@@ -5,6 +5,7 @@ using System.Text;
 using ItemBrowser.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using PugMod;
 using Unity.Collections;
 using UnityEngine;
@@ -45,6 +46,14 @@ namespace ItemBrowser {
 			get => _data.ShowButtonHints;
 			set {
 				_data.ShowButtonHints = value;
+				_isDirty = true;
+			}
+		}
+		
+		public DataBlockAddress Theme {
+			get => _data.Theme;
+			set {
+				_data.Theme = value;
 				_isDirty = true;
 			}
 		}
@@ -164,6 +173,7 @@ namespace ItemBrowser {
 			public bool DiscoveryMode { get; set; }
 			public bool ShowSourceMod { get; set; } = true;
 			public bool ShowButtonHints { get; set; } = true;
+			public Guid Theme { get; set; }
 			public List<OptionsObjectData> Favorites { get; set; } = new();
 			public List<OptionsDetailsHistoryData> DetailsHistory { get; set; } = new();
 		}

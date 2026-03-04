@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ItemBrowser.Api.Entries;
+using ItemBrowser.Api.Themes;
 using ItemBrowser.Utilities.DataStructures;
 using ItemBrowser.Utilities.DataStructures.SortingAndFiltering;
 using PugMod;
@@ -25,6 +26,8 @@ namespace ItemBrowser.Api {
 		internal readonly Dictionary<ObjectDataCD, string> ObjectNameOverrides = new();
 		internal readonly Dictionary<ObjectDataCD, Sprite> ObjectIconOverrides = new();
 		internal readonly Dictionary<ObjectDataCD, string> ObjectNameNotes = new();
+		
+		internal readonly Dictionary<DataBlockAddress, ItemBrowserTheme> Themes = new();
 		
 		internal readonly Dictionary<Type, PoolSystem> ElementPools = new();
 

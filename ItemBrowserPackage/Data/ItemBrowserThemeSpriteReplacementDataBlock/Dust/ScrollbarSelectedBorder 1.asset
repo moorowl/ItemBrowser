@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ba3e3a55e443c9800509fca63b1f14, type: 3}
+  m_Name: ScrollbarSelectedBorder 1
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: 5991078908410649928
+    m_high: 8786205757605480169
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: -7992631312283421857
+      m_high: -4646464828906576901
+  spriteVariable:
+    m_address:
+      m_low: -9190668171460531553
+      m_high: -8020462339601376678
+  spriteReplacement: {fileID: -519692874, guid: 32a5e488dde2b854a960468fecf4ba6c,
+    type: 3}
+  references:
+    version: 2
+    RefIds: []

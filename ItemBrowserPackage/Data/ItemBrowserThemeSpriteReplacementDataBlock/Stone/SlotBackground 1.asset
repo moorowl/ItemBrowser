@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ba3e3a55e443c9800509fca63b1f14, type: 3}
+  m_Name: SlotBackground 1
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: -1309267240743016936
+    m_high: -850132997297684488
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: 2253041898535834541
+      m_high: 2112326270127164395
+  spriteVariable:
+    m_address:
+      m_low: -2525140313593911171
+      m_high: 2001280313944178313
+  spriteReplacement: {fileID: -1077625897, guid: 3b753376f6ffaed4b9d92753989a548e,
+    type: 3}
+  references:
+    version: 2
+    RefIds: []

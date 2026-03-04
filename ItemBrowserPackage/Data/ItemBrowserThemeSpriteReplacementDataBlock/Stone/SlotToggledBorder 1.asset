@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ba3e3a55e443c9800509fca63b1f14, type: 3}
+  m_Name: SlotToggledBorder 1
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: 6882675804061994666
+    m_high: -5969367480285368870
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: 2253041898535834541
+      m_high: 2112326270127164395
+  spriteVariable:
+    m_address:
+      m_low: 1500976780595249506
+      m_high: 4735457336680984011
+  spriteReplacement: {fileID: 467336100, guid: 3b753376f6ffaed4b9d92753989a548e, type: 3}
+  references:
+    version: 2
+    RefIds: []

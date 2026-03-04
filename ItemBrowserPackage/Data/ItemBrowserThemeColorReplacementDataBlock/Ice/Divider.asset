@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 845fe13b9ab74d33ab51a2ac54962ffe, type: 3}
+  m_Name: Divider
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: 5351453709277678125
+    m_high: 3880679169438824170
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: -9050936610157048095
+      m_high: 4485489967121712840
+  colorVariable:
+    m_address:
+      m_low: -1349750084858656824
+      m_high: 2730012394206742217
+  colorReplacement: {r: 0.37254903, g: 0.41568628, b: 0.56078434, a: 0}
+  references:
+    version: 2
+    RefIds: []

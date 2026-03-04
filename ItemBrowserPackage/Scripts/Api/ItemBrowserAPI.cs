@@ -5,6 +5,7 @@ using System.Linq;
 using HarmonyLib;
 using I2.Loc;
 using ItemBrowser.Api.Entries;
+using ItemBrowser.Api.Themes;
 using ItemBrowser.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using PugMod;
@@ -27,6 +28,9 @@ namespace ItemBrowser.Api {
 		private static bool _hasRegistered;
 
 		internal static void Init() {
+			foreach (var theme in ItemBrowserTheme.GetAllThemesFromDataBlocks())
+				Registry.Themes.TryAdd(theme.Address, theme);
+			
 			InitPlugins();
 		}
 

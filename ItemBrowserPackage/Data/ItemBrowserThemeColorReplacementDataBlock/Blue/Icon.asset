@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 845fe13b9ab74d33ab51a2ac54962ffe, type: 3}
+  m_Name: Icon
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: -2381076562655795990
+    m_high: 4344083332716614584
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: 5590223260710197539
+      m_high: -3198203154689367221
+  colorVariable:
+    m_address:
+      m_low: 4446321073337007466
+      m_high: -533817075460810213
+  colorReplacement: {r: 0.5411765, g: 0.54901963, b: 0.5803922, a: 0}
+  references:
+    version: 2
+    RefIds: []
