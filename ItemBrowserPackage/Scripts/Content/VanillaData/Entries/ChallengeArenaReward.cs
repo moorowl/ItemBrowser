@@ -38,8 +38,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					Amount = (1, 1),
 					Chance = 1f,
 					ChanceForOne = 1f,
-					Rolls = (1, 1),
-					ChanceWhenBraveMerchantAlive = 0.2f
+					Rolls = (1, 1)
 				});
 
 				foreach (var gem in GemstoneTypes) {
