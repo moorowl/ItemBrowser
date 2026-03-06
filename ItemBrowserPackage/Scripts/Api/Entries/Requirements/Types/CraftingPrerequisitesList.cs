@@ -34,25 +34,25 @@ namespace ItemBrowser.Api.Entries.Requirements.Types {
 					API.Localization.GetLocalizedTerm($"ContentBundles/{contentBundleName}") ?? contentBundleName
 				));
 			}
+
+			var bossDefeatedPrerequisites = new HashSet<ObjectID>();
+			if (Prerequisites.BirdBossKilled)
+				bossDefeatedPrerequisites.Add(ObjectID.BirdBoss);
+			if (Prerequisites.OctopusBossKilled)
+				bossDefeatedPrerequisites.Add(ObjectID.OctopusBoss);
+			if (Prerequisites.ScarabBossKilled)
+				bossDefeatedPrerequisites.Add(ObjectID.ScarabBoss);
+			if (Prerequisites.HydraBossNatureKilled)
+				bossDefeatedPrerequisites.Add(ObjectID.HydraBossNature);
+			if (Prerequisites.HydraBossSeaKilled)
+				bossDefeatedPrerequisites.Add(ObjectID.HydraBossSea);
+			if (Prerequisites.HydraBossDesertKilled)
+				bossDefeatedPrerequisites.Add(ObjectID.HydraBossDesert);
 			
-			if (Prerequisites.BirdBossKilled) {
+			foreach (var boss in bossDefeatedPrerequisites) {
 				prerequisites.Add(string.Format(
 					API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/BossDefeated"),
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(ObjectID.BirdBoss)
-				));
-			}
-			
-			if (Prerequisites.OctopusBossKilled) {
-				prerequisites.Add(string.Format(
-					API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/BossDefeated"),
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(ObjectID.OctopusBoss)
-				));
-			}
-			
-			if (Prerequisites.ScarabBossKilled) {
-				prerequisites.Add(string.Format(
-					API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/BossDefeated"),
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(ObjectID.ScarabBoss)
+					ObjectUtils.GetLocalizedDisplayNameOrDefault(boss)
 				));
 			}
 
