@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fb37aa6a853461dae2a50c6d59b8d90, type: 3}
+  m_Name: AFWoodenDestructible_2
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: 6517964171673067360
+    m_high: -8078678439500306104
+  m_dynamicCollections:
+    m_list: []
+  appliesTo: AFWoodenDestructible
+  appliesToVariation: 2
+  overrideName: 1
+  name: ItemBrowser-NameOverrides/AFWoodenDestructible_1
+  overrideIcon: 0
+  icon: {fileID: 0}
+  showNameNote: 0
+  nameNote: 
+  references:
+    version: 2
+    RefIds: []

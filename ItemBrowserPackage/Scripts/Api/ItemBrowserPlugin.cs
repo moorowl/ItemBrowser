@@ -24,10 +24,7 @@ namespace ItemBrowser.Api {
 
 				if (gameObject.TryGetComponent<ObjectEntryDisplayBase>(out var displayComponent))
 					registry.AddEntryDisplay(displayComponent);
-				
-				foreach (var overrides in gameObject.GetComponents<ObjectNameAndIconOverride>())
-					registry.AddObjectNameAndIconOverride(overrides);
-				
+
 				if (gameObject.TryGetComponent<PooledElement>(out var pooledElement))
 					registry.AddPooledElement(pooledElement);
 			}

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NaughtyAttributes;
 using Pug.UnityExtensions;
 using PugMod;
@@ -26,9 +25,5 @@ namespace ItemBrowser.Api.Overrides {
 			objectID = API.Authoring.GetObjectID(appliesTo),
 			variation = appliesToVariation,
 		};
-		
-		public static IEnumerable<ItemBrowserObjectOverrideDataBlock> GetAllObjectOverridesFromDataBlocks() {
-			return ScriptableData.GetDataBlocks<ItemBrowserObjectOverrideDataBlock>();
-		}
 	}
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using I2.Loc;
 using ItemBrowser.Api;
 using ItemBrowser.Api.Entries;
+using ItemBrowser.Api.Overrides;
 using ItemBrowser.Utilities.Extensions;
 using Pug.Properties;
 using PugMod;
@@ -54,12 +55,9 @@ namespace ItemBrowser.Utilities {
 		private static readonly Dictionary<ObjectID, HashSet<string>> Categories = new();
 		private static readonly Dictionary<ObjectDataCD, int> PrimaryVariations = new();
 		private static readonly Dictionary<ObjectDataCD, HashSet<string>> AssociatedConditionCategories = new();
-		
-		internal static void InitOnWorldLoad() {
-			SetupDisplayNamesAndCategories();
-		}
-		
-		private static void SetupDisplayNamesAndCategories() {
+		private static readonly Dictionary<ObjectDataCD, Sprite> IconOverrides = new();
+
+		internal static void SetupDisplayNamesAndCategories() {
 			DisplayNames.Clear();
 			DisplayNameNotes.Clear();
 			Categories.Clear();
@@ -67,6 +65,23 @@ namespace ItemBrowser.Utilities {
 			var authoringList = new List<MonoBehaviour>();
 			authoringList.AddRange(Manager.ecs.pugDatabase.prefabList);
 			authoringList.AddRange(Manager.mod.ExtraAuthoring);
+			
+			var nameOverrides = new Dictionary<ObjectDataCD, string>();
+			var nameNotes = new Dictionary<ObjectDataCD, string>();
+			IconOverrides.Clear();
+
+			foreach (var objectOverride in ScriptableData.GetDataBlocks<ItemBrowserObjectOverrideDataBlock>()) {
+				var appliesToObjectData = objectOverride.AppliesToObjectData;
+				
+				if (objectOverride.overrideName && !string.IsNullOrWhiteSpace(objectOverride.name))
+					nameOverrides.TryAdd(appliesToObjectData, objectOverride.name);
+				
+				if (objectOverride.overrideIcon)
+					IconOverrides.TryAdd(appliesToObjectData, objectOverride.icon);
+				
+				if (objectOverride.showNameNote)
+					nameNotes.TryAdd(appliesToObjectData, objectOverride.nameNote);
+			}
 			
 			foreach (var authoring in authoringList) {
 				var gameObject = authoring.gameObject;
@@ -82,7 +97,7 @@ namespace ItemBrowser.Utilities {
 				// Setup display names
 				string localizedName;
 				string unlocalizedName;
-				if (ItemBrowserAPI.Registry.ObjectNameOverrides.TryGetValue(objectData, out var term)) {
+				if (nameOverrides.TryGetValue(objectData, out var term)) {
 					localizedName = API.Localization.GetLocalizedTerm(term);
 					unlocalizedName = term;
 				} else {
@@ -103,7 +118,7 @@ namespace ItemBrowser.Utilities {
 				if (localizedName != null)
 					DisplayNames.TryAdd(objectData, localizedName.Replace("\n", ""));
 				
-				if (ItemBrowserAPI.Registry.ObjectNameNotes.TryGetValue(objectData, out var unlocalizedNameNote))
+				if (nameNotes.TryGetValue(objectData, out var unlocalizedNameNote))
 					DisplayNameNotes.TryAdd(objectData, unlocalizedNameNote);
 				
 				if (!Categories.ContainsKey(objectData.objectID))
@@ -331,7 +346,7 @@ namespace ItemBrowser.Utilities {
 			if (iconOverride != null)
 				iconToUse = iconOverride;
 			
-			if (ItemBrowserAPI.Registry.ObjectIconOverrides.TryGetValue(objectData, out iconOverride))
+			if (IconOverrides.TryGetValue(objectData, out iconOverride))
 				iconToUse = iconOverride;
 
 			return iconToUse;

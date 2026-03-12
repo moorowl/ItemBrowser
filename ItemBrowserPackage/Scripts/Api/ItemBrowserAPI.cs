@@ -69,7 +69,7 @@ namespace ItemBrowser.Api {
 				}
 			}
 			
-			ObjectUtils.InitOnWorldLoad();
+			ObjectUtils.SetupDisplayNamesAndCategories();
 			StructureUtils.InitOnWorldLoad();
 
 			if (!_hasRegistered) {
@@ -84,7 +84,7 @@ namespace ItemBrowser.Api {
 			ObjectEntryRegistry.RegisterFromProviders(Registry.EntryProviders);
 
 			SetupSortingAndFilteringIndexes();
-			OnClientLanguageChanged += SetupSortingAndFilteringIndexes;
+			OnClientLanguageChanged += HandleClientLanguageChanged;
 
 			Manager.main.StartCoroutine(TemporarilyShowBrowserToAvoidLagSpikes());
 		}
@@ -93,7 +93,7 @@ namespace ItemBrowser.Api {
 			if (ItemBrowserUI != null)
 				Object.Destroy(ItemBrowserUI);
 
-			OnClientLanguageChanged -= SetupSortingAndFilteringIndexes;
+			OnClientLanguageChanged -= HandleClientLanguageChanged;
 		}
 
 		private static IEnumerator TemporarilyShowBrowserToAvoidLagSpikes() {
@@ -102,6 +102,11 @@ namespace ItemBrowser.Api {
 			yield return new WaitForSeconds(0.1f);
 
 			ItemBrowserUI.IsShowing = false;
+		}
+
+		private static void HandleClientLanguageChanged() {
+			ObjectUtils.SetupDisplayNamesAndCategories();
+			SetupSortingAndFilteringIndexes();
 		}
 
 		private static void SetupSortingAndFilteringIndexes() {

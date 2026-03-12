@@ -22,13 +22,8 @@ namespace ItemBrowser.Api {
 
 		internal readonly List<ObjectEntryProvider> EntryProviders = new();
 		internal readonly Dictionary<Type, ObjectEntryDisplayBase> EntryToDisplayComponent = new();
-		
-		internal readonly Dictionary<ObjectDataCD, string> ObjectNameOverrides = new();
-		internal readonly Dictionary<ObjectDataCD, Sprite> ObjectIconOverrides = new();
-		internal readonly Dictionary<ObjectDataCD, string> ObjectNameNotes = new();
-		
 		internal readonly Dictionary<DataBlockAddress, ItemBrowserTheme> Themes = new();
-		
+
 		internal readonly Dictionary<Type, PoolSystem> ElementPools = new();
 
 		public void AddItem(ObjectDataCD item) {
@@ -79,20 +74,7 @@ namespace ItemBrowser.Api {
 
 			EntryToDisplayComponent.TryAdd(component.AssociatedEntry, component);
 		}
-
-		public void AddObjectNameAndIconOverride(ObjectNameAndIconOverride overrides) {
-			var objectData = overrides.AppliesToObjectData;
-				
-			if (overrides.overrideName && !string.IsNullOrWhiteSpace(overrides.name))
-				ObjectNameOverrides.TryAdd(objectData, overrides.name);
-				
-			if (overrides.overrideIcon)
-				ObjectIconOverrides.TryAdd(objectData, overrides.icon);
-				
-			if (overrides.showNameNote)
-				ObjectNameNotes.TryAdd(objectData, overrides.nameNote);
-		}
-
+		
 		public void AddItemFilter(string group, Filter<ObjectDataCD> filter) {
 			ItemFilters.Add((group, filter));
 		}
