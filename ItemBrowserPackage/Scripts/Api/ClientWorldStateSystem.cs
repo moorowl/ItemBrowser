@@ -15,6 +15,8 @@ namespace ItemBrowser.Api {
 		public static BlobAssetReference<PugDatabase.PugDatabaseBank> PugDatabaseBank;
 		public static int PlayerCount;
 		public static bool HasRunAtLeastOnce;
+
+		public static bool IsAdminOrInCreative => Manager.saves.IsCreativeModeCharacter() || Manager.main.player.adminPrivileges >= 1;
 		
 		private EntityQuery _playerCountQuery;
 		

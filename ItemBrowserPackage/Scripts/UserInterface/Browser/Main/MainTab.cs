@@ -3,6 +3,7 @@
 		Items,
 		Creatures,
 		History,
-		Cooking
+		Cooking,
+		Options
 	}
 }

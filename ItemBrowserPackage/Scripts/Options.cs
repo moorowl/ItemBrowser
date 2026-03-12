@@ -130,7 +130,7 @@ namespace ItemBrowser {
 				Save();
 		}
 
-		private void SetDefaults() {
+		public void SetDefaults() {
 			SetData(new OptionsData());
 			Save();
 		}
@@ -175,17 +175,11 @@ namespace ItemBrowser {
 			public bool ShowButtonHints { get; set; } = true;
 			public Guid Theme { get; set; }
 			public List<OptionsObjectData> Favorites { get; set; } = new();
-			public List<OptionsDetailsHistoryData> DetailsHistory { get; set; } = new();
 		}
 		
-		private class OptionsObjectData {
+		private record OptionsObjectData {
 			public string InternalName { get; set; }
 			public int Variation { get; set; }
-		}
-		
-		private class OptionsDetailsHistoryData {
-			public ulong Timestamp { get; set; }
-			public DetailsState State { get; set; }
 		}
 	}
 }

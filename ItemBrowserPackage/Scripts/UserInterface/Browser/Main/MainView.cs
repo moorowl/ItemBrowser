@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using ItemBrowser.Utilities;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ItemBrowser.UserInterface.Browser {
 	public class MainView : ItemBrowserView {
 		public GridWithItemsView gridWithItemsView;
 		public GridWithCreaturesView gridWithCreaturesView;
 		public HistoryView historyView;
+		public OptionsView optionsView;
 		public Transform tabButtonsRoot;
-		public Transform optionsPanelRoot;
 		public ItemBrowserButton itemsTabButton;
 		public ItemBrowserButton creaturesTabButton;
 		public ItemBrowserButton historyTabButton;
+		public ItemBrowserButton optionsTabButton;
 
 		private MainTab _selectedTab;
 		private UIelement _lastSelectedElement;
@@ -20,7 +22,8 @@ namespace ItemBrowser.UserInterface.Browser {
 		private readonly List<MainTab> _allTabs = new() {
 			MainTab.Items,
 			MainTab.Creatures,
-			MainTab.History
+			MainTab.History,
+			MainTab.Options
 		};
 
 		protected override void OnShow(bool isFirstTimeShowing) {
@@ -65,7 +68,12 @@ namespace ItemBrowser.UserInterface.Browser {
 
 			var selectedTabView = GetTabView(_selectedTab);
 			tabButtonsRoot.SetParent(selectedTabView.tabButtonsAnchor, false);
-			optionsPanelRoot.SetParent(selectedTabView.optionsPanelAnchor, false);
+			
+			// if the filters panel is open, changing tab would shift the layout and cause tooltips to stay active
+			if (UserInterfaceUtils.IsUsingMouse) {
+				Manager.ui.DeselectAnySelectedUIElement();
+				Manager.ui.mouse.UpdateMouseUIInput(out _, out _);				
+			}
 
 			UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.ChangeTabOrCategory, this);
 		}
@@ -80,6 +88,10 @@ namespace ItemBrowser.UserInterface.Browser {
 		
 		public void SwapToHistoryTab() {
 			SwapSelectedTab(MainTab.History);
+		}
+		
+		public void SwapToOptionsTab() {
+			SwapSelectedTab(MainTab.Options);
 		}
 
 		private void SwapToNextTab() {
@@ -105,6 +117,7 @@ namespace ItemBrowser.UserInterface.Browser {
 				MainTab.Items => gridWithItemsView,
 				MainTab.Creatures => gridWithCreaturesView,
 				MainTab.History => historyView,
+				MainTab.Options => optionsView,
 				_ => throw new ArgumentOutOfRangeException()
 			};
 		}
@@ -114,6 +127,7 @@ namespace ItemBrowser.UserInterface.Browser {
 				MainTab.Items => itemsTabButton,
 				MainTab.Creatures => creaturesTabButton,
 				MainTab.History => historyTabButton,
+				MainTab.Options => optionsTabButton,
 				_ => throw new ArgumentOutOfRangeException()
 			};
 		}
