@@ -63,7 +63,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 		
 		private void UpdateThemeOrdering() {
-			_allThemes = ItemBrowserAPI.Registry.Themes.Values
+			_allThemes = ItemBrowserTheme.GetAllThemesFromDataBlocks()
 				.OrderBy(theme => theme.DisplayOrder)
 				.ThenBy(theme => API.Localization.GetLocalizedTerm(theme.Term) ?? theme.Term)
 				.ToList();

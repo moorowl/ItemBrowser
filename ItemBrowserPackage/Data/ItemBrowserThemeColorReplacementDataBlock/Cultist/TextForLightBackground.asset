@@ -29,7 +29,7 @@ MonoBehaviour:
     m_address:
       m_low: 6049584317689111203
       m_high: -5022214645077494629
-  colorReplacement: {r: 0.05490196, g: 0.14509805, b: 0.13333334, a: 0}
+  colorReplacement: {r: 0.16981119, g: 0.15495634, b: 0.1425773, a: 0}
   references:
     version: 2
     RefIds: []

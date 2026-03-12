@@ -22,6 +22,7 @@ namespace ItemBrowser.UserInterface.Browser {
 
 		private DetailsState _currentState = new();
 		private readonly Stack<DetailsState> _previousStates = new();
+		private readonly List<DetailsState> _history = new();
 		private readonly List<DetailsTab> _allAvailableTabs = new();
 		private readonly List<DetailsTab> _allTabs = new() {
 			DetailsTab.Sources,
@@ -175,8 +176,10 @@ namespace ItemBrowser.UserInterface.Browser {
 				ObjectData = SelectedObject,
 				Tab = SelectedTab,
 				EntriesSourceCategory = entriesSourceView.SelectedCategory,
+				EntriesSourceCategoryTerm = entriesSourceView.SelectedCategoryTerm,
 				EntriesSourceScrollProgress = entriesSourceView.entriesList.scrollWindow.GetScrollValue(),
 				EntriesUsageCategory = entriesUsageView.SelectedCategory,
+				EntriesUsageCategoryTerm = entriesUsageView.SelectedCategoryTerm,
 				EntriesUsageScrollProgress = entriesUsageView.entriesList.scrollWindow.GetScrollValue()
 			};
 		}

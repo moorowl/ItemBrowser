@@ -9,21 +9,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cee60711b60140298b67fb5536b97f46, type: 3}
-  m_Name: Cultist
+  m_Script: {fileID: 11500000, guid: 845fe13b9ab74d33ab51a2ac54962ffe, type: 3}
+  m_Name: TextForSearchPlaceholder
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: -728205848100429888
-    m_high: -5786310624215552600
+    m_low: 4126493728651531650
+    m_high: -2734925581975860902
   m_dynamicCollections:
     m_list: []
-  isEnabled: 1
-  displayOrder: 0
-  term: ItemBrowser-Themes/Cultist
+  theme:
+    m_address:
+      m_low: 5590223260710197539
+      m_high: -3198203154689367221
+  colorVariable:
+    m_address:
+      m_low: 5558699319540295649
+      m_high: 5370917476460309723
+  colorReplacement: {r: 0.5411765, g: 0.54901963, b: 0.5803922, a: 0}
   references:
     version: 2
     RefIds: []

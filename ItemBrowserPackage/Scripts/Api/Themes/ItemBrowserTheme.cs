@@ -8,7 +8,7 @@ namespace ItemBrowser.Api.Themes {
 		public readonly IReadOnlyList<ItemBrowserThemeColorReplacementDataBlock> ColorReplacements;
 
 		public DataBlockAddress Address => _data.address;
-		public readonly string Term;
+		public string Term => _data.term;
 		public int DisplayOrder => _data.displayOrder;
 
 		private ItemBrowserTheme(ItemBrowserThemeDataBlock data, List<ItemBrowserThemeSpriteReplacementDataBlock> spriteReplacements, List<ItemBrowserThemeColorReplacementDataBlock> colorReplacements) {

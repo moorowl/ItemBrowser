@@ -21,9 +21,9 @@ MonoBehaviour:
     m_high: 2112326270127164395
   m_dynamicCollections:
     m_list: []
-  term: ItemBrowser-Themes/Stone
-  displayOrder: 1
   isEnabled: 1
+  displayOrder: 0
+  term: ItemBrowser-Themes/Stone
   references:
     version: 2
     RefIds: []

@@ -22,7 +22,7 @@ MonoBehaviour:
   m_dynamicCollections:
     m_list: []
   isEnabled: 1
-  displayOrder: 1
+  displayOrder: 0
   term: ItemBrowser-Themes/Dust
   references:
     version: 2

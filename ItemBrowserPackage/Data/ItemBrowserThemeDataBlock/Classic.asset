@@ -21,9 +21,9 @@ MonoBehaviour:
     m_high: -4938741339797436535
   m_dynamicCollections:
     m_list: []
-  term: ItemBrowser-Themes/Classic
-  displayOrder: 0
   isEnabled: 1
+  displayOrder: -1
+  term: ItemBrowser-Themes/Classic
   references:
     version: 2
     RefIds: []

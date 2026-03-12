@@ -22,7 +22,6 @@ namespace ItemBrowser.Api {
 
 		internal readonly List<ObjectEntryProvider> EntryProviders = new();
 		internal readonly Dictionary<Type, ObjectEntryDisplayBase> EntryToDisplayComponent = new();
-		internal readonly Dictionary<DataBlockAddress, ItemBrowserTheme> Themes = new();
 
 		internal readonly Dictionary<Type, PoolSystem> ElementPools = new();
 

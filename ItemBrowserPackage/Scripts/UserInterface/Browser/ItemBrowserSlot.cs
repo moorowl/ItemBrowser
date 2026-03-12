@@ -289,6 +289,8 @@ namespace ItemBrowser.UserInterface.Browser {
 			colorReplacer.UpdateColorReplacerFromObjectData(visualObject);
 			Manager.ui.ApplyAnyIconGradientMap(visualObject, icon);
 			
+			SetMissingIcon(false);
+			
 			if (visualObject.objectID == ObjectID.None) {
 				SetEmptyIcon();
 				return;
@@ -305,7 +307,6 @@ namespace ItemBrowser.UserInterface.Browser {
 				return;
 			}
 
-			SetMissingIcon(false);
 			icon.sprite = iconToUse;
 			icon.transform.localPosition = objectInfo.iconOffset;
 			

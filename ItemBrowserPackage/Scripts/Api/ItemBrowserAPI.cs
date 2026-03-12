@@ -28,9 +28,6 @@ namespace ItemBrowser.Api {
 		private static bool _hasRegistered;
 
 		internal static void Init() {
-			foreach (var theme in ItemBrowserTheme.GetAllThemesFromDataBlocks())
-				Registry.Themes.TryAdd(theme.Address, theme);
-			
 			InitPlugins();
 		}
 
@@ -177,10 +174,7 @@ namespace ItemBrowser.Api {
 		}
 		
 		public static T GetPooledElement<T>() where T : UIelement {
-			if (Registry.ElementPools.TryGetValue(typeof(T), out var pool))
-				return (T) pool.GetFreeComponent(true, true);
-			
-			return null;
+			return (T) GetPooledElement(typeof(T));
 		}
 		
 		public static void FreePooledElement(UIelement element) {

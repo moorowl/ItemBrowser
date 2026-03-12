@@ -24,6 +24,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		private readonly List<SwapCategoryButton> _categoryButtons = new();
 
 		public int SelectedCategory { get; private set; }
+		public string SelectedCategoryTerm { get; private set; }
 		
 		private void LateUpdate() {
 			UpdateControllerInput();
@@ -77,6 +78,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		
 		public void SetCategory(int category, float scrollProgress = 1f) {
 			SelectedCategory = Math.Clamp(category, 0, Math.Max(_entries.Count - 1, 0));
+			SelectedCategoryTerm = "";
 			
 			selectedCategoryLabel.gameObject.SetActive(false);
 			nextCategoryButton.canBeClicked = false;
@@ -100,6 +102,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			
 			selectedCategoryLabel.gameObject.SetActive(true);
 			selectedCategoryLabel.Render(entriesInCategory[0].Category.GetTitle(detailsView.IsSelectedObjectNonObtainable));
+			SelectedCategoryTerm = entriesInCategory[0].Category.GetTitle(false);
 
 			if (_entries.Count >= 2) {
 				var nextCategoryIndex = SelectedCategory + 1;
