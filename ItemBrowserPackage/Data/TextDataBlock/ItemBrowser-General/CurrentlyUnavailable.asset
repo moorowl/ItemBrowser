@@ -54,7 +54,7 @@ MonoBehaviour:
         m_address:
           m_low: 681352171529052915
           m_high: 2314507893210082619
-      title: Unavailable in this world ({0})
+      title: Missing requirements
       description: 
     - m_language:
         m_address:
@@ -134,7 +134,7 @@ MonoBehaviour:
       m_address:
         m_low: 681352171529052915
         m_high: 2314507893210082619
-    title: Unavailable in this world ({0})
+    title: Missing requirements
     description: 
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-General

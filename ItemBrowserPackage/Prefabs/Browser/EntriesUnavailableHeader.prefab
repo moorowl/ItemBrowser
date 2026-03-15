@@ -212,14 +212,14 @@ MonoBehaviour:
   checkForProfanity: 0
   isHidden: 0
   trackDynamicTextCharacterEndPositions: 0
-  localize: 0
+  localize: 1
   topAligned: 0
   languagesToForceLatinFont: 
   localizePlaceholders: 1
   dontResetEffectsOnRender: 0
   hideInStreamerMode: 0
   maxWidth: 100
-  textString: 
+  textString: ItemBrowser-General/CurrentlyUnavailable
   textSuffix: 
   formatFields: []
   overrideMaterial: {fileID: 0}

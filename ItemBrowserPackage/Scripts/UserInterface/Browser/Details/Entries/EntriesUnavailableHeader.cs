@@ -6,7 +6,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		public string term;
 
 		public void SetAmount(int amount) {
-			text.Render(string.Format(API.Localization.GetLocalizedTerm(term), amount.ToString()));
+			// text.Render(string.Format(API.Localization.GetLocalizedTerm(term), amount.ToString()));
 		}
 	}
 }
