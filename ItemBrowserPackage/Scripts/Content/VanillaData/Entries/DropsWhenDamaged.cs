@@ -29,7 +29,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						HealthRequiredToDrop = dropsLootWhenDamagedCD.minHealthToDropLoot
 					};
 					registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
-					// registry.Register(ObjectEntryType.Usage, entry.Entity.Id, entry.Entity.Variation, entry);
+					registry.Register(ObjectEntryType.Usage, entry.Entity.Id, entry.Entity.Variation, entry);
 				}
 			}
 		}

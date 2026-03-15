@@ -54,8 +54,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								};
 								registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
 								
-								// if (TileUtils.TryGetAssociatedObject(spawnData.spawnCheck.tileType, tileset, out var tileObjectData))
-									// registry.Register(ObjectEntryType.Usage, tileObjectData.objectID, ObjectUtils.GetPrimaryVariation(tileObjectData), entry);
+								if (TileUtils.TryGetAssociatedObject(spawnData.spawnCheck.tileType, tileset, out var tileObjectData))
+									registry.Register(ObjectEntryType.Usage, tileObjectData.objectID, ObjectUtils.GetPrimaryVariation(tileObjectData), entry);
 							}
 						}
 					}
