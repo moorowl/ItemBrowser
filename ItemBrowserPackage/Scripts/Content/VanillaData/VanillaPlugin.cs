@@ -150,11 +150,13 @@ namespace ItemBrowser.Content.VanillaData {
 			// General modded content filters
 			if (itemsByMod.Count > 0) {
 				registry.AddItemFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Item_FromMods") {
+					Symbol = "#",
 					Function = ModUtils.IsModded
 				});	
 			}
 			if (creaturesByMod.Count > 0) {
 				registry.AddCreatureFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Creature_FromMods") {
+					Symbol = "#",
 					Function = ModUtils.IsModded
 				});
 			}
@@ -162,6 +164,7 @@ namespace ItemBrowser.Content.VanillaData {
 			// Specific mod filters
 			foreach (var (displayName, associatedItems) in itemsByMod) {
 				registry.AddItemFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Item_FromMod") {
+					Symbol = displayName[..Math.Min(displayName.Length, 2)],
 					NameFormatFields = new[] { displayName },
 					LocalizeNameFormatFields = false,
 					DescriptionFormatFields = new[] { displayName },
@@ -172,6 +175,7 @@ namespace ItemBrowser.Content.VanillaData {
 			}
 			foreach (var (displayName, associatedCreatures) in creaturesByMod) {
 				registry.AddCreatureFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Creature_FromMod") {
+					Symbol = displayName[..Math.Min(displayName.Length, 2)],
 					NameFormatFields = new[] { displayName },
 					LocalizeNameFormatFields = false,
 					DescriptionFormatFields = new[] { displayName },
@@ -186,27 +190,33 @@ namespace ItemBrowser.Content.VanillaData {
 			// Item damage
 			const string damageGroup = "ItemBrowser-Filters/Damage";
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_AnyDamage") {
+				Symbol = "#",
 				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation) > 0,
 				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_PhysicalMeleeDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.PhysicalMelee) > 0,
+				Icon = ObjectID.RustyDagger,
+				Function = objectData => ObjectUtils.GetDamage(objectData, ObjectUtils.DamageCategory.PhysicalMelee) > 0,
 				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_PhysicalRangeDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.PhysicalRange) > 0,
+				Icon = ObjectID.Slingshot,
+				Function = objectData => ObjectUtils.GetDamage(objectData, ObjectUtils.DamageCategory.PhysicalRange) > 0,
 				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_MagicDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.Magic) > 0,
+				Icon = ObjectID.BasicStaff,
+				Function = objectData => ObjectUtils.GetDamage(objectData, ObjectUtils.DamageCategory.Magic) > 0,
 				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_SummonDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.Summon) > 0,
+				Icon = ObjectID.TomeOfRange,
+				Function = objectData => ObjectUtils.GetDamage(objectData, ObjectUtils.DamageCategory.Summon) > 0,
 				Group = damageGroup
 			});
 			registry.AddItemFilter(damageGroup, new Filter<ObjectDataCD>($"{damageGroup}_ExplosiveDamage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation, ObjectUtils.DamageCategory.Explosive) > 0,
+				Icon = ObjectID.Bomb,
+				Function = objectData => ObjectUtils.GetDamage(objectData, ObjectUtils.DamageCategory.Explosive) > 0,
 				Group = damageGroup
 			});
 		}
@@ -215,6 +225,7 @@ namespace ItemBrowser.Content.VanillaData {
 			// Item equipment
 			const string equipmentGroup = "ItemBrowser-Filters/Equipment";
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Weapon") {
+				Icon = ObjectID.TinDagger,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					if (PugDatabase.HasComponent<HasWeaponDamageCD>(objectData) && !ObjectUtils.MiningToolObjectTypes.Contains(objectType) && !(PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam))
@@ -225,12 +236,14 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Tool") {
+				Icon = ObjectID.Bucket,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return ObjectUtils.ToolObjectTypes.Contains(objectType) || (PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam);
 				}
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Armor") {
+				Icon = ObjectID.IronShield,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return ObjectUtils.ArmorObjectTypes.Contains(objectType);
@@ -238,6 +251,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Helm") {
+				Icon = ObjectID.IronHelm,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Helm;
@@ -245,6 +259,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_BreastArmor") {
+				Icon = ObjectID.IronBreastArmor,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.BreastArmor;
@@ -252,6 +267,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_PantsArmor") {
+				Icon = ObjectID.IronPantsArmor,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.PantsArmor;
@@ -259,6 +275,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Accessory") {
+				Icon = ObjectID.HeartBerryNecklace,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return ObjectUtils.AccessoryObjectTypes.Contains(objectType);
@@ -266,6 +283,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Ring") {
+				Icon = ObjectID.CavelingMothersRing,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Ring;
@@ -273,6 +291,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Necklace") {
+				Icon = ObjectID.GoldCrystalNecklace,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Necklace;
@@ -280,6 +299,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_OffHand") {
+				Icon = ObjectID.OracleDeck,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Offhand;
@@ -287,6 +307,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Bag") {
+				Icon = ObjectID.ExplorerBackpack,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Bag;
@@ -294,6 +315,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Pouch") {
+				Icon = ObjectID.ValuablePouch,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Pouch;
@@ -301,6 +323,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Lantern") {
+				Icon = ObjectID.Lantern,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Lantern;
@@ -308,6 +331,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter<ObjectDataCD>($"{equipmentGroup}_Pet") {
+				Icon = ObjectID.PetCat,
 				Function = PugDatabase.HasComponent<PetCD>,
 				Group = equipmentGroup
 			});
@@ -317,6 +341,7 @@ namespace ItemBrowser.Content.VanillaData {
 			// Creature type
 			const string typeGroup = "ItemBrowser-Filters/Type";
 			registry.AddCreatureFilter(typeGroup, new Filter<ObjectDataCD>($"{typeGroup}_Hostile") {
+				Icon = ObjectID.AggressiveSlimeBlob,
 				Function = objectData => !ObjectCategoryTagsCD.HasTag(PugDatabase.GetComponent<ObjectCategoryTagsCD>(objectData).tagsBitMask, ObjectCategoryTag.NonHostileCreature)
 				                         && !PugDatabase.HasComponent<CattleCD>(objectData)
 				                         && !PugDatabase.HasComponent<CritterCD>(objectData)
@@ -324,18 +349,22 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = typeGroup
 			});
 			registry.AddCreatureFilter(typeGroup, new Filter<ObjectDataCD>($"{typeGroup}_Boss") {
+				Icon = ObjectID.SlimeBossCrystal,
 				Function = objectData => PugDatabase.HasComponent<BossCD>(objectData) || ObjectUtils.GetCategories(objectData).Contains("Boss/BossCreature"),
 				Group = typeGroup
 			});
 			registry.AddCreatureFilter(typeGroup, new Filter<ObjectDataCD>($"{typeGroup}_Merchant") {
+				Icon = ObjectID.SlimeMerchant,
 				Function = PugDatabase.HasComponent<MerchantCD>,
 				Group = typeGroup
 			});
 			registry.AddCreatureFilter(typeGroup, new Filter<ObjectDataCD>($"{typeGroup}_Cattle") {
+				Icon = ObjectID.Cow,
 				Function = PugDatabase.HasComponent<CattleCD>,
                                                              				Group = typeGroup
 			});
 			registry.AddCreatureFilter(typeGroup, new Filter<ObjectDataCD>($"{typeGroup}_Critter") {
+				Icon = ObjectID.ButterflySunset,
 				Function = PugDatabase.HasComponent<CritterCD>,
 				Group = typeGroup
 			});
@@ -345,6 +374,7 @@ namespace ItemBrowser.Content.VanillaData {
 			// Utility
 			const string utilityGroup = "ItemBrowser-Filters/Utility";
 			registry.AddItemFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_Placeable") {
+				Icon = ObjectID.WoodTable,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.PlaceablePrefab
@@ -353,10 +383,12 @@ namespace ItemBrowser.Content.VanillaData {
 				}
 			});
 			registry.AddItemFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_Consumable") {
+				Icon = ObjectID.HeartberrySoda,
 				Function = objectData => PugDatabase.HasComponent<GivesConditionsWhenConsumedBuffer>(objectData)
 				                         || (PugDatabase.TryGetComponent<CastItemCD>(objectData, out var castItem) && castItem.useType != CastItemUseType.LeashCattle)
 			});
 			registry.AddItemFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_Craftable") {
+				Icon = ObjectID.CopperWorkbench,
 				Function = objectData => {
 					var craftingHandler = Manager.main.player?.playerCraftingHandler;
 					if (craftingHandler == null)
@@ -378,31 +410,38 @@ namespace ItemBrowser.Content.VanillaData {
 				CausesItemCraftingRequirementsToDisplay = true
 			});
 			registry.AddItemFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_CookingIngredient") {
+				Icon = ObjectID.HeartBerry,
 				Function = objectData => {
 					var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
 					return objectInfo.tags.Contains(ObjectCategoryTag.CookingIngredient);
 				}
 			});
 			registry.AddItemFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_Paintable") {
+				Icon = ObjectID.PaintBrushTeal,
 				Function = PugDatabase.HasComponent<PaintableObjectCD>
 			});
 			registry.AddItemFilter(utilityGroup, new($"{utilityGroup}_Discovered") {
+				Icon = ObjectID.Portal,
 				Function = objectData => ObjectUtils.HasBeenDiscovered(objectData),
 				FunctionIsDynamic = true
 			});
 			registry.AddItemFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_Technical_Item") {
+				Icon = ObjectID.MechanicalPart,
 				Function = ItemBrowserAPI.IsTechnicalObject,
 				DefaultState = () => FilterState.Exclude
 			});
 			registry.AddCreatureFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_Technical_Creature") {
+				Icon = ObjectID.MechanicalPart,
 				Function = ItemBrowserAPI.IsTechnicalObject,
 				DefaultState = () => FilterState.Exclude
 			});
 			registry.AddItemFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_NoSources_Item") {
+				Icon = ObjectID.JingleJamCookie,
 				Function = objectData => !ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, objectData).Any(),
 				DefaultState = () => Options.Instance.CheatMode ? FilterState.None : FilterState.Exclude
 			});
 			registry.AddCreatureFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_NoSources_Creature") {
+				Icon = ObjectID.JingleJamCookie,
 				Function = objectData => !ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, objectData).Any(),
 				DefaultState = () => Options.Instance.CheatMode ? FilterState.None : FilterState.Exclude
 			});
@@ -426,6 +465,7 @@ namespace ItemBrowser.Content.VanillaData {
 					continue;
 				
 				registry.AddCreatureFilter(factionGroup, new Filter<ObjectDataCD>($"ItemBrowser-FactionNames/{faction}", $"{factionGroup}_FactionDesc") {
+					Symbol = faction.ToString()[..2],
 					DescriptionFormatFields = new[] {
 						$"ItemBrowser-FactionNames/{faction}"
 					},
@@ -440,6 +480,7 @@ namespace ItemBrowser.Content.VanillaData {
 			const string rarityGroup = "ItemBrowser-Filters/Rarity";
 			foreach (var rarity in Enum.GetValues(typeof(Rarity)).Cast<Rarity>()) {
 				registry.AddItemFilter(rarityGroup, new Filter<ObjectDataCD>($"{rarityGroup}_{rarity}") {
+					Symbol = rarity.ToString()[..2],
 					Function = objectData => PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).rarity == rarity,
 					Group = rarityGroup
 				});
@@ -452,6 +493,7 @@ namespace ItemBrowser.Content.VanillaData {
 			for (var i = 1; i <= LevelScaling.GetMaxLevel(); i++) {
 				var level = i;
 				registry.AddItemFilter(levelGroup, new Filter<ObjectDataCD>($"{levelGroup}_Level") {
+					Symbol = i.ToString(),
 					NameFormatFields = new[] { i.ToString() },
 					LocalizeNameFormatFields = false,
 					DescriptionFormatFields = new[] { i.ToString() },
@@ -462,17 +504,57 @@ namespace ItemBrowser.Content.VanillaData {
 			}
 		}
 		
+		private static readonly Dictionary<string, ObjectID> EffectIcons = new() {
+			{ "Appearance", ObjectID.MagicMirror },
+			{ "Armor", ObjectID.IronShield },
+			{ "Attack Speed", ObjectID.SwiftRing },
+			{ "Burn", ObjectID.FlameRing },
+			{ "Charm", ObjectID.ValentineNecklace },
+			{ "Cooking", ObjectID.CookingPot },
+			{ "Crafting", ObjectID.WoodenWorkBench },
+			{ "Crit", ObjectID.GoldenSpikeRing },
+			{ "Crit Damage", ObjectID.GoldenSpikeRing },
+			{ "Damage", ObjectID.TinDagger },
+			{ "Damage Taken", ObjectID.TurtleShell },
+			{ "Damage vs Bosses", ObjectID.GolemHelm },
+			{ "Deal Damage", ObjectID.RadiationCrystal },
+			{ "Dodge", ObjectID.NinjaHelm },
+			{ "Durability", ObjectID.SalvageAndRepairStation },
+			{ "Explosives", ObjectID.BlastHelm },
+			{ "Faction Change", ObjectID.RoyalGel },
+			{ "Fishing", ObjectID.BaitIncreasedChanceToGetFish },
+			{ "Gardening", ObjectID.FarmerHelm },
+			{ "Glow", ObjectID.GlowingTulipFlower },
+			{ "Heal", ObjectID.HealingPotion },
+			{ "Hunger", ObjectID.Mushroom },
+			{ "Immunity", ObjectID.RemedaisyNecklace },
+			{ "Magic", ObjectID.MagicPotion },
+			{ "Mana", ObjectID.ManaPotion },
+			{ "Max Health", ObjectID.TrinityHeartOrbOffhand },
+			{ "Mining", ObjectID.DrillTool },
+			{ "Minions", ObjectID.MinionPotion },
+			{ "Movement", ObjectID.SwiftFeather },
+			{ "Oil", ObjectID.GroundOilSlime },
+			{ "Pet", ObjectID.PetRock },
+			{ "Poison", ObjectID.PoisonGrenade },
+			{ "Sleep", ObjectID.SleepyHelm },
+			{ "Spawn Object", ObjectID.GodsentHelm },
+			{ "Stun and Snare", ObjectID.StunGrenade },
+			{ "Thorns", ObjectID.BlackSteelUrchin },
+			{ "Unique", ObjectID.LiquidMetal },
+			{ "Void", ObjectID.VoidFusedHelm }
+		};
+		
 		private static void AddFilters_Effect(ItemBrowserRegistry registry) {
 			// Item level
 			const string effectGroup = "ItemBrowser-Filters/Effect";
 
-			var allObjects = ObjectUtils.GetAllObjects();
-			
 			foreach (var conditionCategory in Manager.ui.conditionsIconsTable.conditionCategories) {
 				if (!ObjectUtils.GetAllObjects().Where(ItemBrowserAPI.IsItemIndexed).Any(objectData => ObjectUtils.GetAssociatedConditionCategories(objectData).Contains(conditionCategory.category)))
 					continue;
 				
 				registry.AddItemFilter(effectGroup, new Filter<ObjectDataCD>($"ItemBrowser-ConditionCategoryNames/{conditionCategory.category}", $"{effectGroup}_EffectDesc") {
+					Icon = EffectIcons.GetValueOrDefault(conditionCategory.category),
 					DescriptionFormatFields = new[] { $"ItemBrowser-ConditionCategoryNames/{conditionCategory.category}" },
 					Function = objectData => ObjectUtils.GetAssociatedConditionCategories(objectData).Contains(conditionCategory.category),
 					Group = effectGroup
@@ -484,8 +566,9 @@ namespace ItemBrowser.Content.VanillaData {
 			// Version added
 			const string versionGroup = "ItemBrowser-Filters/VersionAdded";
 			foreach (var version in ObjectsAddedByVersion.AllVersions) {
-				if (version.HasAnyItems) {
+				if (version.HasAnyIndexedItems) {
 					registry.AddItemFilter(versionGroup, new Filter<ObjectDataCD>($"{versionGroup}_Item_Version") {
+						Icon = version.Icon,
 						NameFormatFields = new[] { version.Name },
 						LocalizeNameFormatFields = false,
 						DescriptionFormatFields = new[] { version.Name },
@@ -494,8 +577,9 @@ namespace ItemBrowser.Content.VanillaData {
 						Group = versionGroup
 					});	
 				}
-				if (version.HasAnyCreatures) {
+				if (version.HasAnyIndexedCreatures) {
 					registry.AddCreatureFilter(versionGroup, new Filter<ObjectDataCD>($"{versionGroup}_Creature_Version") {
+						Icon = version.Icon,
 						NameFormatFields = new[] { version.Name },
 						LocalizeNameFormatFields = false,
 						DescriptionFormatFields = new[] { version.Name },

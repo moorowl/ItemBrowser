@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace ItemBrowser.UserInterface.Browser {
 	public class OptionsView : MainSubView, IScrollable {
+		public UIScrollWindow scrollWindow;
+		
 		private readonly OptionsEntryType _cheatMode = new() {
 			CanBeClicked = () => ClientWorldStateSystem.IsAdminOrInCreative,
 			OnLeftClick = () => {
@@ -123,6 +125,9 @@ namespace ItemBrowser.UserInterface.Browser {
 			AddEntry("ItemBrowser-Options/ShowSourceMod", _showSourceMod);
 			AddEntry("ItemBrowser-Options/ShowButtonHints", _showButtonHints);
 			AddEntry("ItemBrowser-Options/PanelsShiftLayout", _panelsShiftLayout);
+			
+			foreach (var scrollItem in scrollContainer.GetComponentsInChildren<IScrollItem>())
+				scrollItem.OnScrollWindowChanged(scrollWindow);
 		}
 
 		private void AddSection(string term) {

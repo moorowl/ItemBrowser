@@ -5,22 +5,24 @@ using ItemBrowser.Api;
 namespace ItemBrowser.Utilities.DataStructures {
 	public class ObjectsAddedByVersion {
 		public readonly string Name;
+		public readonly ObjectID Icon;
 		private readonly HashSet<ObjectID> _objects;
 
 		public IEnumerable<ObjectID> Objects => _objects;
-		public bool HasAnyItems => _objects.Any(id => ItemBrowserAPI.IsItemIndexed(new ObjectDataCD {
+		public bool HasAnyIndexedItems => _objects.Any(id => ItemBrowserAPI.IsItemIndexed(new ObjectDataCD {
 			objectID = id
 		}));
-		public bool HasAnyCreatures => _objects.Any(id => ItemBrowserAPI.IsCreatureIndexed(new ObjectDataCD {
+		public bool HasAnyIndexedCreatures => _objects.Any(id => ItemBrowserAPI.IsCreatureIndexed(new ObjectDataCD {
 			objectID = id
 		}));
 
-		public ObjectsAddedByVersion(string name, ObjectID[] ids) {
+		public ObjectsAddedByVersion(string name, ObjectID icon, ObjectID[] ids) {
 			Name = name;
+			Icon = icon;
 			_objects = new HashSet<ObjectID>(ids);
 		}
 
-		public static readonly ObjectsAddedByVersion Ck10 = new("1.0", new[] {
+		public static readonly ObjectsAddedByVersion Ck10 = new("1.0", ObjectID.ApprenticeHelm, new[] {
 			ObjectID.ExplosiveWallExplosion,
 			ObjectID.PandoriumPantsArmor,
 			ObjectID.LightningGun,
@@ -223,7 +225,7 @@ namespace ItemBrowser.Utilities.DataStructures {
 			ObjectID.WitchDoctorHelm
 		});
 
-		public static readonly ObjectsAddedByVersion Ck101 = new("1.0.1", new[] {
+		public static readonly ObjectsAddedByVersion Ck101 = new("1.0.1", ObjectID.Terrarium, new[] {
 			ObjectID.AquariumCrystal,
 			ObjectID.FireMiteMinion,
 			ObjectID.CoralDoor,
@@ -250,13 +252,13 @@ namespace ItemBrowser.Utilities.DataStructures {
 			ObjectID.TerrariumCrystal
 		});
 
-		public static readonly ObjectsAddedByVersion Ck102 = new("1.0.2", new[] {
+		public static readonly ObjectsAddedByVersion Ck102 = new("1.0.2", ObjectID.LuckyCat, new[] {
 			ObjectID.LuckyCat,
 			ObjectID.PottedEnvelopeTree,
 			ObjectID.ChineseFoldingScreen
 		});
 
-		public static readonly ObjectsAddedByVersion Ck11 = new("1.1", new[] {
+		public static readonly ObjectsAddedByVersion Ck11 = new("1.1", ObjectID.NatureCicadaSummoningItem, new[] {
 			ObjectID.Grenade,
 			ObjectID.PoisonGrenadeProjectile,
 			ObjectID.CamelBaby,
@@ -366,7 +368,7 @@ namespace ItemBrowser.Utilities.DataStructures {
 			ObjectID.VoidBombMortarPojectile
 		});
 
-		public static readonly ObjectsAddedByVersion Ck111 = new("1.1.1", new[] {
+		public static readonly ObjectsAddedByVersion Ck111 = new("1.1.1", ObjectID.AFPortal, new[] {
 			ObjectID.AFDrink1,
 			ObjectID.AFDrink5,
 			ObjectID.PetElectricEgg,
@@ -392,7 +394,7 @@ namespace ItemBrowser.Utilities.DataStructures {
 			ObjectID.PetElectricEggCracked
 		});
 
-		public static readonly ObjectsAddedByVersion Ck112 = new("1.1.2", new[] {
+		public static readonly ObjectsAddedByVersion Ck112 = new("1.1.2", ObjectID.PetBed, new[] {
 			ObjectID.MeteorStaffLesser,
 			ObjectID.MeteorMortarLesserProjectile,
 			ObjectID.PetBedBirdStick,
@@ -405,11 +407,11 @@ namespace ItemBrowser.Utilities.DataStructures {
 			ObjectID.PetWarlockEggCracked
 		});
 
-		public static readonly ObjectsAddedByVersion Ck1129 = new("1.1.2.9", new[] {
+		public static readonly ObjectsAddedByVersion Ck1129 = new("1.1.2.9", ObjectID.MakeAWishHat, new[] {
 			ObjectID.MakeAWishHat
 		});
 		
-		public static readonly ObjectsAddedByVersion Ck12 = new("1.2", new[] {
+		public static readonly ObjectsAddedByVersion Ck12 = new("1.2", ObjectID.InventorHelm, new[] {
 			ObjectID.RobotBossLargeProjectile,
 			ObjectID.InventorPantsArmor,
 			ObjectID.ExcavationVoidMoss,

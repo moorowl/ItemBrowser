@@ -100,11 +100,8 @@ namespace ItemBrowser.UserInterface.Browser {
 			var filterGroups = GetFilters().GroupBy(x => x.Group)
 				.ToDictionary(group => group.Key, group => group.Select(x => x.Filter).ToList());
 
-			foreach (var group in filterGroups) {
-				PrimaryFiltersPanel.AddHeader(group.Key);
-				foreach (var filter in group.Value)
-					PrimaryFiltersPanel.AddFilter(filter);
-			}
+			foreach (var group in filterGroups)
+				PrimaryFiltersPanel.AddFilterGroup(group.Key, group.Value);
 		}
 		
 		protected abstract List<Sorter<ObjectDataCD>> GetSorters();
@@ -118,7 +115,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			foreach (var panel in filtersPanels)
 				panel.IsShowing = shouldShow;
 
-			if (UserInterfaceUtils.IsUsingMouse) {
+			if (UserInterfaceUtils.IsUsingMouse && Options.Instance.PanelsShiftLayout) {
 				Manager.ui.DeselectAnySelectedUIElement();
 				Manager.ui.mouse.UpdateMouseUIInput(out _, out _);				
 			}

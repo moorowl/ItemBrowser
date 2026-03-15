@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Text;
+using I2.Loc;
 using UnityEngine;
 
 namespace ItemBrowser.Utilities {
@@ -7,7 +9,8 @@ namespace ItemBrowser.Utilities {
 		public static bool IsUsingKeyboard => Manager.input.SystemIsUsingKeyboard();
 		public static bool IsUsingMouseAndKeyboard => Manager.input.SystemPrefersKeyboardAndMouse();
 		public static bool IsUsingMouseOrKeyboard => IsUsingMouse || IsUsingKeyboard;
-		
+
+		public const float DescriptionPadding = 0.125f;
 		public static Color DescriptionColor => Manager.text.GetRarityColor(Rarity.Poor);
 		
 		public static string GetInputGlyph(string binding) {
@@ -24,7 +27,7 @@ namespace ItemBrowser.Utilities {
 				return;
 			
 			if (lines.Count > 0)
-				lines[^1].paddingBeneath = 0.125f;
+				lines[^1].paddingBeneath = DescriptionPadding;
 			
 			lines.Add(new TextAndFormatFields {
 				text = term,
@@ -72,6 +75,10 @@ namespace ItemBrowser.Utilities {
 		
 		public static float CalculateHeight(Component component) {
 			return CalculateHeight(component.gameObject);
+		}
+
+		public static Material GetUISpriteColorReplaceMaterial() {
+			return new Material(Shader.Find("Amplify/UISpriteColorReplace"));
 		}
 
 		public enum MenuSound {

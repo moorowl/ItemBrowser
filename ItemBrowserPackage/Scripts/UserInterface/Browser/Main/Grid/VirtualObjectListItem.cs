@@ -58,7 +58,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			if (filtersPanel.DisplayItemCraftingRequirements) {
 				var craftingSources = ItemBrowserAPI.ObjectEntryRegistry.GetEntries<Crafting>(ObjectEntryType.Source, slotObject.objectID, slotObject.variation).ToList();
 				if (craftingSources.Count > 0) {
-					lines[^1].paddingBeneath = 0.125f;
+					lines[^1].paddingBeneath = UserInterfaceUtils.DescriptionPadding;
 					foreach (var craftingSource in craftingSources) {
 						lines.Add(new TextAndFormatFields {
 							text = craftingSource.UsesStation ? "ItemBrowser-ObjectEntryDescriptions/Crafting_0_Station" : "ItemBrowser-ObjectEntryDescriptions/Crafting_0_Recipe",

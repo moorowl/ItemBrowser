@@ -7,7 +7,9 @@ namespace ItemBrowser.Utilities.DataStructures.SortingAndFiltering {
 
 		public readonly string Name;
 		public readonly string Description;
-		
+
+		public ObjectID Icon { get; set; }
+		public string Symbol { get; set; } = "?";
 		public string[] NameFormatFields { get; set; }
 		public bool LocalizeNameFormatFields { get; set; } = true;
 		public string[] DescriptionFormatFields { get; set; }

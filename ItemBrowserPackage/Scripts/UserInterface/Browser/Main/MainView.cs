@@ -61,6 +61,9 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public void SwapSelectedTab(MainTab tabToSelect) {
+			if (tabToSelect == _selectedTab)
+				return;
+			
 			_selectedTab = tabToSelect;
 
 			foreach (var tab in _allTabs) {
@@ -72,7 +75,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			tabButtonsRoot.SetParent(selectedTabView.tabButtonsAnchor, false);
 			
 			// if the filters panel is open, changing tab would shift the layout and cause tooltips to stay active
-			if (UserInterfaceUtils.IsUsingMouse) {
+			if (UserInterfaceUtils.IsUsingMouse && Options.Instance.PanelsShiftLayout) {
 				Manager.ui.DeselectAnySelectedUIElement();
 				Manager.ui.mouse.UpdateMouseUIInput(out _, out _);				
 			}

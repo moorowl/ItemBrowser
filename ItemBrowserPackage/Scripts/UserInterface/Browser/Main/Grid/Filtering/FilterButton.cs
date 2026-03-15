@@ -6,6 +6,12 @@ using UnityEngine;
 
 namespace ItemBrowser.UserInterface.Browser {
 	public class FilterButton : ItemBrowserButton {
+		public GridView gridView;
+		public SpriteRenderer toggledBackground;
+		public SpriteRenderer[] icons;
+		public PugText[] symbols;
+		public ColorReplacer[] colorReplacers;
+		
 		public Filter<ObjectDataCD> Filter { get; set; }
 
 		private FilterState _currentState;
@@ -19,15 +25,53 @@ namespace ItemBrowser.UserInterface.Browser {
 				gridView.RequestListRefresh(false);
 			}
 		}
-		
-		public GridView gridView;
-		public FiltersPanel filtersPanel;
-		public SpriteRenderer toggledBackground;
-		public BoxCollider boxCollider;
-		
+
 		public void SetFilter(Filter<ObjectDataCD> filter) {
 			Filter = filter;
 			ResetState();
+
+			var showIcon = filter.Icon != ObjectID.None;
+			var showSymbol = !showIcon && !string.IsNullOrWhiteSpace(filter.Symbol);
+
+			foreach (var icon in icons)
+				icon.gameObject.SetActive(showIcon);
+			foreach (var symbol in symbols)
+				symbol.gameObject.SetActive(showSymbol);
+
+			if (showIcon) {
+				var iconContainedObject = new ContainedObjectsBuffer {
+					objectData = new ObjectDataCD {
+						objectID = filter.Icon
+					}
+				};
+				var iconObjectInfo = PugDatabase.GetObjectInfo(filter.Icon);
+				var iconSprite = ObjectUtils.GetIcon(iconContainedObject.objectData, true);
+				var iconSpriteSize = iconSprite.bounds.size;
+				if (iconSpriteSize is { x: > 1f, y: > 1f } && ItemBrowserSlot.IsCarriedObject(iconObjectInfo)) {
+					iconSpriteSize.x = 1f;
+					iconSpriteSize.y = 1f;
+				}
+				var iconScale = Mathf.Min(1f / iconSpriteSize.x, 1f / iconSpriteSize.y);
+				
+				for (var i = 0; i < icons.Length; i++) {
+					var icon = icons[i];
+					icon.sprite = iconSprite;
+					icon.material = UserInterfaceUtils.GetUISpriteColorReplaceMaterial();
+					icon.transform.localPosition = iconObjectInfo.iconOffset;
+					icon.transform.localScale = new Vector3(iconScale, iconScale, 1f);
+					
+					colorReplacers[i].UpdateColorReplacerFromObjectData(iconContainedObject);
+					Manager.ui.ApplyAnyIconGradientMap(iconContainedObject, icon);
+				}
+			}
+
+			if (showSymbol) {
+				foreach (var symbol in symbols) {
+					symbol.Render(filter.Symbol);
+					// Offset 1px left because single letters don't center nicely
+					symbol.transform.localPosition = new Vector3(symbol.displayedTextString.Length == 1 ? -1f / 16f : 0f, symbol.transform.localPosition.y, symbol.transform.localPosition.z);
+				}
+			}
 		}
 
 		public void ResetState() {

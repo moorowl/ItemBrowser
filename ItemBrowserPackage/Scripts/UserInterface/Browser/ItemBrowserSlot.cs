@@ -64,7 +64,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			if (boxCollider != null)
 				_size = Mathf.Max(boxCollider.size.x, boxCollider.size.y);
 
-			icon.material = new Material(Shader.Find("Amplify/UISpriteColorReplace"));
+			icon.material = UserInterfaceUtils.GetUISpriteColorReplaceMaterial();
 			UpdateVisuals();
 		}
 
@@ -369,7 +369,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			EquipmentSlotType.FishingRodSlot
 		};
 
-		private static bool IsCarriedObject(ObjectInfo objectInfo) {
+		public static bool IsCarriedObject(ObjectInfo objectInfo) {
 			var objectType = objectInfo.objectType;
 			var equipmentSlotType = PlayerController.GetEquippedSlotTypeForObjectType(objectType, default, default, default, default);
 

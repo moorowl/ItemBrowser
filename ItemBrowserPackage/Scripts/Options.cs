@@ -181,7 +181,7 @@ namespace ItemBrowser {
 			public bool DiscoveryMode { get; set; }
 			public bool ShowSourceMod { get; set; } = true;
 			public bool ShowButtonHints { get; set; } = true;
-			public bool PanelsShiftLayout { get; set; } = true;
+			public bool PanelsShiftLayout { get; set; }
 			
 			public Guid Theme { get; set; }
 			public List<OptionsObjectData> Favorites { get; set; } = new();

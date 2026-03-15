@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ItemBrowser.Utilities;
 
 namespace ItemBrowser.UserInterface.Browser {
 	public class EntryDescriptionButton : ItemBrowserButton {
@@ -11,7 +12,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			_lines.Add(line);
 		}
 
-		public void AddPadding(float amount = 0.125f) {
+		public void AddPadding(float amount = UserInterfaceUtils.DescriptionPadding) {
 			if (_lines.Count == 0)
 				return;
 			

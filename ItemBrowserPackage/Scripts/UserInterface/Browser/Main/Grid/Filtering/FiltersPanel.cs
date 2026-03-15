@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures.SortingAndFiltering;
 using UnityEngine;
 
@@ -10,15 +11,13 @@ namespace ItemBrowser.UserInterface.Browser {
 		public Transform container;
 		public FilterHeader headerTemplate;
 		public FilterButton buttonTemplate;
-		public float headerPaddingTop = 1f;
-		public float headerPaddingBottom = 0.4375f;
-		public float headerHeight = 0.875f;
-		public float filterSpread = 0.625f;
+		public GameObject dividerTemplate;
+		public float dividerPadding = 2f / 16f;
+		public float dividerSideStart = -2.3125f;
 
 		private readonly List<FilterButton> _filterButtons = new();
-		private float _top;
-		private float _left;
-		
+		private float _height;
+
 		public bool IsShowing {
 			get => gameObject.activeSelf;
 			set => gameObject.SetActive(value);
@@ -36,35 +35,60 @@ namespace ItemBrowser.UserInterface.Browser {
 			.Where(filterButton => filterButton.CurrentState == FilterState.Exclude)
 			.Select(filterButton => filterButton.Filter)
 			.GroupBy(filter => filter.Group ?? filter.Name);
-		
-		public void AddHeader(string term) {
-			_left = 0f;
-			_top -= headerPaddingTop;
-			
-			var header = Instantiate(headerTemplate, container);
-			header.transform.localPosition = new Vector3(_left, _top, 0f);
-			header.gameObject.SetActive(true);
-			header.SetTerm(term);
 
-			_left = 0f;
-			_top -= headerPaddingBottom;
+		public void AddFilterGroup(string term, List<Filter<ObjectDataCD>> filters) {
+			if (filters.Count == 0)
+				return;
+			
+			AddHeader(term);
+			AddFilters(filters);
 		}
 		
-		public void AddFilter(Filter<ObjectDataCD> filter) {
-			if (_left >= 52f / 10f) {
-				_left = 0f;
-				_top -= filterSpread;
-			}
+		private void AddHeader(string term) {
+			var header = Instantiate(headerTemplate, container);
+			header.gameObject.SetActive(true);
+			header.SetTerm(term);
+			var headerHeight = UserInterfaceUtils.CalculateHeight(header);
 			
-			var button = Instantiate(buttonTemplate, container);
-			button.transform.localPosition = new Vector3(_left, _top, 0f);
-			button.gameObject.SetActive(true);
-			button.SetFilter(filter);
-			
-			_filterButtons.Add(button);
-			childElements.Add(button);
+			_height -= headerHeight / 2f;
+			header.transform.localPosition = new Vector3(0f, _height, 0f);
+			_height -= headerHeight / 2f;
 
-			_left += filterSpread;
+			AddDivider();
+		}
+		
+		private void AddDivider() {
+			var divider = Instantiate(dividerTemplate, container);
+			divider.gameObject.SetActive(true);
+			var dividerHeight = UserInterfaceUtils.CalculateHeight(divider);
+			
+			_height -= dividerHeight / 2f;
+			divider.transform.localPosition = new Vector3(0f, _height, 0f);
+			_height -= dividerHeight / 2f;
+		}
+		
+		private void AddFilters(List<Filter<ObjectDataCD>> filters) {
+			for (var i = 0; i < filters.Count; i++) {
+				var filter = filters[i];
+
+				var filterButton = Instantiate(buttonTemplate, container);
+				filterButton.SetFilter(filter);
+				filterButton.gameObject.SetActive(true);
+				var filterButtonSize = UserInterfaceUtils.CalculateHeight(filterButton);
+
+				var maxFilterButtonsPerRow = (int) (scrollWindow.windowWidth / filterButtonSize);
+				var filterButtonIndexInColumn = i % maxFilterButtonsPerRow;
+
+				if (filterButtonIndexInColumn == 0)
+					_height -= filterButtonSize / 2f;
+				
+				filterButton.transform.localPosition = new Vector3(dividerSideStart + ((filterButtonSize + dividerPadding) * filterButtonIndexInColumn), _height, 0f);
+				
+				if (i == filters.Count - 1 || filterButtonIndexInColumn == maxFilterButtonsPerRow - 1)
+					_height -= (filterButtonSize / 2f) + dividerPadding;
+				
+				_filterButtons.Add(filterButton);
+			}
 		}
 
 		public void ResetToDefaults() {
@@ -73,9 +97,8 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public void Clear() {
-			_top = headerHeight / 2f;
+			_height = 0f;
 			_filterButtons.Clear();
-			childElements.Clear();
 			scrollWindow.ResetScroll();	
 			
 			for (var i = 0; i < container.childCount; i++)
@@ -103,7 +126,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public float GetCurrentWindowHeight() {
-			return Mathf.Abs(_top) + (filterSpread / 2f);
+			return Mathf.Abs(_height) - dividerPadding;
 		}
 	}
 }

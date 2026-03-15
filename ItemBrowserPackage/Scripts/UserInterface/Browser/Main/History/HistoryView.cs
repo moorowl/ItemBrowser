@@ -7,6 +7,7 @@ using UnityEngine;
 namespace ItemBrowser.UserInterface.Browser {
 	public class HistoryView : MainSubView, IScrollable {
 		public Transform scrollContainer;
+		public UIScrollWindow scrollWindow;
 		public DetailsView detailsView;
 		public float dividerPadding = 2f / 16f;
 
@@ -40,9 +41,14 @@ namespace ItemBrowser.UserInterface.Browser {
 
 			foreach (var state in detailsView.History.OrderByDescending(state => state.Timestamp))
 				AddEntry(state);
+			
+			foreach (var scrollItem in scrollContainer.GetComponentsInChildren<IScrollItem>())
+				scrollItem.OnScrollWindowChanged(scrollWindow);
 		}
 		
 		private void ClearList() {
+			scrollWindow.ResetScroll();
+			
 			_height = 0f;
 			_firstEntry = null;
 			
