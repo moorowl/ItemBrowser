@@ -9,26 +9,29 @@ using UnityEngine;
 
 namespace ItemBrowser.UserInterface.Browser {
 	public class DetailsView : ItemBrowserView {
+		private const int MaxHistory = 100;
+		
 		public EntriesView entriesSourceView;
 		public EntriesView entriesUsageView;
 		public SelectedObjectSlot selectedObjectSlot;
 		public PugText selectedTabLabel;
 		public SwapTabButton nextTabButton;
 		public SwapTabButton previousTabButton;
-
-		public ObjectDataCD SelectedObject => _currentState.ObjectData;
-		public DetailsTab SelectedTab => _currentState.Tab;
-		public bool IsSelectedObjectNonObtainable { get; private set; }
-		public bool HasPreviousStates => _previousStates.Count > 0;
+		public InfoboxPanel infoboxPanel;
 
 		private DetailsState _currentState = new();
-		private readonly Stack<DetailsState> _previousStates = new();
-		private readonly List<DetailsState> _history = new();
+		private readonly Stack<DetailsState> _previousStateStack = new();
+		private readonly List<DetailsState> _previousStateHistory = new();
 		private readonly List<DetailsTab> _allAvailableTabs = new();
 		private readonly List<DetailsTab> _allTabs = new() {
 			DetailsTab.Sources,
 			DetailsTab.Usages
 		};
+		
+		public ObjectDataCD SelectedObject => _currentState.ObjectData;
+		public DetailsTab SelectedTab => _currentState.Tab;
+		public bool IsSelectedObjectNonObtainable { get; private set; }
+		public IEnumerable<DetailsState> History => _previousStateHistory;
 		
 		protected override void OnShow(bool isFirstTimeShowing) {
 			if (SelectedObject.objectID != ObjectID.None)
@@ -65,26 +68,30 @@ namespace ItemBrowser.UserInterface.Browser {
 			if (!UserInterfaceUtils.IsUsingMouseAndKeyboard)
 				UserInterfaceUtils.SelectAndMoveMouseTo(selectedObjectSlot);
 		}
-
-		public bool PushState(ObjectDataCD objectData, DetailsTab initialTab, bool clearPreviousStates = false) {
-			if (objectData.Equals(SelectedObject) && initialTab == SelectedTab)
+		
+		public bool PushState(DetailsState state, bool clearPreviousStates = false, bool force = false) {
+			if (!force && state.ObjectData.Equals(SelectedObject) && state.Tab == SelectedTab)
 				return false;
 
-			if (!IsTabAvailable(initialTab, objectData))
+			if (!IsTabAvailable(state.Tab, state.ObjectData))
 				return false;
 
 			if (clearPreviousStates) {
-				_previousStates.Clear();
-			} else if (SelectedObject.objectID != ObjectID.None && (!SelectedObject.Equals(objectData) || initialTab != SelectedTab)) {
-				_previousStates.Push(GetCurrentState());
+				_previousStateStack.Clear();
+			} else if (SelectedObject.objectID != ObjectID.None && (!SelectedObject.Equals(state.ObjectData) || state.Tab != SelectedTab)) {
+				_previousStateStack.Push(GetCurrentState());
 			}
 
-			ApplyState(new DetailsState {
-				ObjectData = objectData,
-				Tab = initialTab
-			});
+			ApplyState(state);
 			
 			return true;
+		}
+		
+		public bool PushState(ObjectDataCD objectData, DetailsTab initialTab, bool clearPreviousStates = false, bool force = false) {
+			return PushState(new DetailsState {
+				ObjectData = objectData,
+				Tab = initialTab
+			}, force, clearPreviousStates);
 		}
 
 		public bool PopState() {

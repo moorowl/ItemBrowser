@@ -145,6 +145,22 @@ namespace ItemBrowser.UserInterface.Browser {
 			return true;
 		}
 		
+		public bool ShowDetailsFromHistory(DetailsState state) {
+			if (!IsShowing && state.ObjectData.Equals(detailsView.SelectedObject)) {
+				IsShowing = true;
+			} else if (!detailsView.PushState(state, true, true)) {
+				return false;
+			}
+			
+			IsShowing = true;
+			mainView.IsShowing = false;
+			detailsView.IsShowing = true;
+			
+			UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.GenericOpen, this);
+
+			return true;
+		}
+		
 		public void ShowGrid() {
 			IsShowing = true;
 			mainView.IsShowing = true;
@@ -155,8 +171,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		public void GoBack() {
 			if (Manager.input.textInputIsActive) {
 				Manager.input.activeInputField.Deactivate(true);
-			} else if (detailsView.HasPreviousStates) {
-				detailsView.PopState();
+			} else if (detailsView.PopState()) {
 				UserInterfaceUtils.PlaySound(UserInterfaceUtils.MenuSound.GenericClose, this);
 			} else if (detailsView.IsShowing) {
 				ShowGrid();
