@@ -63,7 +63,9 @@ namespace ItemBrowser.UserInterface.Browser {
 			objectList.HideContainerUI();
 		}
 
-		private void LateUpdate() {
+		protected override void LateUpdate() {
+			base.LateUpdate();
+
 			var currentSearchTerm = SearchTerm;
 			if (currentSearchTerm != _lastSearchTerm) {
 				foreach (var otherSearchInput in otherSearchInputsToSync)
@@ -152,7 +154,8 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 		
 		private void AdjustWindowPosition() {
-			transform.localPosition = new Vector3(Mathf.Round(PrimaryFiltersPanel.IsShowing ? -((PrimaryFiltersPanel.WindowWidth / 2f) + (1f / 16f)) : 0f), transform.localPosition.y, transform.localPosition.z);
+			var shiftLayout = PrimaryFiltersPanel.IsShowing && Options.Instance.PanelsShiftLayout;
+			transform.localPosition = new Vector3(Mathf.Round(shiftLayout ? -((PrimaryFiltersPanel.WindowWidth / 2f) + (1f / 16f)) : 0f), transform.localPosition.y, transform.localPosition.z);
 		}
 		
 		private void AdjustSearchFieldPosition() {

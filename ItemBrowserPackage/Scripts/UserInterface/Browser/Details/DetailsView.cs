@@ -5,6 +5,7 @@ using ItemBrowser.Api;
 using ItemBrowser.Api.Entries;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.Extensions;
+using UnityEngine;
 
 namespace ItemBrowser.UserInterface.Browser {
 	public class DetailsView : ItemBrowserView {
@@ -34,8 +35,11 @@ namespace ItemBrowser.UserInterface.Browser {
 				ApplyState(GetCurrentState());
 		}
 
-		private void LateUpdate() {
+		protected override void LateUpdate() {
+			base.LateUpdate();
+			
 			UpdateControllerInput();
+			AdjustWindowPosition();
 		}
 
 		private void UpdateControllerInput() {
@@ -50,6 +54,11 @@ namespace ItemBrowser.UserInterface.Browser {
 
 			if (Manager.ui.currentSelectedUIElement == null || Manager.ui.currentSelectedUIElement is BlockingUIElement)
 				TrySelectSelectedObjectSlot();
+		}
+		
+		private void AdjustWindowPosition() {
+			var shiftLayout = infoboxPanel.IsShowing && Options.Instance.PanelsShiftLayout;
+			transform.localPosition = new Vector3(Mathf.Round(shiftLayout ? -((infoboxPanel.WindowWidth / 2f) + (1f / 16f)) : 0f), transform.localPosition.y, transform.localPosition.z);
 		}
 		
 		public void TrySelectSelectedObjectSlot() {
@@ -79,7 +88,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public bool PopState() {
-			if (!_previousStates.TryPop(out var previousState))
+			if (!_previousStateStack.TryPop(out var previousState))
 				return false;
 			
 			ApplyState(previousState);
@@ -121,11 +130,20 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 			
 			GetTabView(SelectedTab).OnApplyState(_currentState, previousState);
+			infoboxPanel.OnApplyState(_currentState, previousState);
+
+			var stateForHistory = GetCurrentState();
+			if (!stateForHistory.EqualsForHistory(previousState)) {
+				_previousStateHistory.RemoveAll(previousStateForHistory => previousStateForHistory.EqualsForHistory(stateForHistory));
+				_previousStateHistory.Add(stateForHistory);
+				if (_previousStateHistory.Count > MaxHistory)
+					_previousStateHistory.RemoveAt(0);
+			}
 		}
 		
 		public void ClearState() {
 			_currentState = new DetailsState();
-			_previousStates.Clear();
+			_previousStateStack.Clear();
 		}
 		
 		public void SwapSelectedTab(DetailsTab tab) {

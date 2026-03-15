@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 namespace ItemBrowser.UserInterface.Browser {
-	public class ItemBrowserView : MonoBehaviour {
+	public class ItemBrowserView : UIelement {
 		private bool _hasBeenShownBefore;
 		private bool _isShowing;
 		public bool IsShowing {

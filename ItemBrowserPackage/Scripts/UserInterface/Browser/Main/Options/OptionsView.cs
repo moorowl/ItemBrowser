@@ -67,6 +67,14 @@ namespace ItemBrowser.UserInterface.Browser {
 				valueText.Render($"ItemBrowser-Options/{(Options.Instance.ShowButtonHints ? "Enabled" : "Disabled")}");
 			}
 		};
+		private readonly OptionsEntryType _panelsShiftLayout = new() {
+			OnLeftClick = () => {
+				Options.Instance.PanelsShiftLayout = !Options.Instance.PanelsShiftLayout;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(Options.Instance.PanelsShiftLayout ? "Enabled" : "Disabled")}");
+			}
+		};
 		private readonly OptionsEntryType _showSourceMod = new() {
 			OnLeftClick = () => {
 				Options.Instance.ShowSourceMod = !Options.Instance.ShowSourceMod;
@@ -99,6 +107,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			AddEntry("ItemBrowser-Options/Theme", _theme);
 			AddEntry("ItemBrowser-Options/ShowSourceMod", _showSourceMod);
 			AddEntry("ItemBrowser-Options/ShowButtonHints", _showButtonHints);
+			AddEntry("ItemBrowser-Options/PanelsShiftLayout", _panelsShiftLayout);
 		}
 
 		private void AddSection(string term) {

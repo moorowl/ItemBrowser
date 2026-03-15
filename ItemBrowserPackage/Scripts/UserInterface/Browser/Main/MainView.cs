@@ -30,7 +30,9 @@ namespace ItemBrowser.UserInterface.Browser {
 			TrySelectLastSelectedElement();
 		}
 
-		private void LateUpdate() {
+		protected override void LateUpdate() {
+			base.LateUpdate();
+
 			UpdateControllerInput();
 			UpdateLastSelectedElement();
 		}

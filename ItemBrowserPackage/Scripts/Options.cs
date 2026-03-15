@@ -15,7 +15,7 @@ namespace ItemBrowser {
 		public static Options Instance { get; private set; } = new();
 		
 		private const string FilePath = Main.InternalName + "/Options.json";
-		private const int CurrentVersion = 1;
+		private const int CurrentVersion = 2;
 		private const float AutosaveInterval = 10f;
 
 		public bool CheatMode {
@@ -46,6 +46,14 @@ namespace ItemBrowser {
 			get => _data.ShowButtonHints;
 			set {
 				_data.ShowButtonHints = value;
+				_isDirty = true;
+			}
+		}
+
+		public bool PanelsShiftLayout {
+			get => _data.PanelsShiftLayout;
+			set {
+				_data.PanelsShiftLayout = value;
 				_isDirty = true;
 			}
 		}
@@ -173,6 +181,8 @@ namespace ItemBrowser {
 			public bool DiscoveryMode { get; set; }
 			public bool ShowSourceMod { get; set; } = true;
 			public bool ShowButtonHints { get; set; } = true;
+			public bool PanelsShiftLayout { get; set; } = true;
+			
 			public Guid Theme { get; set; }
 			public List<OptionsObjectData> Favorites { get; set; } = new();
 		}
