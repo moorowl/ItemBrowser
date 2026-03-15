@@ -90,10 +90,25 @@ namespace ItemBrowser.UserInterface.Browser {
 		public GameObject dividerTemplate;
 
 		private float _height;
+		private OptionsEntry _firstEntry;
 
 		protected override void OnShow(bool isFirstTimeShowing) {
 			if (isFirstTimeShowing)
 				AddAllSettings();
+			
+			TrySelectFirstEntry();
+		}
+
+		protected override void LateUpdate() {
+			base.LateUpdate();
+			
+			if (Manager.ui.currentSelectedUIElement == null || Manager.ui.currentSelectedUIElement is BlockingUIElement)
+				TrySelectFirstEntry();
+		}
+
+		private void TrySelectFirstEntry() {
+			if (_firstEntry != null && UserInterfaceUtils.IsUsingMouseAndKeyboard)
+				UserInterfaceUtils.SelectAndMoveMouseTo(_firstEntry);
 		}
 
 		private void AddAllSettings() {

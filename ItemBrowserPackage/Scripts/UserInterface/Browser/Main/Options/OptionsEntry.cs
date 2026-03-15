@@ -6,7 +6,6 @@ namespace ItemBrowser.UserInterface.Browser {
 		public PugText nameText;
 		public PugText valueText;
 		public float defaultTextOpacity;
-		public float selectedTextOpacity;
 		public float disabledTextOpacity;
 
 		private OptionsEntryType _type;
@@ -86,9 +85,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		private void UpdateTextOpacity() {
-			var opacity = IsSelected ? selectedTextOpacity : defaultTextOpacity;
-			if (!canBeClicked)
-				opacity = disabledTextOpacity;
+			var opacity = canBeClicked ? defaultTextOpacity : disabledTextOpacity;
 
 			nameText.style.color.a = opacity;
 			nameText.SetTempColor(nameText.style.color);
