@@ -356,7 +356,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 									Rolls = new ValueBasedOnWorldState<(int, int)>(() => (1, 1)),
 									IsAffectedByPlayerCount = drop.multiplayerAmountAdditionScaling > 0
 								};
-								entry.AddRequirement(new SeasonActive(group.season));
+								if (group.season != Season.None)
+									entry.AddRequirement(new SeasonActive(group.season));
 								
 								AddNormalEntry(entry.Result.Id, entry.Result.Variation, entry);
 								
