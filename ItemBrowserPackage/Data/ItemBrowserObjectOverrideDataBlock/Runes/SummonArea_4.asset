@@ -17,8 +17,8 @@ MonoBehaviour:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: 0
-    m_high: 0
+    m_low: -2718819697635895683
+    m_high: -2601756979759390312
   m_dynamicCollections:
     m_list: []
   appliesTo: SummonArea
