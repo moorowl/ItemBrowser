@@ -6,7 +6,7 @@ namespace ItemBrowser.UserInterface {
 		public GameObject root;
 		public float yRenderOffset = 5f;
 
-		public bool IsShowing { get; private set; }
+		public bool IsShowing { get; set; }
 
 		private void Awake() {
 			IsShowing = false;

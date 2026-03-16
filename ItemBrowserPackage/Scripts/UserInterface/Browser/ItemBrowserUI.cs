@@ -27,7 +27,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		private List<ItemBrowserTheme> _allThemes;
 		private readonly List<ThemedRenderer> _themedRenderers = new();
 		
-		private GameObject _tileGrid;
+		public TileGridHandler TileGrid { get; private set; }
 		private Transform _tileGridRenderAnchor;
 
 		private float _timeToAutoUpdateObjectsToHighlightInInventory;
@@ -42,7 +42,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			ApplyTheme(_allThemes[currentThemeIndex > -1 ? currentThemeIndex : 0]);
 			
 			_tileGridRenderAnchor = Manager.camera.GetRenderAnchor();
-			_tileGrid = Instantiate(tileGridPrefab, _tileGridRenderAnchor);
+			TileGrid = Instantiate(tileGridPrefab, _tileGridRenderAnchor).GetComponent<TileGridHandler>();
 
 			ThemedRenderer.OnEnabled += AddThemedRenderer;
 			ThemedRenderer.OnDisabled += RemoveThemedRenderer;
@@ -56,8 +56,8 @@ namespace ItemBrowser.UserInterface.Browser {
 			
 			OnUninit?.Invoke(this);
 			
-			if (_tileGrid != null) {
-				Destroy(_tileGrid);
+			if (TileGrid != null) {
+				Destroy(TileGrid.gameObject);
 				Manager.camera.ReturnRenderAnchor(_tileGridRenderAnchor);
 			}
 		}
