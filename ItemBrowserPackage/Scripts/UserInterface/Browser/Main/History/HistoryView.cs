@@ -9,6 +9,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		public Transform scrollContainer;
 		public UIScrollWindow scrollWindow;
 		public DetailsView detailsView;
+		public PugText nothingToShowText;
 		public float dividerPadding = 2f / 16f;
 
 		private float _height;
@@ -28,7 +29,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		private void TrySelectFirstEntry() {
-			if (_firstEntry != null && UserInterfaceUtils.IsUsingMouseAndKeyboard)
+			if (_firstEntry != null && !UserInterfaceUtils.IsUsingMouseAndKeyboard)
 				UserInterfaceUtils.SelectAndMoveMouseTo(_firstEntry);
 		}
 
@@ -39,11 +40,14 @@ namespace ItemBrowser.UserInterface.Browser {
 		private void RenderList() {
 			ClearList();
 
-			foreach (var state in detailsView.History.OrderByDescending(state => state.Timestamp))
+			var states = detailsView.History.OrderByDescending(state => state.Timestamp).ToList();
+			foreach (var state in states)
 				AddEntry(state);
 			
 			foreach (var scrollItem in scrollContainer.GetComponentsInChildren<IScrollItem>())
 				scrollItem.OnScrollWindowChanged(scrollWindow);
+			
+			nothingToShowText.gameObject.SetActive(states.Count == 0);
 		}
 		
 		private void ClearList() {
@@ -72,7 +76,6 @@ namespace ItemBrowser.UserInterface.Browser {
 			_activePooledElements.Add(entry);
 			entry.gameObject.SetActive(true);
 			entry.SetDetailsState(state);
-			// TODO fix this
 			var entryHeight = UserInterfaceUtils.CalculateHeight(entry);
 			
 			_height -= 1.25f / 2f;

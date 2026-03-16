@@ -22,11 +22,13 @@ namespace ItemBrowser.UserInterface.Browser {
 		
 		private List<List<ObjectEntry>> _entries = new();
 		private readonly List<SwapCategoryButton> _categoryButtons = new();
+		private ObjectDataCD _lastSelectedObject;
 
 		public int SelectedCategory { get; private set; }
 		public string SelectedCategoryTerm { get; private set; }
 		
-		private void LateUpdate() {
+		protected override void LateUpdate() {
+			base.LateUpdate();
 			UpdateControllerInput();
 		}
 
@@ -73,10 +75,14 @@ namespace ItemBrowser.UserInterface.Browser {
 			};
 			SetCategory(category, scrollProgress);
 
+			_lastSelectedObject = detailsView.SelectedObject;
 			detailsView.TrySelectSelectedObjectSlot();
 		}
 		
 		public void SetCategory(int category, float scrollProgress = 1f) {
+			if (_lastSelectedObject.Equals(detailsView.SelectedObject))
+				detailsView.AddCurrentStateToHistory();
+			
 			SelectedCategory = Math.Clamp(category, 0, Math.Max(_entries.Count - 1, 0));
 			SelectedCategoryTerm = "";
 			
@@ -102,7 +108,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			
 			selectedCategoryLabel.gameObject.SetActive(true);
 			selectedCategoryLabel.Render(entriesInCategory[0].Category.GetTitle(detailsView.IsSelectedObjectNonObtainable));
-			SelectedCategoryTerm = entriesInCategory[0].Category.GetTitle(false);
+			SelectedCategoryTerm = entriesInCategory[0].Category.GetTitle(detailsView.IsSelectedObjectNonObtainable);
 
 			if (_entries.Count >= 2) {
 				var nextCategoryIndex = SelectedCategory + 1;
@@ -122,6 +128,8 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 			
 			entriesList.SetEntries(detailsView.SelectedObject, entriesInCategory, scrollProgress);
+			
+			detailsView.AddCurrentStateToHistory();
 		}
 
 		private void CycleToNextCategory() {

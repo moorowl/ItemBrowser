@@ -83,7 +83,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			}
 
 			ApplyState(state);
-			
+
 			return true;
 		}
 		
@@ -95,14 +95,28 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public bool PopState() {
+			AddCurrentStateToHistory();
+			
 			if (!_previousStateStack.TryPop(out var previousState))
 				return false;
 			
 			ApplyState(previousState);
 			return true;
 		}
+
+		public void AddCurrentStateToHistory() {
+			var stateForHistory = GetCurrentState();
+			if (stateForHistory.ObjectData.objectID != ObjectID.None) {
+				_previousStateHistory.RemoveAll(previousStateForHistory => previousStateForHistory.EqualsForHistory(stateForHistory));
+				_previousStateHistory.Add(stateForHistory);
+				if (_previousStateHistory.Count > MaxHistory)
+					_previousStateHistory.RemoveAt(0);
+			}
+		}
 		
 		private void ApplyState(DetailsState state) {
+			AddCurrentStateToHistory();
+			
 			var previousState = _currentState with {};
 			_currentState = state;
 
@@ -138,14 +152,8 @@ namespace ItemBrowser.UserInterface.Browser {
 			
 			GetTabView(SelectedTab).OnApplyState(_currentState, previousState);
 			infoboxPanel.OnApplyState(_currentState, previousState);
-
-			var stateForHistory = GetCurrentState();
-			if (!stateForHistory.EqualsForHistory(previousState)) {
-				_previousStateHistory.RemoveAll(previousStateForHistory => previousStateForHistory.EqualsForHistory(stateForHistory));
-				_previousStateHistory.Add(stateForHistory);
-				if (_previousStateHistory.Count > MaxHistory)
-					_previousStateHistory.RemoveAt(0);
-			}
+			
+			AddCurrentStateToHistory();
 		}
 		
 		public void ClearState() {

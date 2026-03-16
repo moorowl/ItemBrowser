@@ -7,7 +7,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace ItemBrowser.UserInterface.Browser {
-	public class HistoryEntry : UIelement {
+	public class HistoryEntry : ItemBrowserButton {
 		public ItemBrowserSlot itemSlot;
 		public PugText typeLabel;
 		public PugText categoryLabel;
@@ -19,7 +19,8 @@ namespace ItemBrowser.UserInterface.Browser {
 		private string _typeString;
 		private string _timestampString;
 
-		private void Awake() {
+		protected override void Awake() {
+			base.Awake();
 			selectedBorder.SetActive(false);
 		}
 
@@ -99,10 +100,6 @@ namespace ItemBrowser.UserInterface.Browser {
 					color = Color.white * 0.95f
 				}
 			};
-		}
-		
-		public override HoverWindowAlignment GetHoverWindowAlignment() {
-			return UserInterfaceUtils.IsUsingMouseAndKeyboard ? HoverWindowAlignment.BOTTOM_RIGHT_OF_CURSOR : HoverWindowAlignment.BOTTOM_RIGHT_OF_SCREEN;
 		}
 	}
 }

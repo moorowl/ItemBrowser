@@ -65,10 +65,7 @@ namespace ItemBrowser.Api.Entries {
 
 					return (objectData, prefabData.ObjectInfo.prefabInfos[0].ecsPrefab);
 				})
-				.Where(entry => {
-					var isTechnicalOrDeprecated = ItemBrowserAPI.IsTechnicalObject(entry.objectData) || ItemBrowserAPI.IsDeprecatedObject(entry.objectData);
-					return ObjectUtils.IsPrimaryVariation(entry.objectData) && !isTechnicalOrDeprecated;
-				})
+				.Where(entry => ObjectUtils.IsPrimaryVariation(entry.objectData) && !ItemBrowserAPI.IsDeprecatedObject(entry.objectData))
 				.ToList();
 
 			foreach (var provider in providers) {

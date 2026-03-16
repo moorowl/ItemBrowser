@@ -10,12 +10,12 @@ namespace ItemBrowser.UserInterface.Browser {
 		
 		public GameObject optionalToggledMarker;
 
-		private float _size;
+		private float _height;
 		private UIScrollWindow _scrollWindow;
 		
 		public bool IsToggled { get; set; }
 
-		public override float localScrollPosition => _scrollWindow != null ? transform.position.y - _scrollWindow.scrollingContent.position.y - (_size / 2f) : 0f;
+		public override float localScrollPosition => _scrollWindow != null ? -Mathf.Abs(_scrollWindow.scrollingContent.position.y - transform.position.y) + _scrollWindow.scrollingContent.GetChild(0).localPosition.y : 0f;
 		private bool ShowHoverWindow => _scrollWindow == null || _scrollWindow.IsShowingPosition(localScrollPosition);
 		public override bool isVisibleOnScreen => ShowHoverWindow && base.isVisibleOnScreen;
 		public override UIScrollWindow uiScrollWindow => _scrollWindow;
@@ -29,7 +29,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			
 			var boxCollider = GetComponent<BoxCollider>();
 			if (boxCollider != null)
-				_size = Mathf.Max(boxCollider.size.x, boxCollider.size.y);
+				_height = boxCollider.size.y;
 
 			LateUpdate();
 		}
@@ -64,7 +64,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			base.OnSelected();
 
 			IsSelected = true;
-			_scrollWindow?.MoveScrollToIncludePosition(localScrollPosition, _size * 1.25f);
+			_scrollWindow?.MoveScrollToIncludePosition(localScrollPosition, _height * 1.25f);
 		}
 
 		public override void OnDeselected(bool playEffect = true) {

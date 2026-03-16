@@ -64,10 +64,6 @@ namespace ItemBrowser.UserInterface.Browser {
 			return lines;
 		}
 
-		public override HoverWindowAlignment GetHoverWindowAlignment() {
-			return HoverWindowAlignment.BOTTOM_RIGHT_OF_CURSOR;
-		}
-		
 		public void SetNameAndType(string term, OptionsEntryType type) {
 			nameText.Render(term);
 			_type = type;

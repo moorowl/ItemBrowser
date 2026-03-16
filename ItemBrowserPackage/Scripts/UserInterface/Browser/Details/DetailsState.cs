@@ -13,10 +13,15 @@ namespace ItemBrowser.UserInterface.Browser {
 		public long Timestamp { get; set; } = DateTime.Now.ToFileTimeUtc();
 
 		public bool EqualsForHistory(DetailsState other) {
-			return ObjectData.Equals(other.ObjectData)
-			       && Tab == other.Tab
-			       && EntriesSourceCategory == other.EntriesSourceCategory
-			       && EntriesUsageCategory == other.EntriesUsageCategory;
+			if (ObjectData.Equals(other.ObjectData) && Tab == other.Tab) {
+				return Tab switch {
+					DetailsTab.Sources => EntriesSourceCategory == other.EntriesSourceCategory,
+					DetailsTab.Usages => EntriesUsageCategory == other.EntriesUsageCategory,
+					_ => false
+				};
+			}
+
+			return false;
 		}
 	}
 }
