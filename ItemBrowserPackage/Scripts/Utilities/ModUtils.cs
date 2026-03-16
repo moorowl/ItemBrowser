@@ -59,7 +59,7 @@ namespace ItemBrowser.Utilities {
 			DisplayNames.Clear();
 			
 			foreach (var mod in API.ModLoader.LoadedMods)
-				DisplayNames[mod.ModId] = mod.Metadata.name;
+				DisplayNames[mod.ModId] = !string.IsNullOrWhiteSpace(mod.Metadata.displayName) ? mod.Metadata.displayName : mod.Metadata.name;
 			
 			// Override from mod.io
 			var subscribedMods = ModIOUnity.GetSubscribedMods(out var result);
@@ -69,19 +69,6 @@ namespace ItemBrowser.Utilities {
 					DisplayNames[profile.id.id] = profile.name;
 				}	
 			}
-			
-			/* Override from steam workshop
-			var resultPageTask = Query.All.WhereUserSubscribed(SteamClient.SteamId).GetPageAsync(1);
-			resultPageTask.Wait();
-
-			if (resultPageTask.Result.HasValue) {
-				foreach (var entry in resultPageTask.Result.Value.Entries) {
-					if (entry.IsBanned || !entry.IsInstalled)
-						continue;
-
-					DisplayNames.TryAdd((long) entry.Id.Value, entry.Title);
-				}
-			}*/
 		}
 
 		private static void SetupAssociatedObjects() {
