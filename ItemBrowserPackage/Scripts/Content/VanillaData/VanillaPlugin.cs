@@ -131,23 +131,28 @@ namespace ItemBrowser.Content.VanillaData {
 		private static void AddFilters_Source(ItemBrowserRegistry registry) {
 			// Source
 			const string sourceGroup = "ItemBrowser-Filters/Source";
+			const string unknownModSymbol = "?";
 
-			var itemsByMod = new Dictionary<string, HashSet<ObjectDataCD>>();
-			var creaturesByMod = new Dictionary<string, HashSet<ObjectDataCD>>();
+			var itemsByMod = new Dictionary<long, HashSet<ObjectDataCD>>();
+			var creaturesByMod = new Dictionary<long, HashSet<ObjectDataCD>>();
 			
 			// Setup Mod Name -> Associated items/creatures
-			foreach (var mod in API.ModLoader.LoadedMods.OrderBy(mod => ModUtils.GetDisplayName(mod.ModId))) {
-				var displayName = ModUtils.GetDisplayName(mod.ModId);
-				var associatedObjects = ModUtils.GetAssociatedObjects(mod.ModId);
+			var modsToCheck = new List<long> {
+				ModUtils.UnknownModId
+			};
+			modsToCheck.AddRange(API.ModLoader.LoadedMods.OrderBy(mod => ModUtils.GetDisplayName(mod.ModId)).Select(mod => mod.ModId));
+
+			foreach (var mod in modsToCheck) {
+				var associatedObjects = ModUtils.GetAssociatedObjects(mod);
 
 				var associatedItems = associatedObjects.Where(ItemBrowserAPI.IsItemIndexed).ToHashSet();
 				var associatedCreatures = associatedObjects.Where(ItemBrowserAPI.IsCreatureIndexed).ToHashSet();
 
 				if (associatedItems.Count > 0)
-					itemsByMod.TryAdd(displayName, associatedItems);
+					itemsByMod.TryAdd(mod, associatedItems);
 				
 				if (associatedCreatures.Count > 0)
-					creaturesByMod.TryAdd(displayName, associatedCreatures);
+					creaturesByMod.TryAdd(mod, associatedCreatures);
 			}
 			
 			// General modded content filters
@@ -165,9 +170,12 @@ namespace ItemBrowser.Content.VanillaData {
 			}
 
 			// Specific mod filters
-			foreach (var (displayName, associatedItems) in itemsByMod) {
-				registry.AddItemFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Item_FromMod") {
-					Symbol = displayName[..Math.Min(displayName.Length, 2)],
+			foreach (var (mod, associatedItems) in itemsByMod) {
+				var displayName = ModUtils.GetDisplayName(mod);
+				var isUnknownMod = mod == ModUtils.UnknownModId;
+
+				registry.AddItemFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Item_" + (isUnknownMod ? "FromUnknownMod" : "FromMod")) {
+					Symbol = isUnknownMod ? unknownModSymbol : displayName[..Math.Min(displayName.Length, 2)],
 					NameFormatFields = new[] { displayName },
 					LocalizeNameFormatFields = false,
 					DescriptionFormatFields = new[] { displayName },
@@ -176,9 +184,12 @@ namespace ItemBrowser.Content.VanillaData {
 					Group = sourceGroup
 				});
 			}
-			foreach (var (displayName, associatedCreatures) in creaturesByMod) {
-				registry.AddCreatureFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Creature_FromMod") {
-					Symbol = displayName[..Math.Min(displayName.Length, 2)],
+			foreach (var (mod, associatedCreatures) in creaturesByMod) {
+				var displayName = ModUtils.GetDisplayName(mod);
+				var isUnknownMod = mod == ModUtils.UnknownModId;
+
+				registry.AddCreatureFilter(sourceGroup, new Filter<ObjectDataCD>($"{sourceGroup}_Item_" + (isUnknownMod ? "FromUnknownMod" : "FromMod")) {
+					Symbol = isUnknownMod ? unknownModSymbol : displayName[..Math.Min(displayName.Length, 2)],
 					NameFormatFields = new[] { displayName },
 					LocalizeNameFormatFields = false,
 					DescriptionFormatFields = new[] { displayName },

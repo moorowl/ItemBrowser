@@ -9,9 +9,9 @@ namespace ItemBrowser.Utilities {
 		private static readonly Dictionary<long, HashSet<ObjectDataCD>> AssociatedObjects = new();
 		private static readonly Dictionary<ObjectDataCD, long> AssociatedMod = new();
 
-		private const long UnknownModId = -1;
+		public const long UnknownModId = -1;
 		private const string UnknownModName = "(Unknown Mod)";
-		private const long CoreKeeperModId = 0;
+		public const long CoreKeeperModId = 0;
 		private const string CoreKeeperModName = "Core Keeper";
 		
 		internal static void InitOnModLoad() {
