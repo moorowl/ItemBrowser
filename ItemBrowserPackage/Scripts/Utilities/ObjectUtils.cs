@@ -55,6 +55,7 @@ namespace ItemBrowser.Utilities {
 		private static readonly Dictionary<ObjectID, HashSet<string>> Categories = new();
 		private static readonly Dictionary<ObjectDataCD, int> PrimaryVariations = new();
 		private static readonly Dictionary<ObjectDataCD, HashSet<string>> AssociatedConditionCategories = new();
+		private static readonly Dictionary<ObjectDataCD, int> ArmorValues = new();
 		private static readonly Dictionary<ObjectDataCD, Sprite> IconOverrides = new();
 
 		internal static void SetupDisplayNamesAndCategories() {
@@ -182,8 +183,9 @@ namespace ItemBrowser.Utilities {
 				}
 			}
 			
-			// Setup associated condition categories
+			// Setup associated condition categories and armor values
 			AssociatedConditionCategories.Clear();
+			ArmorValues.Clear();
 
 			var conditionToCategory = new Dictionary<ConditionID, string>();
 			foreach (var conditionCategory in Manager.ui.conditionsIconsTable.conditionCategories) {
@@ -192,21 +194,21 @@ namespace ItemBrowser.Utilities {
 			}
 			
 			foreach (var objectData in GetAllObjects()) {
-				var associatedConditions = new HashSet<ConditionID>();
+				var associatedConditions = new List<(ConditionID Id, int Value)>();
 				
 				// Equipped conditions
 				if (PugDatabase.HasComponent<GivesConditionsWhenEquippedBuffer>(objectData)) {
 					foreach (var givesConditionsWhenEquipped in PugDatabase.GetBuffer<GivesConditionsWhenEquippedBuffer>(objectData))
-						associatedConditions.Add(givesConditionsWhenEquipped.equipmentCondition.id);
+						associatedConditions.Add((givesConditionsWhenEquipped.equipmentCondition.id, givesConditionsWhenEquipped.equipmentCondition.value));
 				}
 				
 				// Consumed conditions
 				if (PugDatabase.HasComponent<GivesConditionsWhenConsumedBuffer>(objectData)) {
 					foreach (var givesConditionsWhenEquipped in PugDatabase.GetBuffer<GivesConditionsWhenConsumedBuffer>(objectData)) {
-						associatedConditions.Add(givesConditionsWhenEquipped.conditionDataContainer.conditionData.conditionID);
+						associatedConditions.Add((givesConditionsWhenEquipped.conditionDataContainer.conditionData.conditionID, givesConditionsWhenEquipped.conditionDataContainer.conditionData.value));
 						
 						if (PugDatabase.HasComponent<CookingIngredientCD>(objectData))
-							associatedConditions.Add(givesConditionsWhenEquipped.conditionDataContainer.conditionDataWhenCooked.conditionID);
+							associatedConditions.Add((givesConditionsWhenEquipped.conditionDataContainer.conditionDataWhenCooked.conditionID, givesConditionsWhenEquipped.conditionDataContainer.conditionDataWhenCooked.value));
 					}
 				}
 
@@ -217,19 +219,19 @@ namespace ItemBrowser.Utilities {
 					var associatedSetBonusInfo = setBonusesTable.GetSetBonusInfo(associatedSetBonus);
 					
 					foreach (var data in associatedSetBonusInfo.setBonusDatas)
-						associatedConditions.Add(data.conditionData.conditionID);
+						associatedConditions.Add((data.conditionData.conditionID, data.conditionData.value));
 				}
 				
 				// Creature conditions (pets)
 				if (PugDatabase.HasComponent<ConditionsBuffer>(objectData)) {
 					foreach (var initialCondition in PugDatabase.GetBuffer<ConditionsBuffer>(objectData))
-						associatedConditions.Add(initialCondition.condition.conditionData.conditionID);
+						associatedConditions.Add((initialCondition.condition.conditionData.conditionID, initialCondition.condition.conditionData.value));
 				}
 				if (PugDatabase.TryGetComponent<InitialRandomConditionsCD>(objectData, out var initialRandomConditionsCD)) {
 					ref var initialConditions = ref initialRandomConditionsCD.initialConditions.Value;
 					
 					for (var i = 0; i < initialConditions.Length; i++)
-						associatedConditions.Add(initialConditions[i].condition.conditionID);
+						associatedConditions.Add((initialConditions[i].condition.conditionID, initialConditions[i].condition.value));
 				}
 				
 				// Pet talents
@@ -238,11 +240,26 @@ namespace ItemBrowser.Utilities {
 
 					foreach (var petTalent in PugDatabase.GetBuffer<PetTalentPoolBuffer>(objectData)) {
 						var petTalentInfo = petInfosTable.petTalents.FirstOrDefault(petTalentInfo => petTalentInfo.petTalentID == petTalent.petTalentID);
-						associatedConditions.Add(petTalentInfo.conditionID);
+						associatedConditions.Add((petTalentInfo.conditionID, petTalentInfo.value));
 					}
 				}
 
-				AssociatedConditionCategories.TryAdd(objectData, associatedConditions.Where(id => id != ConditionID.None).Select(id => conditionToCategory.GetValueOrDefault(id)).ToHashSet());
+				var highestArmorValue = associatedConditions
+					.Where(associatedCondition => {
+						var conditionEffect = Manager.ui.conditionsIconsTable.GetConditionInfo(associatedCondition.Id).effect;
+						return conditionEffect is ConditionEffect.Armor or ConditionEffect.ArmorPercentage;
+					})
+					.Select(associatedCondition => associatedCondition.Value)
+					.DefaultIfEmpty(0)
+					.Max();
+
+				ArmorValues.TryAdd(objectData, highestArmorValue);
+				AssociatedConditionCategories.TryAdd(objectData, associatedConditions
+					.Select(associatedCondition => associatedCondition.Id)
+					.Where(id => id != ConditionID.None)
+					.Select(id => conditionToCategory.GetValueOrDefault(id))
+					.ToHashSet()
+				);
 			}
 		}
 
@@ -501,6 +518,14 @@ namespace ItemBrowser.Utilities {
 		
 		public static int GetBaseLevel(ObjectID id, int variation = 0) {
 			return GetBaseLevel(new ObjectData { objectID = id, variation = variation });
+		}
+
+		public static int GetArmor(ObjectDataCD objectData) {
+			return ArmorValues.GetValueOrDefault(objectData);
+		}
+
+		public static int GetArmor(ObjectID id, int variation = 0) {
+			return GetArmor(new ObjectData { objectID = id, variation = variation });
 		}
 
 		// from InventoryUtility.GetRaritySellValue

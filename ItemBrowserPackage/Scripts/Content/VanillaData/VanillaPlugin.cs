@@ -85,30 +85,33 @@ namespace ItemBrowser.Content.VanillaData {
 		private static void AddSorters(ItemBrowserRegistry registry) {
 			// Item sorters
 			registry.AddItemSorter(new Sorter<ObjectDataCD>("ItemBrowser-Sorters/Alphabetical") {
-				Function = objectData => -ObjectUtils.GetDisplayNameSortOrder(objectData.objectID, objectData.variation)
+				Function = objectData => -ObjectUtils.GetDisplayNameSortOrder(objectData)
 			});
 			registry.AddItemSorter(new Sorter<ObjectDataCD>("ItemBrowser-Sorters/InternalIndex") {
 				Function = objectData => (int) objectData.objectID * 10000 + objectData.variation
 			});
 			registry.AddItemSorter(new Sorter<ObjectDataCD>("ItemBrowser-Sorters/Damage") {
-				Function = objectData => ObjectUtils.GetDamage(objectData.objectID, objectData.variation)
+				Function = ObjectUtils.GetDamage
+			});
+			registry.AddItemSorter(new Sorter<ObjectDataCD>("ItemBrowser-Sorters/Armor") {
+				Function = ObjectUtils.GetArmor
 			});
 			registry.AddItemSorter(new Sorter<ObjectDataCD>("ItemBrowser-Sorters/Level") {
-				Function = objectData => ObjectUtils.GetBaseLevel(objectData.objectID, objectData.variation)
+				Function = ObjectUtils.GetBaseLevel
 			});
 			registry.AddItemSorter(new Sorter<ObjectDataCD>("ItemBrowser-Sorters/Value") {
-				Function = objectData => ObjectUtils.GetValue(objectData.objectID, objectData.variation)
+				Function = objectData => ObjectUtils.GetValue(objectData)
 			});
 			
 			// Creature sorters
 			registry.AddCreatureSorter(new Sorter<ObjectDataCD>("ItemBrowser-Sorters/Alphabetical") {
-				Function = objectData => -ObjectUtils.GetDisplayNameSortOrder(objectData.objectID, objectData.variation)
+				Function = objectData => -ObjectUtils.GetDisplayNameSortOrder(objectData)
 			});
 			registry.AddCreatureSorter(new Sorter<ObjectDataCD>("ItemBrowser-Sorters/InternalIndex") {
 				Function = objectData => (int) objectData.objectID * 10000 + objectData.variation
 			});
 			registry.AddCreatureSorter(new Sorter<ObjectDataCD>("ItemBrowser-Sorters/Level") {
-				Function = objectData => ObjectUtils.GetBaseLevel(objectData.objectID, objectData.variation)
+				Function = ObjectUtils.GetBaseLevel
 			});
 		}
 		
