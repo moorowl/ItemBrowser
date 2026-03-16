@@ -85,6 +85,14 @@ namespace ItemBrowser.UserInterface.Browser {
 				valueText.Render($"ItemBrowser-Options/{(Options.Instance.ShowSourceMod ? "Enabled" : "Disabled")}");
 			}
 		};
+		private readonly OptionsEntryType _showTileGrid = new() {
+			OnLeftClick = () => {
+				ItemBrowserAPI.ItemBrowserUI.TileGrid.IsShowing = !ItemBrowserAPI.ItemBrowserUI.TileGrid.IsShowing;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(ItemBrowserAPI.ItemBrowserUI.TileGrid.IsShowing ? "Enabled" : "Disabled")}");
+			}
+		};
 		
 		public Transform scrollContainer;
 		public OptionsEntry entryTemplate;
@@ -109,7 +117,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		private void TrySelectFirstEntry() {
-			if (_firstEntry != null && UserInterfaceUtils.IsUsingMouseAndKeyboard)
+			if (_firstEntry != null && !UserInterfaceUtils.IsUsingMouseAndKeyboard)
 				UserInterfaceUtils.SelectAndMoveMouseTo(_firstEntry);
 		}
 
@@ -125,6 +133,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			AddEntry("ItemBrowser-Options/ShowSourceMod", _showSourceMod);
 			AddEntry("ItemBrowser-Options/ShowButtonHints", _showButtonHints);
 			AddEntry("ItemBrowser-Options/PanelsShiftLayout", _panelsShiftLayout);
+			AddEntry("ItemBrowser-Options/ShowTileGrid", _showTileGrid);
 			
 			foreach (var scrollItem in scrollContainer.GetComponentsInChildren<IScrollItem>())
 				scrollItem.OnScrollWindowChanged(scrollWindow);
@@ -154,6 +163,9 @@ namespace ItemBrowser.UserInterface.Browser {
 			_height -= entryHeight / 2f;
 			
 			AddDivider();
+
+			if (_firstEntry == null)
+				_firstEntry = entry;
 		}
 		
 		private void AddDivider() {
