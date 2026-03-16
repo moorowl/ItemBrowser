@@ -137,10 +137,8 @@ namespace ItemBrowser.Content.VanillaData {
 			var creaturesByMod = new Dictionary<long, HashSet<ObjectDataCD>>();
 			
 			// Setup Mod Name -> Associated items/creatures
-			var modsToCheck = new List<long> {
-				ModUtils.UnknownModId
-			};
-			modsToCheck.AddRange(API.ModLoader.LoadedMods.OrderBy(mod => ModUtils.GetDisplayName(mod.ModId)).Select(mod => mod.ModId));
+			var modsToCheck = API.ModLoader.LoadedMods.OrderBy(mod => ModUtils.GetDisplayName(mod.ModId)).Select(mod => mod.ModId).ToList();
+			modsToCheck.Add(ModUtils.UnknownModId);
 
 			foreach (var mod in modsToCheck) {
 				var associatedObjects = ModUtils.GetAssociatedObjects(mod);

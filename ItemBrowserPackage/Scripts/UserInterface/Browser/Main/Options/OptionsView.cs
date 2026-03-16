@@ -133,6 +133,9 @@ namespace ItemBrowser.UserInterface.Browser {
 			AddEntry("ItemBrowser-Options/ShowSourceMod", _showSourceMod);
 			AddEntry("ItemBrowser-Options/ShowButtonHints", _showButtonHints);
 			AddEntry("ItemBrowser-Options/PanelsShiftLayout", _panelsShiftLayout);
+			
+			// Extras
+			AddSection("ItemBrowser-Options/Extras");
 			AddEntry("ItemBrowser-Options/ShowTileGrid", _showTileGrid);
 			
 			foreach (var scrollItem in scrollContainer.GetComponentsInChildren<IScrollItem>())
