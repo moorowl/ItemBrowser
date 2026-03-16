@@ -13,7 +13,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public override IEnumerable<Farming> OnSort(IEnumerable<Farming> entries) {
 			return entries
 				.OrderBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Result))
-				.ThenBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Seed));
+				.ThenBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Seed.Id, entry.Seed.Variation));
 		}
 		
 		protected override void OnRender(Farming entry) {
@@ -21,7 +21,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				objectID = entry.Result
 			});
 			seedSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
-				objectID = entry.Seed
+				objectID = entry.Seed.Id,
+				variation = entry.Seed.Variation
 			});
 		}
 
@@ -29,7 +30,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = entry.HasGoldSeed ? "ItemBrowser-ObjectEntryDescriptions/Farming_0_" + (entry.RequiresGoldSeed ? "Golden" : "Normal") : "ItemBrowser-ObjectEntryDescriptions/Farming_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Seed)
+					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Seed.Id, entry.Seed.Variation)
 				},
 				dontLocalizeFormatFields = true,
 				color = UserInterfaceUtils.DescriptionColor
@@ -43,7 +44,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				color = UserInterfaceUtils.DescriptionColor
 			});
 			
-			if (entry.RequiresGoldSeed) {
+			if (entry.RequiresGoldSeed && entry.HasGoldSeed) {
 				var chanceAtMin = Manager.mod.SkillTalentsTable.skillTalentTrees.SelectMany(tree => tree.skillTalents)
 					.FirstOrDefault(talent => talent.givesCondition == ConditionID.ChanceToGainRarePlant).conditionValuePerPoint;
 				var chanceAtMax = chanceAtMin * Constants.kSkillPointsPerTalentPoint;
