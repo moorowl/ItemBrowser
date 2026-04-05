@@ -114,7 +114,7 @@ namespace ItemBrowser.UserInterface.Browser {
 		}
 
 		public override List<TextAndFormatFields> GetHoverDescription() {
-			return new List<TextAndFormatFields> {
+			var lines = new List<TextAndFormatFields> {
 				new() {
 					text = Filter.Description,
 					formatFields = Filter.DescriptionFormatFields,
@@ -126,6 +126,11 @@ namespace ItemBrowser.UserInterface.Browser {
 					color = GetStateColor(CurrentState)
 				}
 			};
+
+			UserInterfaceUtils.AppendButtonHint(lines, "ItemBrowser-ButtonHints/" + (CurrentState == FilterState.Include ? "RemoveFilter" : "IncludeFilter"), "UIInteract");
+			UserInterfaceUtils.AppendButtonHint(lines, "ItemBrowser-ButtonHints/" + (CurrentState == FilterState.Exclude ? "RemoveFilter" : "ExcludeFilter"), "UISecondInteract");
+			
+			return lines;
 		}
 
 		private static Color GetStateColor(FilterState state) {
