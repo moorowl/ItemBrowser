@@ -437,6 +437,11 @@ namespace ItemBrowser.Content.VanillaData {
 				Function = objectData => ObjectUtils.HasBeenDiscovered(objectData),
 				FunctionIsDynamic = true
 			});
+			registry.AddItemFilter(utilityGroup, new($"{utilityGroup}_NonObtainable") {
+				Icon = ObjectID.WallObsidianBlock,
+				Function = ObjectUtils.IsNonObtainable,
+				FunctionIsDynamic = true
+			});
 			registry.AddItemFilter(utilityGroup, new Filter<ObjectDataCD>($"{utilityGroup}_Technical_Item") {
 				Icon = ObjectID.MechanicalPart,
 				Function = ItemBrowserAPI.IsTechnicalObject,
