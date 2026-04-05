@@ -423,8 +423,13 @@ namespace ItemBrowser.UserInterface.Browser {
 				if (InputHelper.IsShowTechnicalInfoHeld) {
 					return new List<TextAndFormatFields> {
 						new() {
-							text = _season.ToString(),
-							dontLocalize = true
+							text = "{0} ({1})",
+							dontLocalize = true,
+							formatFields = new[] {
+								_season.ToString(),
+								((int) _season).ToString()
+							},
+							dontLocalizeFormatFields = true,
 						}
 					};
 				}

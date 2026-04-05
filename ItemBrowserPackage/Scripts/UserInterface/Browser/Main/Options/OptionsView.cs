@@ -85,6 +85,14 @@ namespace ItemBrowser.UserInterface.Browser {
 				valueText.Render($"ItemBrowser-Options/{(Options.Instance.ShowSourceMod ? "Enabled" : "Disabled")}");
 			}
 		};
+		private readonly OptionsEntryType _showTechnicalInfo = new() {
+			OnLeftClick = () => {
+				Options.Instance.AlwaysShowTechnicalInfo = !Options.Instance.AlwaysShowTechnicalInfo;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(Options.Instance.AlwaysShowTechnicalInfo ? "Always" : "KeyHeld")}");
+			}
+		};
 		private readonly OptionsEntryType _showTileGrid = new() {
 			OnLeftClick = () => {
 				ItemBrowserAPI.ItemBrowserUI.TileGrid.IsShowing = !ItemBrowserAPI.ItemBrowserUI.TileGrid.IsShowing;
@@ -132,6 +140,7 @@ namespace ItemBrowser.UserInterface.Browser {
 			AddEntry("ItemBrowser-Options/Theme", _theme);
 			AddEntry("ItemBrowser-Options/ShowSourceMod", _showSourceMod);
 			AddEntry("ItemBrowser-Options/ShowButtonHints", _showButtonHints);
+			AddEntry("ItemBrowser-Options/ShowTechnicalInfo", _showTechnicalInfo);
 			AddEntry("ItemBrowser-Options/PanelsShiftLayout", _panelsShiftLayout);
 			
 			// Extras

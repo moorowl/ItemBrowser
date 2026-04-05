@@ -49,6 +49,14 @@ namespace ItemBrowser {
 				_isDirty = true;
 			}
 		}
+		
+		public bool AlwaysShowTechnicalInfo {
+			get => _data.AlwaysShowTechnicalInfo;
+			set {
+				_data.AlwaysShowTechnicalInfo = value;
+				_isDirty = true;
+			}
+		}
 
 		public bool PanelsShiftLayout {
 			get => _data.PanelsShiftLayout;
@@ -181,6 +189,7 @@ namespace ItemBrowser {
 			public bool DiscoveryMode { get; set; }
 			public bool ShowSourceMod { get; set; } = true;
 			public bool ShowButtonHints { get; set; } = true;
+			public bool AlwaysShowTechnicalInfo { get; set; }
 			public bool PanelsShiftLayout { get; set; }
 			
 			public Guid Theme { get; set; }

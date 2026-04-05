@@ -18,7 +18,7 @@ namespace ItemBrowser {
 		private const PlayerInput.InputType SpawnItemInput = (PlayerInput.InputType) 39004;
 		private const PlayerInput.InputType ToggleTileGridInput = (PlayerInput.InputType) 39005;
 
-		public static bool IsShowTechnicalInfoHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(ShowTechnicalInfoInput);
+		public static bool IsShowTechnicalInfoHeld => Options.Instance.AlwaysShowTechnicalInfo || Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(ShowTechnicalInfoInput);
 		public static bool IsSpawnItemPressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(SpawnItemInput);
 		public static bool IsPickUpTenHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_10);
 		public static bool IsToggleFavoritePressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.LOCKING_TOGGLE);
