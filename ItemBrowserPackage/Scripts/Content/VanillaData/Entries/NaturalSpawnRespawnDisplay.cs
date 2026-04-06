@@ -1,6 +1,7 @@
 ﻿using I2.Loc;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
@@ -12,7 +13,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText chanceText;
 		
 		protected override void OnRender(NaturalSpawnRespawn entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result.Id,
 				variation = entry.Result.Variation
 			});
@@ -22,17 +23,17 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				leftSourceSlot.gameObject.SetActive(true);
 				plusText.gameObject.SetActive(true);
 				
-				leftSourceSlot.DisplayedObject = new DisplayedObject.BiomeIcon(entry.SpawnCheck.biome);
-				rightSourceSlot.DisplayedObject = new DisplayedObject.Tile(entry.SpawnCheck.tileType, entry.TilesetToSpawnOn);
+				leftSourceSlot.Icon = new BiomeSlotIcon(entry.SpawnCheck.biome);
+				rightSourceSlot.Icon = new TileSlotIcon(entry.SpawnCheck.tileType, entry.TilesetToSpawnOn);
 			} else {
 				// Any biome + Tile
 				leftSourceSlot.gameObject.SetActive(false);
 				plusText.gameObject.SetActive(false);
 				
-				rightSourceSlot.DisplayedObject = new DisplayedObject.Tile(entry.SpawnCheck.tileType, entry.TilesetToSpawnOn);
+				rightSourceSlot.Icon = new TileSlotIcon(entry.SpawnCheck.tileType, entry.TilesetToSpawnOn);
 			}
 
-			var spawnChance = UserInterfaceUtils.FormatChance(LootUtils.GetChanceForActiveWorld(entry.SpawnCheck.spawnChance));
+			var spawnChance = UserInterfaceUtility.FormatChance(LootUtility.GetChanceForActiveWorld(entry.SpawnCheck.spawnChance));
 			chanceText.Render(spawnChance + "%");
 		}
 
@@ -43,35 +44,35 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					formatFields = new[] {
 						$"BiomeNames/{entry.SpawnCheck.biome}"
 					},
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			} else {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnRespawn_0_AnyBiome",
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnRespawn_1",
 				formatFields = new[] {
-					UserInterfaceUtils.FormatChance(LootUtils.GetChanceForActiveWorld(entry.SpawnCheck.spawnChance))
+					UserInterfaceUtility.FormatChance(LootUtility.GetChanceForActiveWorld(entry.SpawnCheck.spawnChance))
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnRespawn_2",
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnRespawn_3",
 				formatFields = new[] {
-					TileUtils.GetLocalizedDisplayName(entry.SpawnCheck.tileType, entry.TilesetToSpawnOn)
+					TileUtility.GetLocalizedDisplayName(entry.SpawnCheck.tileType, entry.TilesetToSpawnOn)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 
 			var adjacentTiles = entry.SpawnCheck.adjacentTiles.list;
@@ -79,17 +80,17 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddPadding();
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnRespawn_4",
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 				
 				foreach (var adjacentTile in adjacentTiles) {
 					description.AddLine(new TextAndFormatFields {
 						text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnRespawn_3",
 						formatFields = new[] {
-							TileUtils.GetLocalizedDisplayName(adjacentTile.tileType, adjacentTile.mustAlsoMatchTileset ? adjacentTile.tileset : null)
+							TileUtility.GetLocalizedDisplayName(adjacentTile.tileType, adjacentTile.mustAlsoMatchTileset ? adjacentTile.tileset : null)
 						},
 						dontLocalizeFormatFields = true,
-						color = UserInterfaceUtils.DescriptionColor
+						color = UserInterfaceUtility.DescriptionColor
 					});
 				}
 			}
@@ -97,7 +98,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnRespawn_5",
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			if (entry.SpawnCheck.spawnChanceDecay > 0f) {
 				description.AddLine(new TextAndFormatFields {
@@ -106,7 +107,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						entry.SpawnCheck.spawnChanceDecay.ToString(LocalizationManager.CurrentCulture)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});	
 			}
 
@@ -117,7 +118,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						entry.SpawnCheck.maxSpawnPerTile.GetValueForCurrentPlatform().ToString(LocalizationManager.CurrentCulture)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 
@@ -128,7 +129,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						entry.SpawnCheck.maxSpawnsPerRespawn.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 
@@ -139,7 +140,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						entry.SpawnCheck.minTilesRequired.ToString(LocalizationManager.CurrentCulture)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

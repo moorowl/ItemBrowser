@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using PugMod;
 using PugTilemap;
 using UnityEngine;

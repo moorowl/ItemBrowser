@@ -1,6 +1,7 @@
-﻿using ItemBrowser.Api.Entries;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class BreedingDisplay : ObjectEntryDisplay<Breeding> {
@@ -8,10 +9,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public ItemBrowserSlot childSlot;
 		
 		protected override void OnRender(Breeding entry) {
-			parentSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			parentSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.ParentType
 			});
-			childSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			childSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.ChildType
 			});
 		}
@@ -20,10 +21,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/Breeding_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.ParentType)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.ParentType)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
@@ -32,7 +33,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					entry.MealsRequired.ToString()
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			
 			// 60% chance to inherit the color of a random parent

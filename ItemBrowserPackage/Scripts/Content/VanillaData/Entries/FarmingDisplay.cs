@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using I2.Loc;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class FarmingDisplay : ObjectEntryDisplay<Farming> {
@@ -12,15 +13,15 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 		public override IEnumerable<Farming> OnSort(IEnumerable<Farming> entries) {
 			return entries
-				.OrderBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Result))
-				.ThenBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Seed.Id, entry.Seed.Variation));
+				.OrderBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Result))
+				.ThenBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Seed.Id, entry.Seed.Variation));
 		}
 		
 		protected override void OnRender(Farming entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result
 			});
-			seedSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			seedSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Seed.Id,
 				variation = entry.Seed.Variation
 			});
@@ -30,10 +31,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = entry.HasGoldSeed ? "ItemBrowser-ObjectEntryDescriptions/Farming_0_" + (entry.RequiresGoldSeed ? "Golden" : "Normal") : "ItemBrowser-ObjectEntryDescriptions/Farming_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Seed.Id, entry.Seed.Variation)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Seed.Id, entry.Seed.Variation)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/Farming_2",
@@ -41,7 +42,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					(entry.GrowthTime / 60f).ToString(LocalizationManager.CurrentCulture)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			
 			if (entry.RequiresGoldSeed && entry.HasGoldSeed) {
@@ -56,7 +57,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						((int) Constants.baseChanceToGainRarePlantPercentage).ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/Farming_3",
@@ -65,7 +66,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
                         chanceAtMax.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

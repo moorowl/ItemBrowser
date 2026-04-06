@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using PugMod;
 using PugTilemap;
@@ -20,7 +20,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
 				ref var customSceneTable = ref ClientWorldStateSystem.CustomSceneTable.Value;
 
-				foreach (var scene in StructureUtils.AllCustomScenes) {
+				foreach (var scene in StructureUtility.AllCustomScenes) {
 					ref var sceneBlob = ref customSceneTable.scenes[scene.IndexInCustomSceneTable];
 					
 					var allObjectDatas = new List<ObjectDataCD>();
@@ -36,7 +36,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						
 						allObjectDatas.Add(new ObjectDataCD {
 							objectID = objectData.objectID,
-							variation = ObjectUtils.GetPrimaryVariation(objectData),
+							variation = ObjectUtility.GetPrimaryVariation(objectData),
 							amount = 1
 						});
 					}
@@ -62,7 +62,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						}
 					}
 
-					var combinedObjectDatas = ObjectUtils.GroupAndSumObjects(allObjectDatas, false);
+					var combinedObjectDatas = ObjectUtility.GroupAndSumObjects(allObjectDatas, false);
 
 					foreach (var objectData in combinedObjectDatas) {
 						var entry = new StructureContents {
@@ -74,8 +74,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					}
 				}
 
-				var allDungeons = StructureUtils.AllRandomDungeons.Select(x => (x.Name, x.Entity))
-					.Union(StructureUtils.AllUniqueDungeons.Select(x => (x.Name, x.Entity)))
+				var allDungeons = StructureUtility.AllRandomDungeons.Select(x => (x.Name, x.Entity))
+					.Union(StructureUtility.AllUniqueDungeons.Select(x => (x.Name, x.Entity)))
 					.ToList();
 
 				// Dungeons
@@ -90,13 +90,13 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 							if (room.amount.max <= 0)
 								continue;
 
-							roomsThatSpawn.UnionWith(StructureUtils.SeparateFlags(room.roomType));
+							roomsThatSpawn.UnionWith(StructureUtility.SeparateFlags(room.roomType));
 						}
 					}
 					
 					if (EntityUtility.TryGetBuffer<DungeonNodeTemplateBuffer>(dungeon.Entity, API.Client.World, out var dungeonNodeTemplateBuffer)) {
 						foreach (var dungeonNodeTemplate in dungeonNodeTemplateBuffer) {
-							var nodeFlags = StructureUtils.SeparateFlags(dungeonNodeTemplate.flags);
+							var nodeFlags = StructureUtility.SeparateFlags(dungeonNodeTemplate.flags);
 							var nodeEntity = dungeonNodeTemplate.spawnTemplateBufferEntity;
 
 							if (!EntityUtility.TryGetBuffer<DungeonNodeSpawnTemplateBuffer>(nodeEntity, API.Client.World, out var dungeonNodeSpawnTemplateBuffer))
@@ -112,7 +112,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 					if (EntityUtility.TryGetBuffer<DungeonPathTemplateBuffer>(dungeon.Entity, API.Client.World, out var dungeonPathTemplateBuffer)) {
 						foreach (var dungeonPathTemplate in dungeonPathTemplateBuffer) {
-							var pathFlags = StructureUtils.SeparateFlags(dungeonPathTemplate.flags);
+							var pathFlags = StructureUtility.SeparateFlags(dungeonPathTemplate.flags);
 							var pathEntity = dungeonPathTemplate.spawnTemplateBufferEntity;
 
 							if (!EntityUtility.TryGetBuffer<DungeonPathSpawnTemplateBuffer>(pathEntity, API.Client.World, out var dungeonPathSpawnTemplateBuffer))
@@ -157,7 +157,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								var variation = entry.objectToSpawn.variations[variationIdx];
 
 								objectsThatCouldHaveSpawned.Add(entry.objectToSpawn.objectID);
-								if (PugDatabase.TryGetComponent<TileCD>(entry.objectToSpawn.objectID, out var tileCD) && TileUtils.IsBlock(tileCD.tileType, (Tileset) tileCD.tileset, out var wallObjectId, out _)) {
+								if (PugDatabase.TryGetComponent<TileCD>(entry.objectToSpawn.objectID, out var tileCD) && TileUtility.IsBlock(tileCD.tileType, (Tileset) tileCD.tileset, out var wallObjectId, out _)) {
 									objectsThatSpawn.Add(new ObjectDataCD {
 										objectID = wallObjectId,
 										variation = variation
@@ -184,7 +184,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 				return new ObjectDataCD {
 					objectID = objectData.objectID,
-					variation = ObjectUtils.GetPrimaryVariation(objectData),
+					variation = ObjectUtility.GetPrimaryVariation(objectData),
 					amount = objectData.amount
 				};
 			}

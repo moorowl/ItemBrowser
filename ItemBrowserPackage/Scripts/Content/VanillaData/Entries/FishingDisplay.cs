@@ -1,6 +1,7 @@
-﻿using ItemBrowser.Api.Entries;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 using PugTilemap;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
@@ -13,7 +14,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText catchTypeText;
 		
 		protected override void OnRender(Fishing entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result
 			});
 			
@@ -22,17 +23,17 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				leftSourceSlot.gameObject.SetActive(true);
 				plusText.gameObject.SetActive(true);
 				
-				leftSourceSlot.DisplayedObject = new DisplayedObject.BiomeIcon(entry.Biome);
-				rightSourceSlot.DisplayedObject = new DisplayedObject.Tile(TileType.water, Tileset.Dirt);
+				leftSourceSlot.Icon = new BiomeSlotIcon(entry.Biome);
+				rightSourceSlot.Icon = new TileSlotIcon(TileType.water, Tileset.Dirt);
 			} else {
 				// Any biome + specific liquid
 				leftSourceSlot.gameObject.SetActive(false);
 				plusText.gameObject.SetActive(false);
 				
-				rightSourceSlot.DisplayedObject = new DisplayedObject.Tile(TileType.water, entry.Tileset);
+				rightSourceSlot.Icon = new TileSlotIcon(TileType.water, entry.Tileset);
 			}
 			
-			chanceText.Render(UserInterfaceUtils.FormatChance(entry.Chance) + "%");
+			chanceText.Render(UserInterfaceUtility.FormatChance(entry.Chance) + "%");
 			catchTypeText.Render($"ItemBrowser-CatchTypes/{entry.Type}");
 		}
 
@@ -43,25 +44,25 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					formatFields = new[] {
 						$"BiomeNames/{entry.Biome}"
 					},
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			} else {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/Fishing_0_Liquid",
 					formatFields = new[] {
-						TileUtils.GetLocalizedDisplayName(TileType.water, entry.Tileset)
+						TileUtility.GetLocalizedDisplayName(TileType.water, entry.Tileset)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 			description.AddLine(new TextAndFormatFields {
 				text = $"ItemBrowser-ObjectEntryDescriptions/Fishing_1_{entry.Type}",
 				formatFields = new[] {
-					UserInterfaceUtils.FormatChance(entry.Chance)
+					UserInterfaceUtility.FormatChance(entry.Chance)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 		}
 	}

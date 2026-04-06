@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using I2.Loc;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using PugTilemap;
 
@@ -14,25 +15,25 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 		public override IEnumerable<CritterCatching> OnSort(IEnumerable<CritterCatching> entries) {
 			return entries
-				.OrderBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Critter.Id, entry.Critter.Variation));
+				.OrderBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Critter.Id, entry.Critter.Variation));
 		}
 		
 		protected override void OnRender(CritterCatching entry) {
-			critterSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			critterSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Critter.Id,
 				variation = entry.Critter.Variation
 			});
-			critterCatcherSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			critterCatcherSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.CritterCatcher.Id,
 				variation = entry.CritterCatcher.Variation
 			});
 
 			if (entry.SpawnsOnTileset != null) {
-				biomeOrTilesetSlot.DisplayedObject = new DisplayedObject.Tile(TileType.ground, entry.SpawnsOnTileset.Value);
+				biomeOrTilesetSlot.Icon = new TileSlotIcon(TileType.ground, entry.SpawnsOnTileset.Value);
 			} else if (entry.SpawnsInBiomes.Count > 0) {
-				biomeOrTilesetSlot.DisplayedObject = new DisplayedObject.BiomeIcon(entry.SpawnsInBiomes.ToArray());
+				biomeOrTilesetSlot.Icon = new BiomeSlotIcon(entry.SpawnsInBiomes.ToArray());
 			} else {
-				biomeOrTilesetSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD());
+				biomeOrTilesetSlot.Icon = new BasicSlotIcon(new ObjectDataCD());
 			}
 		}
 
@@ -41,20 +42,20 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/CritterCatching_0_SpecificTileset",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.CritterCatcher.Id, entry.CritterCatcher.Variation),
-						TileUtils.GetLocalizedDisplayName(TileType.ground, entry.SpawnsOnTileset.Value)
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.CritterCatcher.Id, entry.CritterCatcher.Variation),
+						TileUtility.GetLocalizedDisplayName(TileType.ground, entry.SpawnsOnTileset.Value)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			} else if (entry.SpawnsInBiomes.Count > 0) {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/CritterCatching_0_SpecificBiome",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.CritterCatcher.Id, entry.CritterCatcher.Variation)
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.CritterCatcher.Id, entry.CritterCatcher.Variation)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 
 				foreach (var biome in entry.SpawnsInBiomes) {
@@ -63,7 +64,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						formatFields = new[] {
 							$"BiomeNames/{biome}"
 						},
-						color = UserInterfaceUtils.DescriptionColor
+						color = UserInterfaceUtility.DescriptionColor
 					});
 				}
 			}
@@ -76,7 +77,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					(entry.TimeToCatch.Max / 60f).ToString(LocalizationManager.CurrentCulture)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 		}
 	}

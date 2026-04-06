@@ -1,6 +1,7 @@
 ﻿using System;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public ItemBrowserSlot resultSlot;
 		
 		protected override void OnRender(BackgroundPerks entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result.Id,
 				variation = entry.Result.Variation,
 				amount = entry.Result.Amount
@@ -28,7 +29,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				formatFields = new[] {
 					background.optionalTitle.mTerm
 				},
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
@@ -37,7 +38,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					entry.Result.Amount.ToString()
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 		}
 	}

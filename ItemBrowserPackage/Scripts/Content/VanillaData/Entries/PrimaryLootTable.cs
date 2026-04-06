@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using PugMod;
@@ -75,7 +75,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 				return string.Format(
 					API.Localization.GetLocalizedTerm("ItemBrowser-PoolHeaders/Rolls" + (rolls.Max != 1 ? "_Plural" : "")),
-					UserInterfaceUtils.FormatRange(rolls)
+					UserInterfaceUtility.FormatRange(rolls)
 				);
 			}
 		}

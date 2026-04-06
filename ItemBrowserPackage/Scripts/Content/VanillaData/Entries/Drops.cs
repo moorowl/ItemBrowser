@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.Api.Entries.Requirements.Types;
+using ItemBrowser.Common.Api;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.Api.Entries.Requirements.Types;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using ItemBrowser.Utilities.Extensions;
@@ -106,8 +106,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					// Spawns on death
 					if (EntityUtility.TryGetComponentData<SpawnEntityOnDeathCD>(entity, world, out var spawnEntityOnDeathCD)) {
 						var entry = new Drops {
-							Result = (spawnEntityOnDeathCD.objectToSpawn, ObjectUtils.GetPrimaryVariation(spawnEntityOnDeathCD.objectToSpawn, spawnEntityOnDeathCD.objectVariation)),
-							Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+							Result = (spawnEntityOnDeathCD.objectToSpawn, ObjectUtility.GetPrimaryVariation(spawnEntityOnDeathCD.objectToSpawn, spawnEntityOnDeathCD.objectVariation)),
+							Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 							Chance = spawnEntityOnDeathCD.spawnChance,
 							ChanceForOne = spawnEntityOnDeathCD.spawnChance,
 							Amount = (1, 1),
@@ -125,7 +125,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						var chestObjectData = UsesOptionalChest(objectData) ? bossCD.optionalChestVersion : bossCD.chestToSpawn;
 						var entry = new Drops {
 							Result = (chestObjectData.objectID, 0),
-							Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+							Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 							Chance = 1f,
 							ChanceForOne = 1f,
 							Amount = (1, 1),
@@ -160,13 +160,13 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 							var entry = new Drops {
 								Result = (drop.lootDropID, 0),
-								Entity = (entityObjectData.objectID, ObjectUtils.GetPrimaryVariation(entityObjectData)),
+								Entity = (entityObjectData.objectID, ObjectUtility.GetPrimaryVariation(entityObjectData)),
 								Chance = chanceToDropLootCD.chance,
 								ChanceForOne = new ValueBasedOnWorldState<float>(
 									() => chanceToDropLootCD.chance
 								),
 								Amount = new ValueBasedOnWorldState<(int, int)>(() => {
-									var scaledAmount = LootUtils.GetMultiplayerScaledAmount(drop.amount, drop.multiplayerAmountAdditionScaling);
+									var scaledAmount = LootUtility.GetMultiplayerScaledAmount(drop.amount, drop.multiplayerAmountAdditionScaling);
 									return (scaledAmount, scaledAmount);
 								}),
 								Rolls = (1, 1),
@@ -188,28 +188,28 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					// Drops from table
 					if (EntityUtility.TryGetComponentData<DropsLootFromLootTableCD>(entity, world, out var dropsLootFromLootTableCD)) {
 						var isBoss = EntityUtility.HasComponentData<BossCD>(entity, world);
-						var lootTableHelper = LootUtils.GetLootTableHelper(dropsLootFromLootTableCD.lootTableID);
+						var lootTableHelper = LootUtility.GetLootTableHelper(dropsLootFromLootTableCD.lootTableID);
 						
 						var lootTableGuaranteedPool = lootTable.CreateAndAddPool(new PrimaryLootTable.RollsPoolHeader((1, 1)));
 						var lootTableRandomPool = lootTable.CreateAndAddPool(new PrimaryLootTable.RollsPoolHeader(
 							new ValueBasedOnWorldState<(int, int)>(
-								() => isBoss ? LootUtils.CalculateRollsForBosses(lootTableHelper.BaseRolls) : LootUtils.CalculateRolls(lootTableHelper.BaseRolls)
+								() => isBoss ? LootUtility.CalculateRollsForBosses(lootTableHelper.BaseRolls) : LootUtility.CalculateRolls(lootTableHelper.BaseRolls)
 							)
 						));
 
 						foreach (var drop in lootTableHelper.GuaranteedPool) {
 							var entry = new Drops {
 								Result = (drop.Item, 0),
-								Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+								Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 								Chance = drop.Chance,
 								ChanceForOne = new ValueBasedOnWorldState<float>(
-									() => isBoss ? LootUtils.CalculateChanceForOneForBosses(drop.Chance, drop.BaseRolls) : LootUtils.CalculateChanceForOne(drop.Chance, drop.BaseRolls)
+									() => isBoss ? LootUtility.CalculateChanceForOneForBosses(drop.Chance, drop.BaseRolls) : LootUtility.CalculateChanceForOne(drop.Chance, drop.BaseRolls)
 								),
 								Amount = new ValueBasedOnWorldState<(int, int)>(
 									() => drop.Amount
 								),
 								Rolls = new ValueBasedOnWorldState<(int, int)>(
-									() => isBoss ? LootUtils.CalculateRollsForBosses(drop.BaseRolls) : LootUtils.CalculateRolls(drop.BaseRolls)
+									() => isBoss ? LootUtility.CalculateRollsForBosses(drop.BaseRolls) : LootUtility.CalculateRolls(drop.BaseRolls)
 								),
 								OnlyDropsInBiome = drop.OnlyDropsInBiome,
 								IsFromGuaranteedPool = drop.IsFromGuaranteedPool,
@@ -223,16 +223,16 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						foreach (var drop in lootTableHelper.RandomPool) {
 							var entry = new Drops {
 								Result = (drop.Item, 0),
-								Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+								Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 								Chance = drop.Chance,
 								ChanceForOne = new ValueBasedOnWorldState<float>(
-									() => isBoss ? LootUtils.CalculateChanceForOneForBosses(drop.Chance, drop.BaseRolls) : LootUtils.CalculateChanceForOne(drop.Chance, drop.BaseRolls)
+									() => isBoss ? LootUtility.CalculateChanceForOneForBosses(drop.Chance, drop.BaseRolls) : LootUtility.CalculateChanceForOne(drop.Chance, drop.BaseRolls)
 								),
 								Amount = new ValueBasedOnWorldState<(int, int)>(
 									() => drop.Amount
 								),
 								Rolls = new ValueBasedOnWorldState<(int, int)>(
-									() => isBoss ? LootUtils.CalculateRollsForBosses(drop.BaseRolls) : LootUtils.CalculateRolls(drop.BaseRolls)
+									() => isBoss ? LootUtility.CalculateRollsForBosses(drop.BaseRolls) : LootUtility.CalculateRolls(drop.BaseRolls)
 								),
 								OnlyDropsInBiome = drop.OnlyDropsInBiome,
 								IsFromLootTableWithGuaranteedPool = drop.IsFromLootTableWithGuaranteedPool,
@@ -250,7 +250,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						foreach (var onUseLoot in onUseLootBuffer) {
 							var entry = new Drops {
 								Result = (onUseLoot.lootDropID, 0),
-								Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+								Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 								Chance = onUseLoot.chance,
 								ChanceForOne = new ValueBasedOnWorldState<float>(
 									() => onUseLoot.chance
@@ -265,28 +265,28 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 							genericPool.AddEntry(entry);
 						}
 						
-						var spawnsOnUseLootTableHelper = LootUtils.GetLootTableHelper(spawnsItemsOnUseCD.lootTable);
+						var spawnsOnUseLootTableHelper = LootUtility.GetLootTableHelper(spawnsItemsOnUseCD.lootTable);
 						
 						var spawnsOnUseGuaranteedPool = lootTable.CreateAndAddPool(new PrimaryLootTable.RollsPoolHeader((1, 1)));
 						var spawnsOnUseRandomPool = lootTable.CreateAndAddPool(new PrimaryLootTable.RollsPoolHeader(
 							new ValueBasedOnWorldState<(int, int)>(
-								() => LootUtils.CalculateRolls(spawnsOnUseLootTableHelper.BaseRolls)
+								() => LootUtility.CalculateRolls(spawnsOnUseLootTableHelper.BaseRolls)
 							)
 						));
 						
 						foreach (var drop in spawnsOnUseLootTableHelper.GuaranteedPool) {
 							var entry = new Drops {
 								Result = (drop.Item, 0),
-								Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+								Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 								Chance = drop.Chance,
 								ChanceForOne = new ValueBasedOnWorldState<float>(
-									() => LootUtils.CalculateChanceForOne(drop.Chance, drop.BaseRolls)
+									() => LootUtility.CalculateChanceForOne(drop.Chance, drop.BaseRolls)
 								),
 								Amount = new ValueBasedOnWorldState<(int, int)>(
 									() => drop.Amount
 								),
 								Rolls = new ValueBasedOnWorldState<(int, int)>(
-									() => LootUtils.CalculateRolls(drop.BaseRolls)
+									() => LootUtility.CalculateRolls(drop.BaseRolls)
 								),
 								OnlyDropsInBiome = drop.OnlyDropsInBiome,
 								IsFromGuaranteedPool = drop.IsFromGuaranteedPool,
@@ -300,16 +300,16 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						foreach (var drop in spawnsOnUseLootTableHelper.RandomPool) {
 							var entry = new Drops {
 								Result = (drop.Item, 0),
-								Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+								Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 								Chance = drop.Chance,
 								ChanceForOne = new ValueBasedOnWorldState<float>(
-									() => LootUtils.CalculateChanceForOne(drop.Chance, drop.BaseRolls)
+									() => LootUtility.CalculateChanceForOne(drop.Chance, drop.BaseRolls)
 								),
 								Amount = new ValueBasedOnWorldState<(int, int)>(
 									() => drop.Amount
 								),
 								Rolls = new ValueBasedOnWorldState<(int, int)>(
-									() => LootUtils.CalculateRolls(drop.BaseRolls)
+									() => LootUtility.CalculateRolls(drop.BaseRolls)
 								),
 								OnlyDropsInBiome = drop.OnlyDropsInBiome,
 								IsFromLootTableWithGuaranteedPool = drop.IsFromLootTableWithGuaranteedPool
@@ -324,7 +324,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				// Normal objects
 				foreach (var (objectData, authoring) in allObjects) {
 					var entity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, pugDatabaseBankBlob, objectData.variation);
-					if (entity == Unity.Entities.Entity.Null || !ObjectUtils.IsPrimaryVariation(objectData))
+					if (entity == Unity.Entities.Entity.Null || !ObjectUtility.IsPrimaryVariation(objectData))
 						continue;
 
 					if (ItemBrowserAPI.IsDeprecatedObject(objectData))
@@ -346,11 +346,11 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 							foreach (var drop in group.lootDrops) {
 								var entry = new Drops {
 									Result = (drop.lootDropID, 0),
-									Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+									Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 									Chance = drop.chance,
 									ChanceForOne = new ValueBasedOnWorldState<float>(() => drop.chance),
 									Amount = new ValueBasedOnWorldState<(int, int)>(() => {
-										var scaledAmount = LootUtils.GetMultiplayerScaledAmount(drop.amount, drop.multiplayerAmountAdditionScaling);
+										var scaledAmount = LootUtility.GetMultiplayerScaledAmount(drop.amount, drop.multiplayerAmountAdditionScaling);
 										return (scaledAmount, scaledAmount);
 									}),
 									Rolls = new ValueBasedOnWorldState<(int, int)>(() => (1, 1)),
@@ -367,12 +367,12 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					}
 					
 					if (primaryLootTable.Pools.Any(pool => pool.Entries.Any()))
-						registry.Register(ObjectEntryType.Usage, objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData), primaryLootTable);
+						registry.Register(ObjectEntryType.Usage, objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData), primaryLootTable);
 				}
 				
 				// Scene objects
 				ref var customSceneTable = ref ClientWorldStateSystem.CustomSceneTable.Value;
-				foreach (var scene in StructureUtils.AllCustomScenes) {
+				foreach (var scene in StructureUtility.AllCustomScenes) {
 					ref var sceneBlob = ref customSceneTable.scenes[scene.IndexInCustomSceneTable];
 
 					for (var i = 0; i < sceneBlob.prefabInventoryOverrides.Length; i++) {

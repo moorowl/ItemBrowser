@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using Pug.Automation;
 using PugTilemap;
@@ -18,7 +18,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		
 		public class Provider : ObjectEntryProvider {
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
-				var allCritters = ObjectUtils.GetAllCritterSpawnAreas(allObjects)
+				var allCritters = ObjectUtility.GetAllCritterSpawnAreas(allObjects)
 					.Where(critter => PugDatabase.HasComponent<CritterCatcherCatchableCD>(critter.Id))
 					.ToList();
 

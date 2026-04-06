@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using PugTilemap;
 using UnityEngine;
@@ -35,7 +35,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								variations.Add(new ValueWithWeight<int>(i, 1f));
 						}
 						
-						variations.RemoveAll(variation => !ObjectUtils.IsPrimaryVariation(spawn.objectID, variation.value));
+						variations.RemoveAll(variation => !ObjectUtility.IsPrimaryVariation(spawn.objectID, variation.value));
 						if (variations.Count == 0)
 							variations.Add(new ValueWithWeight<int>(0, 1f));
 						
@@ -43,7 +43,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 							foreach (var tileset in tilesets) {
 								var resultingObject = TryReplaceResultingObject(spawn.objectID);
 								var entry = new NaturalSpawnRespawn {
-									Result = (resultingObject, ObjectUtils.GetPrimaryVariation(resultingObject, variation.value)),
+									Result = (resultingObject, ObjectUtility.GetPrimaryVariation(resultingObject, variation.value)),
 									Type = spawn.spawnType,
 									AmountToSpawn = spawn.amount,
 									TilesetToSpawnOn = tileset == Tileset.MAX_VALUE ? null : tileset,
@@ -54,8 +54,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								};
 								registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
 
-								if (TileUtils.TryGetAssociatedObject(respawnData.spawnCheck.tileType, tileset, out var tileObjectData))
-									registry.Register(ObjectEntryType.Usage, tileObjectData.objectID, ObjectUtils.GetPrimaryVariation(tileObjectData), entry);
+								if (TileUtility.TryGetAssociatedObject(respawnData.spawnCheck.tileType, tileset, out var tileObjectData))
+									registry.Register(ObjectEntryType.Usage, tileObjectData.objectID, ObjectUtility.GetPrimaryVariation(tileObjectData), entry);
 							}
 						}
 					}

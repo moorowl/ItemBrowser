@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
@@ -12,34 +13,34 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 		public override IEnumerable<VendingMachine> OnSort(IEnumerable<VendingMachine> entries) {
 			return entries
-				.OrderBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Result))
-				.ThenBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Vendor));
+				.OrderBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Result))
+				.ThenBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Vendor));
 		}
 		
 		protected override void OnRender(VendingMachine entry) {
-			var buyCost = ObjectUtils.GetValue(entry.Result, 0, true);
+			var buyCost = ObjectUtility.GetValue(entry.Result, 0, true);
 			
-			vendingMachineSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			vendingMachineSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Vendor
 			});
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result
 			}, entry.Stock);
 			costText.Render(buyCost.ToString());
 		}
 
 		protected override void OnRenderDescription(VendingMachine entry, EntryDescriptionButton description) {
-			var buyCost = ObjectUtils.GetValue(entry.Result, 0, true);
+			var buyCost = ObjectUtility.GetValue(entry.Result, 0, true);
 			
 			// Purchased from
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/VendingMachine_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Vendor),
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Vendor),
 					buyCost.ToString()
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 		}
 	}

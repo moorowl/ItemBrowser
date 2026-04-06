@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.Api.Entries.Requirements.Types;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.Api.Entries.Requirements.Types;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.Extensions;
 using Pug.Properties;
@@ -45,7 +45,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					if (!AcceptedCraftingTypes.Contains(craftingCD.craftingType))
 						continue;
 
-					if (ObjectUtils.GetLocalizedDisplayName(objectData.objectID, objectData.variation) == null)
+					if (ObjectUtility.GetLocalizedDisplayName(objectData.objectID, objectData.variation) == null)
 						continue;
 
 					var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
@@ -108,9 +108,9 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						
 						registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
 						registry.Register(ObjectEntryType.Usage, entry.Station, 0, entry);
-						foreach (var ingredient in ObjectUtils.GroupAndSumObjects(canCraftObjectInfo.requiredObjectsToCraft))
+						foreach (var ingredient in ObjectUtility.GroupAndSumObjects(canCraftObjectInfo.requiredObjectsToCraft))
 							registry.Register(ObjectEntryType.Usage, ingredient.objectID, 0, entry);
-						foreach (var ingredient in ObjectUtils.GetAllObjectsWithTag(canCraftObjectInfo.craftingSettings.canOnlyUseAnyMaterialsWithTag))
+						foreach (var ingredient in ObjectUtility.GetAllObjectsWithTag(canCraftObjectInfo.craftingSettings.canOnlyUseAnyMaterialsWithTag))
 							registry.Register(ObjectEntryType.Usage, ingredient.objectID, 0, entry);
 					}
 				}
@@ -138,7 +138,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					registry.Register(ObjectEntryType.Usage, entry.Recipe, 0, entry);
 					if (entry.RequiresObjectNearby != ObjectID.None)
 						registry.Register(ObjectEntryType.Usage, entry.RequiresObjectNearby, 0, entry);
-					foreach (var ingredient in ObjectUtils.GroupAndSumObjects(objectToCraftInfo.requiredObjectsToCraft)) {
+					foreach (var ingredient in ObjectUtility.GroupAndSumObjects(objectToCraftInfo.requiredObjectsToCraft)) {
 						if (ingredient.objectID != entry.Recipe)
 							registry.Register(ObjectEntryType.Usage, ingredient.objectID, 0, entry);
 					}

@@ -1,6 +1,7 @@
-﻿using ItemBrowser.Api.Entries;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class CreatureSummoningDisplay : ObjectEntryDisplay<CreatureSummoning> {
@@ -10,7 +11,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText plusText;
 		
 		protected override void OnRender(CreatureSummoning entry) {
-			creatureSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			creatureSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Creature.Id,
 				variation = entry.Creature.Variation
 			});
@@ -20,11 +21,11 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				leftSlot.gameObject.SetActive(true);
 				plusText.gameObject.SetActive(true);
 				
-				rightSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+				rightSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 					objectID = entry.SummoningArea.Id,
 					variation = entry.SummoningArea.Variation
 				});
-				leftSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+				leftSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 					objectID = entry.SummoningItem.Id,
 					variation = entry.SummoningItem.Variation
 				});
@@ -32,7 +33,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				leftSlot.gameObject.SetActive(false);
 				plusText.gameObject.SetActive(false);
 				
-				rightSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+				rightSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 					objectID = entry.SummoningItem.Id,
 					variation = entry.SummoningItem.Variation
 				});
@@ -44,20 +45,20 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddLine(new TextAndFormatFields {
 					text = $"ItemBrowser-ObjectEntryDescriptions/CreatureSummoning_0_{entry.SummoningMethod}",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.SummoningItem.Id, entry.SummoningItem.Variation),
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.SummoningArea.Id, entry.SummoningArea.Variation)
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.SummoningItem.Id, entry.SummoningItem.Variation),
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.SummoningArea.Id, entry.SummoningArea.Variation)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			} else {
 				description.AddLine(new TextAndFormatFields {
 					text = $"ItemBrowser-ObjectEntryDescriptions/CreatureSummoning_0_{entry.SummoningMethod}",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.SummoningItem.Id, entry.SummoningItem.Variation)
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.SummoningItem.Id, entry.SummoningItem.Variation)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

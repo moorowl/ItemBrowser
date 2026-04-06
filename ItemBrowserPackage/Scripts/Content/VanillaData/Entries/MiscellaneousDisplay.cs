@@ -1,5 +1,6 @@
-﻿using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using PugMod;
 
@@ -9,7 +10,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText descriptionText;
 		
 		protected override void OnRender(Miscellaneous entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result.Id,
 				variation = entry.Result.Variation
 			}, entry.Result.Amount);
@@ -19,7 +20,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			} else {
 				descriptionText.Render(string.Format(
 					API.Localization.GetLocalizedTerm(entry.Term),
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Source.Id, entry.Source.Variation)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Source.Id, entry.Source.Variation)
 				));	
 			}
 		}
@@ -28,16 +29,16 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			if (!entry.HasSource) {
 				description.AddLine(new TextAndFormatFields {
 					text = entry.Term,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			} else {
 				description.AddLine(new TextAndFormatFields {
 					text = entry.Term,
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Source.Id, entry.Source.Variation)
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Source.Id, entry.Source.Variation)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

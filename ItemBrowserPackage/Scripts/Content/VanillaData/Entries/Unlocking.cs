@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -14,7 +14,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public class Provider : ObjectEntryProvider {
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
 				foreach (var (objectData, _) in allObjects) {
-					if (!ObjectUtils.IsPrimaryVariation(objectData.objectID, objectData.variation))
+					if (!ObjectUtility.IsPrimaryVariation(objectData.objectID, objectData.variation))
 						continue;
 					
 					if (!PugDatabase.TryGetComponent<ChangeVariationWhenContainingObjectCD>(objectData, out var changeVariationWhenContainingObjectCD))
@@ -27,7 +27,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						Key = (changeVariationWhenContainingObjectCD.objectID, 0),
 						OutputObject = (
 							changeVariationWhenContainingObjectCD.reinstantiateToNewObjectId,
-							ObjectUtils.GetPrimaryVariation(changeVariationWhenContainingObjectCD.reinstantiateToNewObjectId, changeVariationWhenContainingObjectCD.variationToChangeTo)
+							ObjectUtility.GetPrimaryVariation(changeVariationWhenContainingObjectCD.reinstantiateToNewObjectId, changeVariationWhenContainingObjectCD.variationToChangeTo)
 						),
 						InputObject = (objectData.objectID, objectData.variation),
 					};

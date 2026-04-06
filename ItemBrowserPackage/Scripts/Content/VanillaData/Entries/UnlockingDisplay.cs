@@ -1,6 +1,7 @@
-﻿using ItemBrowser.Api.Entries;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class UnlockingDisplay : ObjectEntryDisplay<Unlocking> {
@@ -9,15 +10,15 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public ItemBrowserSlot keySlot;
 		
 		protected override void OnRender(Unlocking entry) {
-			outputSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			outputSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.OutputObject.Id,
 				variation = entry.OutputObject.Variation
 			});
-			inputSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			inputSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.InputObject.Id,
 				variation = entry.InputObject.Variation
 			});
-			keySlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			keySlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Key.Id,
 				variation = entry.Key.Variation
 			});
@@ -27,20 +28,20 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/Unlocking_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Key.Id, entry.Key.Variation),
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.InputObject.Id, entry.InputObject.Variation)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Key.Id, entry.Key.Variation),
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.InputObject.Id, entry.InputObject.Variation)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/Unlocking_1",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.OutputObject.Id, entry.OutputObject.Variation)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.OutputObject.Id, entry.OutputObject.Variation)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 		}
 	}

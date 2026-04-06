@@ -1,5 +1,6 @@
-﻿using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
@@ -9,10 +10,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public ItemBrowserSlot[] feedSlots;
 		
 		protected override void OnRender(CattleProduce entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result
 			}, entry.Amount);
-			cattleSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			cattleSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Cattle
 			}); 
 			
@@ -25,7 +26,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				
 				var slot = feedSlots[i];
 				slot.gameObject.SetActive(true);
-				slot.DisplayedObject = new DisplayedObject.Tag(entry.SuitableFeed[i], entry.SuitableFeedRequired);
+				slot.Icon = new TagSlotIcon(entry.SuitableFeed[i], entry.SuitableFeedRequired);
 			}
 		}
 
@@ -33,16 +34,16 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = entry.SuitableFeedRequired != 1 ? "ItemBrowser-ObjectEntryDescriptions/CattleProduce_0_Plural" : "ItemBrowser-ObjectEntryDescriptions/CattleProduce_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Cattle),
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Cattle),
 					entry.SuitableFeedRequired.ToString()
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/CattleProduce_1",
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			foreach (var feed in entry.SuitableFeed) {
 				description.AddLine(new TextAndFormatFields {
@@ -50,7 +51,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					formatFields = new[] {
 						$"ItemBrowser-ObjectCategoryNames/{feed}"
 					},
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

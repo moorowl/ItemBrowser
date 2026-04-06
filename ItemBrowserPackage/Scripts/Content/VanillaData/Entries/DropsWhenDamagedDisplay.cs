@@ -1,5 +1,6 @@
-﻿using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using PugMod;
 
@@ -10,11 +11,11 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText damageToDropText;
 		
 		protected override void OnRender(DropsWhenDamaged entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result.Id,
 				variation = entry.Result.Variation
 			});
-			entitySlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			entitySlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Entity.Id,
 				variation = entry.Entity.Variation
 			});
@@ -25,10 +26,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/DropsWhenDamaged_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
@@ -37,7 +38,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					entry.DamageRequiredToDrop.ToString()
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 
 			if (entry.HealthRequiredToDrop > 0) {
@@ -51,7 +52,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						maxHealth.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

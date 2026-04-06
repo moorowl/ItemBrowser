@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using UnityEngine;
 
 namespace ItemBrowser.Content.VanillaData.Entries {

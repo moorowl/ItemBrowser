@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -19,7 +19,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					if (!PugDatabase.TryGetComponent<ExtractorCD>(objectData, out var extractorCD) || extractorCD.extractableType != ObjectCategoryTag.SeedExtractable)
 						continue;
 
-					foreach (var extractable in ObjectUtils.GetAllObjectsWithTag(ObjectCategoryTag.SeedExtractable)) {
+					foreach (var extractable in ObjectUtility.GetAllObjectsWithTag(ObjectCategoryTag.SeedExtractable)) {
 						if (!PugDatabase.TryGetComponent<ExtractableCD>(extractable, out var extractableCD))
 							continue;
 

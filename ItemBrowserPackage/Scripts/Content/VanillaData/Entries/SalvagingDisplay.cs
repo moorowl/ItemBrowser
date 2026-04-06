@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
@@ -12,18 +13,18 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 		public override IEnumerable<Salvaging> OnSort(IEnumerable<Salvaging> entries) {
 			return entries
-				.OrderBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Result))
-				.ThenBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.ItemSalvaged));
+				.OrderBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Result))
+				.ThenBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.ItemSalvaged));
 		}
 		
 		protected override void OnRender(Salvaging entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result
 			}, entry.ResultAmount);
-			sourceSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			sourceSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.ItemSalvaged
 			});
-			stationSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD[] {
+			stationSlot.Icon = new BasicSlotIcon(new ObjectDataCD[] {
 				new() {
 					objectID = ObjectID.SalvageAndRepairStation
 				},
@@ -38,10 +39,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/Salvaging_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.ItemSalvaged)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.ItemSalvaged)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			if (entry.ResultAmount.Min != entry.ResultAmount.Max) {
 				// Drops x-x
@@ -52,7 +53,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						entry.ResultAmount.Max.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			} else {
 				// Always drops x
@@ -62,7 +63,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						entry.ResultAmount.Max.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

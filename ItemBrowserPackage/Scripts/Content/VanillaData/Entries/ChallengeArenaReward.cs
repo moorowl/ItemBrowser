@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -52,15 +52,15 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					});
 				}
 
-				var eventTerminalLootTableHelper = LootUtils.GetLootTableHelper(LootTableID.AlienEventTerminal);
+				var eventTerminalLootTableHelper = LootUtility.GetLootTableHelper(LootTableID.AlienEventTerminal);
 				
 				foreach (var drop in eventTerminalLootTableHelper.GuaranteedPool) {
 					registry.Register(ObjectEntryType.Source, drop.Item, 0, new ChallengeArenaReward {
 						Result = drop.Item,
 						Chance = drop.Chance,
-						ChanceForOne = LootUtils.CalculateChanceForOne(drop.Chance, drop.BaseRolls),
+						ChanceForOne = LootUtility.CalculateChanceForOne(drop.Chance, drop.BaseRolls),
 						Amount = drop.Amount,
-						Rolls = LootUtils.CalculateRolls(drop.BaseRolls),
+						Rolls = LootUtility.CalculateRolls(drop.BaseRolls),
 						OnlyDropsInBiome = drop.OnlyDropsInBiome,
 						IsFromGuaranteedPool = true,
 						IsFromTableWithGuaranteedPool = drop.IsFromLootTableWithGuaranteedPool
@@ -71,9 +71,9 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					registry.Register(ObjectEntryType.Source, drop.Item, 0, new ChallengeArenaReward {
 						Result = drop.Item,
 						Chance = drop.Chance,
-						ChanceForOne = LootUtils.CalculateChanceForOne(drop.Chance, drop.BaseRolls),
+						ChanceForOne = LootUtility.CalculateChanceForOne(drop.Chance, drop.BaseRolls),
 						Amount = drop.Amount,
-						Rolls = LootUtils.CalculateRolls(drop.BaseRolls),
+						Rolls = LootUtility.CalculateRolls(drop.BaseRolls),
 						OnlyDropsInBiome = drop.OnlyDropsInBiome,
 						IsFromTableWithGuaranteedPool = drop.IsFromLootTableWithGuaranteedPool
 					});

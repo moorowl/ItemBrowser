@@ -21,7 +21,7 @@ MonoBehaviour:
     m_high: -152623098679890440
   m_dynamicCollections:
     m_list: []
-  isEnabled: 0
+  isEnabled: 1
   displayOrder: 0
   term: ItemBrowser-Themes/Meadow
   references:

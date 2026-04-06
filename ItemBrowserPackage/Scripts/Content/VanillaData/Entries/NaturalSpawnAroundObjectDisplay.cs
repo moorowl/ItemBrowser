@@ -1,6 +1,7 @@
 ﻿using I2.Loc;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using PugTilemap;
 
@@ -14,11 +15,11 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText plusTextLeft;
 		
 		protected override void OnRender(NaturalSpawnAroundObject entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result.Id,
 				variation = entry.Result.Variation
 			});
-			entitySlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			entitySlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Entity.Id,
 				variation = entry.Entity.Variation
 			});
@@ -30,12 +31,12 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			
 			if (entry.SpawnsInBiomes.Count > 0) {
 				biomeOrTilesetSlot.gameObject.SetActive(true);
-				biomeOrTilesetSlot.DisplayedObject = new DisplayedObject.BiomeIcon(entry.SpawnsInBiomes.ToArray());
+				biomeOrTilesetSlot.Icon = new BiomeSlotIcon(entry.SpawnsInBiomes.ToArray());
 				plusTextRight.gameObject.SetActive(true);
 			}
 			if (entry.SpawnsOnTileset != null) {
 				biomeOrTilesetSlot.gameObject.SetActive(true);
-				biomeOrTilesetSlot.DisplayedObject = new DisplayedObject.Tile(TileType.ground, entry.SpawnsOnTileset.Value);
+				biomeOrTilesetSlot.Icon = new TileSlotIcon(TileType.ground, entry.SpawnsOnTileset.Value);
 				plusTextRight.gameObject.SetActive(true);
 			}
 		}
@@ -45,10 +46,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnAroundObject_0_SpecificBiome",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation)
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 
 				foreach (var biome in entry.SpawnsInBiomes) {
@@ -57,27 +58,27 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						formatFields = new[] {
 							$"BiomeNames/{biome}"
 						},
-						color = UserInterfaceUtils.DescriptionColor
+						color = UserInterfaceUtility.DescriptionColor
 					});
 				}
 			} else if (entry.SpawnsOnTileset != null) {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnAroundObject_0_SpecificTile",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation),
-						TileUtils.GetLocalizedDisplayName(TileType.ground, entry.SpawnsOnTileset.Value)
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation),
+						TileUtility.GetLocalizedDisplayName(TileType.ground, entry.SpawnsOnTileset.Value)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			} else {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnAroundObject_0_AnyBiome",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation)
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 
@@ -85,7 +86,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddPadding();
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnAroundObject_1",
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});	
 			}
 			
@@ -93,14 +94,14 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddPadding();
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnAroundObject_10",
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 			
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/NaturalSpawnAroundObject_3",
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			
 			description.AddLine(new TextAndFormatFields {
@@ -109,7 +110,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					entry.SpawnRadius.ToString(LocalizationManager.CurrentCulture)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			if (entry.DespawnRadius > 0f) {
 				description.AddLine(new TextAndFormatFields {
@@ -118,7 +119,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						entry.DespawnRadius.ToString(LocalizationManager.CurrentCulture)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});	
 			}
 			if (entry.SpawnLimit > 0) {
@@ -128,7 +129,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						entry.SpawnLimit.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});	
 			}
 			description.AddLine(new TextAndFormatFields {
@@ -138,7 +139,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					entry.SpawnCooldown.Max.ToString(LocalizationManager.CurrentCulture)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			if (entry.SpawnLimit > 0 && entry.SpawnLimitReachedCooldown.Max > 0f) {
 				description.AddLine(new TextAndFormatFields {
@@ -148,7 +149,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						entry.SpawnLimitReachedCooldown.Max.ToString(LocalizationManager.CurrentCulture)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -17,7 +17,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					.FirstOrDefault(talent => talent.givesCondition == ConditionID.ChanceForRandomLootFromWall).conditionValuePerPoint / 1000f;
 				var chanceAtMax = chanceAtMin * Constants.kSkillPointsPerTalentPoint;
 				
-				foreach (var drop in LootUtils.GetLootTableHelper(LootTableID.ArcheologistWallLoot).RandomPool) {
+				foreach (var drop in LootUtility.GetLootTableHelper(LootTableID.ArcheologistWallLoot).RandomPool) {
 					registry.Register(ObjectEntryType.Source, drop.Item, 0, new ArchaeologistDrops {
 						Result = drop.Item,
 						Chance = (chanceAtMin * drop.Chance, chanceAtMax * drop.Chance)

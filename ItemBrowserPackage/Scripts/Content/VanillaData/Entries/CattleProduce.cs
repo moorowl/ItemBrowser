@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -41,7 +41,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						registry.Register(ObjectEntryType.Source, canCraftObject.objectID, 0, entry);
 						registry.Register(ObjectEntryType.Usage, objectData.objectID, 0, entry);
 						foreach (var eatsTag in eatsTags) {
-							foreach (var ingredient in ObjectUtils.GetAllObjectsWithTag(eatsTag)) {
+							foreach (var ingredient in ObjectUtility.GetAllObjectsWithTag(eatsTag)) {
 								registry.Register(ObjectEntryType.Usage, ingredient.objectID, ingredient.variation, entry);
 							}
 						}

@@ -1,6 +1,7 @@
-﻿using ItemBrowser.Api.Entries;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class JewelryCrafterDisplay : ObjectEntryDisplay<JewelryCrafter> {
@@ -9,33 +10,33 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText chanceText;
 		
 		protected override void OnRender(JewelryCrafter entry) {
-			unpolishedSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			unpolishedSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.UnpolishedVersion
 			});
-			polishedSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			polishedSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.PolishedVersion
 			});
-			chanceText.Render($"{UserInterfaceUtils.FormatChance(entry.Chance.Min)}-{UserInterfaceUtils.FormatChance(entry.Chance.Max)}%");
+			chanceText.Render($"{UserInterfaceUtility.FormatChance(entry.Chance.Min)}-{UserInterfaceUtility.FormatChance(entry.Chance.Max)}%");
 		}
 
 		protected override void OnRenderDescription(JewelryCrafter entry, EntryDescriptionButton description) {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/JewelryCrafter_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.UnpolishedVersion)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.UnpolishedVersion)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/JewelryCrafter_1",
 				formatFields = new[] {
-					UserInterfaceUtils.FormatChance(entry.Chance.Min),
-					UserInterfaceUtils.FormatChance(entry.Chance.Max)
+					UserInterfaceUtility.FormatChance(entry.Chance.Min),
+					UserInterfaceUtility.FormatChance(entry.Chance.Max)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});	
 		}
 	}

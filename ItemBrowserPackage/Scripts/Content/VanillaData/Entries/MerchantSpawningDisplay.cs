@@ -1,6 +1,7 @@
-﻿using ItemBrowser.Api.Entries;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class MerchantSpawningDisplay : ObjectEntryDisplay<MerchantSpawning> {
@@ -8,10 +9,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public ItemBrowserSlot idolSlot;
 		
 		protected override void OnRender(MerchantSpawning entry) {
-			merchantSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			merchantSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Merchant
 			});
-			idolSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			idolSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Idol
 			});
 		}
@@ -20,10 +21,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/MerchantSpawning_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Idol)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Idol)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 		}
 	}

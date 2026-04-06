@@ -1,5 +1,6 @@
-﻿using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
@@ -10,7 +11,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		
 		protected override void OnRender(UpgradeMaterial entry) {
 			var primaryMaterial = entry.PrimaryMaterial;
-			bigMaterialSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			bigMaterialSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = primaryMaterial.Id,
 				amount = primaryMaterial.Amount
 			});
@@ -22,7 +23,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			foreach (var material in entry.OtherMaterials) {
 				var slot = smallMaterialSlots[slotIndex];
 				slot.gameObject.SetActive(true);
-				slot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+				slot.Icon = new BasicSlotIcon(new ObjectDataCD {
 					objectID = material.Id,
 					amount = material.Amount
 				});
@@ -43,36 +44,36 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					entry.Level.To.ToString()
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			
 			// "Materials" header
 			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/UpgradeMaterial_1",
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			
 			// Materials list
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/UpgradeMaterial_2",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.PrimaryMaterial.Id),
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.PrimaryMaterial.Id),
 					entry.PrimaryMaterial.Amount.ToString()
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			
 			foreach (var material in entry.OtherMaterials) {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/UpgradeMaterial_2",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(material.Id),
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(material.Id),
 						material.Amount.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

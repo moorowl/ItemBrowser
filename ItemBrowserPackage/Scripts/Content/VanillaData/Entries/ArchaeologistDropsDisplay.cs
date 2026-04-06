@@ -1,6 +1,7 @@
-﻿using ItemBrowser.Api.Entries;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class ArchaeologistDropsDisplay : ObjectEntryDisplay<ArchaeologistDrops> {
@@ -8,25 +9,25 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText chanceText;
 		
 		protected override void OnRender(ArchaeologistDrops entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result
 			});
-			chanceText.Render($"{UserInterfaceUtils.FormatChance(entry.Chance.Min)}-{UserInterfaceUtils.FormatChance(entry.Chance.Max)}%");
+			chanceText.Render($"{UserInterfaceUtility.FormatChance(entry.Chance.Min)}-{UserInterfaceUtility.FormatChance(entry.Chance.Max)}%");
 		}
 		
 		protected override void OnRenderDescription(ArchaeologistDrops entry, EntryDescriptionButton description) {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/ArchaeologistDrops_0",
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddLine(new TextAndFormatFields {
 				text = $"ItemBrowser-ObjectEntryDescriptions/ArchaeologistDrops_1",
 				formatFields = new[] {
-					UserInterfaceUtils.FormatChance(entry.Chance.Min),
-					UserInterfaceUtils.FormatChance(entry.Chance.Max)
+					UserInterfaceUtility.FormatChance(entry.Chance.Min),
+					UserInterfaceUtility.FormatChance(entry.Chance.Max)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 		}
 	}

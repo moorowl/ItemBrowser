@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.Api.Entries.Requirements.Types;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.Api.Entries.Requirements.Types;
 using ItemBrowser.Utilities;
 using PugTilemap;
 using UnityEngine;
@@ -24,7 +24,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		
 		public class Provider : ObjectEntryProvider {
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
-				var allCritters = ObjectUtils.GetAllCritterSpawnAreas(allObjects);
+				var allCritters = ObjectUtility.GetAllCritterSpawnAreas(allObjects);
 
 				foreach (var (objectData, authoring) in allObjects) {
 					// Have to use authoring because season-specific entries aren't converted
@@ -36,7 +36,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 							foreach (var critter in allCritters) {
 								var entry = new NaturalSpawnAroundObject {
 									Result = (critter.Id, 0),
-									Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+									Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 									DespawnRadius = spawn.critterDespawnDistance,
 									SpawnRadius = spawn.maxSpawnDistance,
 									SpawnCooldown = (spawn.minSpawnCooldown, spawn.maxSpawnCooldown),
@@ -69,8 +69,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 							}
 						} else {
 							var entry = new NaturalSpawnAroundObject {
-								Result = (spawn.objectToSpawn.objectID, ObjectUtils.GetPrimaryVariation(spawn.objectToSpawn)),
-								Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+								Result = (spawn.objectToSpawn.objectID, ObjectUtility.GetPrimaryVariation(spawn.objectToSpawn)),
+								Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 								DespawnRadius = spawn.critterDespawnDistance,
 								SpawnRadius = spawn.maxSpawnDistance,
 								SpawnCooldown = (spawn.minSpawnCooldown, spawn.maxSpawnCooldown),

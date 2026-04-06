@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -18,17 +19,17 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		}
 		
 		protected override void OnRender(ChallengeArenaReward entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result
 			}, entry.Amount);
-			sourceSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			sourceSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = ObjectID.AlienChest
 			});
 			
 			var showPoolTypeText = entry.IsFromTableWithGuaranteedPool;
-			var chanceText = $"{UserInterfaceUtils.FormatChance(entry.ChanceForOne)}%";
+			var chanceText = $"{UserInterfaceUtility.FormatChance(entry.ChanceForOne)}%";
 			if (entry.ChanceWhenBraveMerchantAlive != null)
-				chanceText = $"{chanceText} / {UserInterfaceUtils.FormatChance(entry.ChanceWhenBraveMerchantAlive.Value)}%";
+				chanceText = $"{chanceText} / {UserInterfaceUtility.FormatChance(entry.ChanceWhenBraveMerchantAlive.Value)}%";
 
 			chanceForOneText.Render(chanceText);
 			chanceForOneText.transform.localPosition = new Vector3(
@@ -44,14 +45,14 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 		protected override void OnRenderDescription(ChallengeArenaReward entry, EntryDescriptionButton description) {
 			var showPoolTypeText = entry.IsFromTableWithGuaranteedPool;
-			var rolls = UserInterfaceUtils.FormatRange(entry.Rolls);
-			var chanceForOne = UserInterfaceUtils.FormatChance(entry.ChanceForOne);
-			var chancePerRoll = UserInterfaceUtils.FormatChance(entry.Chance);
-			var amount = UserInterfaceUtils.FormatRange(entry.Amount);
+			var rolls = UserInterfaceUtility.FormatRange(entry.Rolls);
+			var chanceForOne = UserInterfaceUtility.FormatChance(entry.ChanceForOne);
+			var chancePerRoll = UserInterfaceUtility.FormatChance(entry.Chance);
+			var amount = UserInterfaceUtility.FormatRange(entry.Amount);
 			
 			description.AddLine(new TextAndFormatFields {
 				text = showPoolTypeText ? (entry.IsFromGuaranteedPool ? "ItemBrowser-ObjectEntryDescriptions/ChallengeArenaReward_0_GuaranteedPool" : "ItemBrowser-ObjectEntryDescriptions/ChallengeArenaReward_0_RandomPool") : "ItemBrowser-ObjectEntryDescriptions/ChallengeArenaReward_0",
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			if (chanceForOne != chancePerRoll) {
@@ -62,7 +63,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						amount
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/ChallengeArenaReward_1_PerRoll",
@@ -72,7 +73,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						rolls
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			} else {
 				description.AddLine(new TextAndFormatFields {
@@ -82,7 +83,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						amount
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 
@@ -90,10 +91,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/ChallengeArenaReward_1_BraveMerchant",
 					formatFields = new[] {
-						UserInterfaceUtils.FormatChance(entry.ChanceWhenBraveMerchantAlive.Value)
+						UserInterfaceUtility.FormatChance(entry.ChanceWhenBraveMerchantAlive.Value)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 			
@@ -106,7 +107,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						formatFields = new[] {
 							$"BiomeNames/{entry.OnlyDropsInBiome}"
 						},
-						color = UserInterfaceUtils.DescriptionColor
+						color = UserInterfaceUtility.DescriptionColor
 					});	
 				}
 			}

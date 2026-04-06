@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using Pug.Automation;
 using UnityEngine;
@@ -24,7 +24,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 					var entry = new DropsWhenDamaged {
 						Result = (dropsLootWhenDamagedCD.dropsLoot, 0),
-						Entity = (objectData.objectID, ObjectUtils.GetPrimaryVariation(objectData)),
+						Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
 						DamageRequiredToDrop = dropsLootWhenDamagedCD.damageToDealToDropLoot,
 						HealthRequiredToDrop = dropsLootWhenDamagedCD.minHealthToDropLoot
 					};

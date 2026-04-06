@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class TradingDisplay : ObjectEntryDisplay<Trading> {
@@ -11,11 +12,11 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public ItemBrowserSlot[] ingredientSlots;
 		
 		protected override void OnRender(Trading entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result.Id,
 				variation = entry.Result.Variation
 			}, entry.Amount);
-			vendorSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			vendorSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Vendor.Id,
 				variation = entry.Vendor.Variation
 			}); 
@@ -32,7 +33,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				var slot = ingredientSlots[i];
 				slot.gameObject.SetActive(true);
 
-				slot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+				slot.Icon = new BasicSlotIcon(new ObjectDataCD {
 					objectID = craftingObject.objectID,
 					amount = craftingObject.amount
 				});
@@ -44,26 +45,26 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/Trading_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Vendor.Id, entry.Vendor.Variation)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Vendor.Id, entry.Vendor.Variation)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			// Materials header
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/Trading_1",
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			foreach (var craftingObject in GetRequiredObjectsToCraft(entry.Result)) {
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/Trading_2",
 					formatFields = new[] {
-						ObjectUtils.GetLocalizedDisplayNameOrDefault(craftingObject.objectID),
+						ObjectUtility.GetLocalizedDisplayNameOrDefault(craftingObject.objectID),
 						craftingObject.amount.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 		}

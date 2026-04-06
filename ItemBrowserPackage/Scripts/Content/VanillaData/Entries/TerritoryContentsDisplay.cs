@@ -1,5 +1,6 @@
-﻿using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class TerritoryContentsDisplay : ObjectEntryDisplay<TerritoryContents> {
@@ -7,7 +8,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText territoryText;
 		
 		protected override void OnRender(TerritoryContents entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result.Id,
 				variation = entry.Result.Variation
 			});

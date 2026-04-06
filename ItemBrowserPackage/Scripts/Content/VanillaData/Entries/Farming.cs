@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using Pug.Properties;
 using UnityEngine;
@@ -18,7 +17,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public class Provider : ObjectEntryProvider {
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
 				foreach (var (objectData, _) in allObjects) {
-					if (!ObjectUtils.IsPrimaryVariation(objectData) || !PugDatabase.TryGetComponent<ObjectPropertiesCD>(objectData, out var objectPropertiesCD))
+					if (!ObjectUtility.IsPrimaryVariation(objectData) || !PugDatabase.TryGetComponent<ObjectPropertiesCD>(objectData, out var objectPropertiesCD))
 						continue;
 
 					if (!objectPropertiesCD.Has(PropertyID.isSeed))

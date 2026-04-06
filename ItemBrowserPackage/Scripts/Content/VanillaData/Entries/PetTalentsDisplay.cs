@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api.Entries;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.UserInterface.Browser;
 using PugMod;
 using Unity.Mathematics;
 using UnityEngine;
@@ -60,7 +60,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				conditionID = talentInfo.conditionID,
 				value = (int) math.round(valueBase * valueMultiplier)
 			}, false, false, false, buffsOwner);
-			text.color = UserInterfaceUtils.DescriptionColor;
+			text.color = UserInterfaceUtility.DescriptionColor;
 			text.dontLocalizeFormatFields = true;
 			lines.Add(text);
 

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ItemBrowser.Api;
-using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+using ItemBrowser.Common.Api;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -29,22 +30,22 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public override IEnumerable<Drops> OnSort(IEnumerable<Drops> entries) {
 			return entries
 				.OrderByDescending(entry => entry.FoundInScenes.Count > 0 ? 0 : 1)
-				.ThenBy(entry => ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation))
+				.ThenBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation))
 				.ThenByDescending(entry => entry.IsFromGuaranteedPool ? 1 : 0);
 		}
 		
 		protected override void OnRender(Drops entry) {
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result.Id,
 				variation = entry.Result.Variation
 			}, entry.Amount.Get());
-			sourceSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			sourceSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Entity.Id,
 				variation = entry.Entity.Variation
 			});
 			
 			var showPoolTypeText = entry.IsFromLootTableWithGuaranteedPool;
-			var chanceForOne = UserInterfaceUtils.FormatChance(entry.ChanceForOne.Get());
+			var chanceForOne = UserInterfaceUtility.FormatChance(entry.ChanceForOne.Get());
 
 			chanceForOneText.Render(chanceForOne + "%");
 			chanceForOneText.transform.localPosition = new Vector3(
@@ -60,18 +61,18 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 		protected override void OnRenderDescription(Drops entry, EntryDescriptionButton description) {
 			var showPoolTypeText = entry.IsFromLootTableWithGuaranteedPool;
-			var rolls = UserInterfaceUtils.FormatRange(entry.Rolls.Get());
-			var chanceForOne = UserInterfaceUtils.FormatChance(entry.ChanceForOne.Get());
-			var chancePerRoll = UserInterfaceUtils.FormatChance(entry.Chance);
-			var amount = UserInterfaceUtils.FormatRange(entry.Amount.Get());
+			var rolls = UserInterfaceUtility.FormatRange(entry.Rolls.Get());
+			var chanceForOne = UserInterfaceUtility.FormatChance(entry.ChanceForOne.Get());
+			var chancePerRoll = UserInterfaceUtility.FormatChance(entry.Chance);
+			var amount = UserInterfaceUtility.FormatRange(entry.Amount.Get());
 
 			description.AddLine(new TextAndFormatFields {
 				text = showPoolTypeText ? (entry.IsFromGuaranteedPool ? "ItemBrowser-ObjectEntryDescriptions/Drops_0_GuaranteedPool" : "ItemBrowser-ObjectEntryDescriptions/Drops_0_RandomPool") : "ItemBrowser-ObjectEntryDescriptions/Drops_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			if (chanceForOne != chancePerRoll) {
@@ -82,7 +83,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						amount
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 				description.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/Drops_1_PerRoll",
@@ -92,7 +93,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						rolls
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			} else {
 				description.AddLine(new TextAndFormatFields {
@@ -102,7 +103,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						amount
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 			
@@ -113,7 +114,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					formatFields = new[] {
 						$"BiomeNames/{entry.OnlyDropsInBiome}"
 					},
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});
 			}
 			
@@ -139,17 +140,17 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			});
 			structureInfo.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/Drops_5",
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 
 			foreach (var scene in entry.FoundInScenes) {
 				structureInfo.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/Drops_6",
 					formatFields = new[] {
-						StructureUtils.GetPersistentSceneName(scene.Name)
+						StructureUtility.GetPersistentSceneName(scene.Name)
 					},
 					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtils.DescriptionColor
+					color = UserInterfaceUtility.DescriptionColor
 				});	
 			}
 		}

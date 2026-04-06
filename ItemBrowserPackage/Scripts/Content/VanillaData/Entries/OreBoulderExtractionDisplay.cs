@@ -1,5 +1,6 @@
-﻿using ItemBrowser.Api.Entries;
-using ItemBrowser.UserInterface.Browser;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.UserInterface.SlotIcons;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
@@ -8,10 +9,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public ItemBrowserSlot resultSlot;
 		
 		protected override void OnRender(OreBoulderExtraction entry) {
-			oreBoulderSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			oreBoulderSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.OreBoulder
 			});
-			resultSlot.DisplayedObject = new DisplayedObject.Basic(new ObjectDataCD {
+			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {
 				objectID = entry.Result
 			}, entry.TotalOre);
 		}
@@ -21,10 +22,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/OreBoulderExtraction_0",
 				formatFields = new[] {
-					ObjectUtils.GetLocalizedDisplayNameOrDefault(entry.OreBoulder)
+					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.OreBoulder)
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
 			// x ore total
@@ -34,7 +35,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					entry.TotalOre.ToString()
 				},
 				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtils.DescriptionColor
+				color = UserInterfaceUtility.DescriptionColor
 			});
 		}
 	}
