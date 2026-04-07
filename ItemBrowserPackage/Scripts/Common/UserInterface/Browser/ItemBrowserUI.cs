@@ -177,11 +177,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			}
 		}
 		
-		private void LateUpdate() {
+		protected override void LateUpdate() {
 			UpdateScale();
 			UpdateGoBack();
 			HideMapIfShowing();
-			UpdateSwapToInventory();
 
 			if (Time.time >= _timeToAutoUpdateObjectsToHighlightInInventory) {
 				UpdateObjectsToHighlightInInventory();
@@ -190,6 +189,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 			if (Manager.main.player != null && Manager.main.player.guestMode)
 				IsShowing = false;
+			
+			base.LateUpdate();
 		}
 
 		private void UpdateScale() {
@@ -204,16 +205,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (Manager.input.IsMenuStartButtonDown() || Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.CANCEL))
 				GoBack();
 		}
-
-		private void UpdateSwapToInventory() {
-			var player = Manager.main.player;
-			if (!player.guestMode && player.inputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.TOGGLE_INVENTORY))
-				if (Manager.ui.isPlayerInventoryShowing)
-					player.CloseAnyOpenInventory();
-				else
-					player.OpenPlayerInventory();
-		}
-
+		
 		private void UpdateObjectsToHighlightInInventory() {
 			_objectsToHighlightInInventory.Clear();
 
