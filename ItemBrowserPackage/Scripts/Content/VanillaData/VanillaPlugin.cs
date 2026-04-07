@@ -9,10 +9,15 @@ using ItemBrowser.Content.VanillaData.Entries;
 using ItemBrowser.Utilities;
 using Pug.Properties;
 using PugMod;
+using UnityEngine;
 
 namespace ItemBrowser.Content.VanillaData {
 	public class VanillaPlugin : ItemBrowserPlugin {
 		public override bool AutomaticallyRegisterFromAssets => true;
+
+		private const int UpdateGetObjectsInInventoryAndNearbyChestsFrames = 3;
+		private static HashSet<ObjectID> _objectsInInventoryAndNearbyChests;
+		private static int _lastGetObjectsInInventoryAndNearbyChests;
 
 		public override void OnEarlyRegister(ItemBrowserRegistry registry) {
 			foreach (var objectData in ObjectUtility.GetAllObjects()) {
@@ -418,6 +423,17 @@ namespace ItemBrowser.Content.VanillaData {
 				Function = objectData => PugDatabase.HasComponent<GivesConditionsWhenConsumedBuffer>(objectData)
 				                         || (PugDatabase.TryGetComponent<CastItemCD>(objectData, out var castItem) && castItem.useType != CastItemUseType.LeashCattle)
 			});
+			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_CookingIngredient") {
+				Icon = ObjectID.HeartBerry,
+				Function = objectData => {
+					var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
+					return objectInfo.tags.Contains(ObjectCategoryTag.CookingIngredient);
+				}
+			});
+			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_Paintable") {
+				Icon = ObjectID.PaintBrushTeal,
+				Function = PugDatabase.HasComponent<PaintableObjectCD>
+			});
 			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_Craftable") {
 				Icon = ObjectID.CopperWorkbench,
 				Function = objectData => {
@@ -440,16 +456,17 @@ namespace ItemBrowser.Content.VanillaData {
 				FunctionIsDynamic = true,
 				CausesItemCraftingRequirementsToDisplay = true
 			});
-			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_CookingIngredient") {
-				Icon = ObjectID.HeartBerry,
+			registry.AddItemFilter(utilityGroup, new($"{utilityGroup}_InInventory") {
+				Icon = ObjectID.InventoryChest,
 				Function = objectData => {
-					var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
-					return objectInfo.tags.Contains(ObjectCategoryTag.CookingIngredient);
-				}
-			});
-			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_Paintable") {
-				Icon = ObjectID.PaintBrushTeal,
-				Function = PugDatabase.HasComponent<PaintableObjectCD>
+					if (Time.frameCount >= _lastGetObjectsInInventoryAndNearbyChests + UpdateGetObjectsInInventoryAndNearbyChestsFrames) {
+						_objectsInInventoryAndNearbyChests = ObjectUtility.GetObjectsInInventoryAndNearbyChests(Manager.main.player);
+						_lastGetObjectsInInventoryAndNearbyChests = Time.frameCount;
+					}
+					
+					return _objectsInInventoryAndNearbyChests.Contains(objectData.objectID);
+				},
+				FunctionIsDynamic = true
 			});
 			registry.AddItemFilter(utilityGroup, new($"{utilityGroup}_Discovered") {
 				Icon = ObjectID.Portal,

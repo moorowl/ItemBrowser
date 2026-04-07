@@ -621,6 +621,31 @@ namespace ItemBrowser.Utilities {
 			return amount;
 		}
 		
+		public static HashSet<ObjectID> GetObjectsInInventoryAndNearbyChests(PlayerController player) {
+			var objects = new HashSet<ObjectID>();
+			
+			var querySystem = player.querySystem;
+			if (querySystem == null)
+				return objects;
+
+			var inventoryBufferLookup = querySystem.GetBufferLookup<InventoryBuffer>();
+			var containedObjectsBufferLookup = querySystem.GetBufferLookup<ContainedObjectsBuffer>();
+			
+			AddObjectsInEntity(player.entity, objects, inventoryBufferLookup, containedObjectsBufferLookup);
+			foreach (var chest in player.playerCraftingHandler.GetNearbyChests())
+				AddObjectsInEntity(chest, objects, inventoryBufferLookup, containedObjectsBufferLookup);
+
+			return objects;
+		}
+		
+		private static void AddObjectsInEntity(Entity entity, HashSet<ObjectID> objects, BufferLookup<InventoryBuffer> inventoryBufferLookup, BufferLookup<ContainedObjectsBuffer> containedObjectsBufferLookup) {
+			var containedObjectsBuffer = containedObjectsBufferLookup[entity];
+			foreach (var inventory in inventoryBufferLookup[entity]) {
+				for (var i = inventory.startIndex; i < inventory.startIndex + inventory.size; i++)
+					objects.Add(containedObjectsBuffer[i].objectID);
+			}
+		}
+		
 		public static List<(ObjectID Id, List<Biome> Biomes, List<Tileset> Tilesets)> GetAllCritterSpawnAreas(List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
 			return allObjects
 				.Where(entry => PugDatabase.TryGetComponent<ObjectPropertiesCD>(entry.ObjectData, out var propertiesCD) && propertiesCD.Has(PropertyID.Critter.spawnContinuously))
