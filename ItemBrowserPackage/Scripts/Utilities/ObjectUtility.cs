@@ -7,6 +7,7 @@ using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.Api.Overrides;
 using ItemBrowser.Utilities.Extensions;
+using PlayerEquipment;
 using Pug.Properties;
 using PugMod;
 using PugTilemap;
@@ -46,6 +47,7 @@ namespace ItemBrowser.Utilities {
 		
 		private static readonly Dictionary<ObjectDataCD, string> DisplayNames = new();
 		private static readonly Dictionary<ObjectDataCD, string> DisplayNameNotes = new();
+		private static readonly Dictionary<ObjectDataCD, string> Descriptions = new();
 		private static readonly Dictionary<ObjectID, HashSet<string>> Categories = new();
 		private static readonly Dictionary<ObjectDataCD, int> PrimaryVariations = new();
 		private static readonly Dictionary<ObjectDataCD, HashSet<string>> AssociatedConditionCategories = new();
@@ -62,6 +64,7 @@ namespace ItemBrowser.Utilities {
 		private static void BakeDisplayNamesAndNotes() {
 			DisplayNames.Clear();
 			DisplayNameNotes.Clear();
+			Descriptions.Clear();
 			IconOverrides.Clear();
 
 			var nameOverrides = new Dictionary<ObjectDataCD, string>();
@@ -107,6 +110,10 @@ namespace ItemBrowser.Utilities {
 				
 				if (nameNotes.TryGetValue(objectData, out var unlocalizedNameNote))
 					DisplayNameNotes.TryAdd(objectData, unlocalizedNameNote);
+
+				var localizedDescription = API.Localization.GetLocalizedTerm($"Items/{PlayerController.GetAnyObjectIDReplaceForNameAndDesc(objectData.objectID)}Desc");
+				if (localizedDescription != null)
+					Descriptions.TryAdd(objectData, localizedDescription);
 				
 				if (!Categories.ContainsKey(objectData.objectID))
 					Categories[objectData.objectID] = new HashSet<string>();
@@ -271,6 +278,14 @@ namespace ItemBrowser.Utilities {
 		
 		public static string GetUnlocalizedDisplayNameNote(ObjectID id, int variation = 0) {
 			return GetUnlocalizedDisplayNameNote(new ObjectDataCD { objectID = id, variation = variation });
+		}
+		
+		public static string GetLocalizedDescription(ObjectDataCD objectData) {
+			return Descriptions.GetValueOrDefault(objectData);
+		}
+		
+		public static string GetLocalizedDescription(ObjectID id, int variation = 0) {
+			return GetLocalizedDescription(new ObjectDataCD { objectID = id, variation = variation });
 		}
 		
 		public static string GetInternalName(ObjectDataCD objectData) {
@@ -668,6 +683,23 @@ namespace ItemBrowser.Utilities {
 					);
 				})
 				.ToList();
+		}
+		
+		private static readonly HashSet<EquipmentSlotType> CarriedEquipmentSlotTypes = new() {
+			EquipmentSlotType.MeleeWeaponSlot,
+			EquipmentSlotType.RangeWeaponSlot,
+			EquipmentSlotType.ShovelSlot,
+			EquipmentSlotType.HoeSlot,
+			EquipmentSlotType.BugNet,
+			EquipmentSlotType.SeederSlot,
+			EquipmentSlotType.Shield,
+			EquipmentSlotType.InstrumentSlot,
+			EquipmentSlotType.FishingRodSlot
+		};
+		
+		public static bool IsCarriedObject(ObjectType objectType) {
+			var equipmentSlotType = PlayerController.GetEquippedSlotTypeForObjectType(objectType, default, default, default, default);
+			return objectType != ObjectType.ThrowingWeapon && CarriedEquipmentSlotTypes.Contains(equipmentSlotType);
 		}
 	}
 }
