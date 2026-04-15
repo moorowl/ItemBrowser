@@ -1,13 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ModIO;
 using PugMod;
+using UnityEngine;
 
 namespace ItemBrowser.Utilities {
 	public static class ModUtility {
 		private static readonly Dictionary<long, string> DisplayNames = new();
 		private static readonly Dictionary<long, HashSet<ObjectDataCD>> AssociatedObjects = new();
 		private static readonly Dictionary<ObjectDataCD, long> AssociatedMod = new();
+
+		private static readonly Lazy<Dictionary<int, long>> AssetToModMap = new(() => {
+			var map = new Dictionary<int, long>();
+
+			foreach (var mod in API.ModLoader.LoadedMods) {
+				foreach (var asset in mod.Assets)
+					map.TryAdd(asset.GetInstanceID(), mod.ModId);
+			}
+
+			return map;
+		});
 
 		public const long UnknownModId = -1;
 		private const string UnknownModName = "(Unknown Mod)";
@@ -44,24 +57,19 @@ namespace ItemBrowser.Utilities {
 
 				var associatedModId = UnknownModId;
 				var objectData = default(ObjectDataCD);
-				
+
 				if (gameObject.TryGetComponent<ObjectAuthoring>(out var objectAuthoring)) {
-					var internalName = objectAuthoring.objectName;
-					if (internalName.Contains(":")) {
-						var sourceMod = ProcessModInternalName(internalName.Split(':')[0]);
-						associatedModId = API.ModLoader.LoadedMods.FirstOrDefault(mod => ProcessModInternalName(mod.Metadata.name) == sourceMod)?.ModId ?? UnknownModId;
-						objectData = new ObjectDataCD {
-							objectID = API.Authoring.GetObjectID(internalName),
-							variation = objectAuthoring.variation
-						};
-					}
+					associatedModId = GetSourceModOrDefault(objectAuthoring, associatedModId);
+					objectData = new ObjectDataCD {
+						objectID = API.Authoring.GetObjectID(objectAuthoring.objectName),
+						variation = objectAuthoring.variation
+					};
 				} else if (gameObject.TryGetComponent<EntityMonoBehaviourData>(out var entityMonoBehaviourData)) {
 					objectData = new ObjectDataCD {
 						objectID = entityMonoBehaviourData.objectInfo.objectID,
 						variation = entityMonoBehaviourData.objectInfo.variation
 					};
 				}
-
 				if (objectData.objectID == ObjectID.None)
 					continue;
 				
@@ -71,10 +79,26 @@ namespace ItemBrowser.Utilities {
 				AssociatedObjects[associatedModId].Add(objectData);
 				AssociatedMod.TryAdd(objectData, associatedModId);
 			}
+		}
 
-			return;
+		private static long GetSourceModOrDefault(ObjectAuthoring objectAuthoring, long defaultModId) {
+			// Try to get mod from prefab -> mod id map first
+			// This will work for most objects, but won't detect those instantiated at runtime (e.g. corelib workbenches)
+			if (AssetToModMap.Value.TryGetValue(objectAuthoring.gameObject.GetInstanceID(), out var modId))
+				return modId;
+			
+			var internalName = objectAuthoring.objectName;
+			if (internalName.Contains(":") && internalName.Length >= 3) {
+				var sourceMod = NormalizeModInternalName(internalName.Split(':')[0]);
+				var sourceLoadedMod = API.ModLoader.LoadedMods.FirstOrDefault(mod => NormalizeModInternalName(mod.Metadata.name) == sourceMod);
 
-			string ProcessModInternalName(string name) {
+				if (sourceLoadedMod != null)
+					return sourceLoadedMod.ModId;
+			}
+
+			return defaultModId;
+			
+			string NormalizeModInternalName(string name) {
 				return name.ToLowerInvariant().Replace("-", "").Replace("_", "").Replace(" ", "");
 			}
 		}
