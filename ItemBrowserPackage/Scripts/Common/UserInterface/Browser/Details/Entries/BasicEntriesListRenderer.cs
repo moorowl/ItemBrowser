@@ -2,7 +2,6 @@
 using System.Linq;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
-using ItemBrowser.Common.Api.Entries.Requirements;
 using ItemBrowser.Utilities;
 using UnityEngine;
 

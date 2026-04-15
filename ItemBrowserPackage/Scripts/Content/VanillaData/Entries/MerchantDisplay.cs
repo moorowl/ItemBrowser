@@ -41,12 +41,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				dontLocalizeFormatFields = true,
 				color = UserInterfaceUtility.DescriptionColor
 			});
-			if (entry.Requirement != MerchantItemRequirement.None) {
-				description.AddLine(new TextAndFormatFields {
-					text = $"ItemBrowser-ObjectEntryDescriptions/Merchant_2_{entry.Requirement}",
-					color = UserInterfaceUtility.DescriptionColor
-				});
-			}
+			description.AddPadding();
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/Merchant_1",
 				formatFields = new[] {

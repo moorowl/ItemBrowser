@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Content.VanillaData.Entries.Requirements;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -10,7 +11,6 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public ObjectID Result { get; set; }
 		public ObjectID MerchantType { get; set; }
 		public int Stock { get; set; }
-		public MerchantItemRequirement Requirement { get; set; }
 		
 		public class Provider : ObjectEntryProvider {
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
@@ -25,9 +25,11 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						var entry = new Merchant {
 							Result = info.objectID,
 							MerchantType = objectData.objectID,
-							Stock = math.max(info.amount, 1),
-							Requirement = info.requirementToBeAvailable
+							Stock = math.max(info.amount, 1)
 						};
+						if (info.requirementToBeAvailable != MerchantItemRequirement.None)
+							entry.AddRequirement(new MerchantRequirement(info.requirementToBeAvailable));
+						
 						registry.Register(ObjectEntryType.Source, entry.Result, 0, entry);
 						registry.Register(ObjectEntryType.Usage, entry.MerchantType, 0, entry);
 					}

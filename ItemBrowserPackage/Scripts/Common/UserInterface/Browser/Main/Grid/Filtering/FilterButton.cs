@@ -46,19 +46,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				};
 				var iconObjectInfo = PugDatabase.GetObjectInfo(filter.Icon);
 				var iconSprite = ObjectUtility.GetIcon(iconContainedObject.objectData, true);
-				var iconSpriteSize = iconSprite.bounds.size;
-				if (iconSpriteSize is { x: > 1f, y: > 1f } && ItemBrowserSlot.IsCarriedObject(iconObjectInfo)) {
-					iconSpriteSize.x = 1f;
-					iconSpriteSize.y = 1f;
-				}
-				var iconScale = Mathf.Min(1f / iconSpriteSize.x, 1f / iconSpriteSize.y);
-				
+
 				for (var i = 0; i < icons.Length; i++) {
 					var icon = icons[i];
 					icon.sprite = iconSprite;
 					icon.material = UserInterfaceUtility.GetUISpriteColorReplaceMaterial();
-					icon.transform.localPosition = iconObjectInfo.iconOffset;
-					icon.transform.localScale = new Vector3(iconScale, iconScale, 1f);
+					UserInterfaceUtility.ApplyObjectIconTransform(icon, iconObjectInfo, 1f);
 					
 					colorReplacers[i].UpdateColorReplacerFromObjectData(iconContainedObject);
 					Manager.ui.ApplyAnyIconGradientMap(iconContainedObject, icon);

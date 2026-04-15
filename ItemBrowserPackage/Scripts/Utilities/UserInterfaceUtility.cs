@@ -11,6 +11,7 @@ namespace ItemBrowser.Utilities {
 
 		public const float DescriptionPadding = 0.125f;
 		public static Color DescriptionColor => Manager.text.GetRarityColor(Rarity.Poor);
+		public static Color AlmostWhiteColor = Color.white * 0.99f;
 		
 		public static string GetInputGlyph(string binding) {
 			var prefersJoystick = Manager.input.IsAnyGamepadConnected() && !IsUsingMouseOrKeyboard;
@@ -34,7 +35,7 @@ namespace ItemBrowser.Utilities {
 					glyph
 				},
 				dontLocalizeFormatFields = true,
-				color = Color.white * 0.95f
+				color = UserInterfaceUtility.AlmostWhiteColor
 			});
 		}
 
@@ -80,6 +81,17 @@ namespace ItemBrowser.Utilities {
 			return new Material(Shader.Find("Amplify/UISpriteColorReplace"));
 		}
 
+		public static void ApplyObjectIconTransform(SpriteRenderer sr, ObjectInfo objectInfo, float desiredScale) {
+			sr.transform.localPosition = objectInfo.iconOffset;
+			
+			var iconSize = new Vector3(1f, 1f, 0f);
+			if (sr.sprite.bounds.size is { x: > 1f, y: > 1f } && !ObjectUtility.IsCarriedObject(objectInfo.objectType))
+				iconSize = sr.sprite.bounds.size;
+
+			var scaleMin = Mathf.Min(1f / iconSize.x, 1f / iconSize.y);
+			sr.transform.localScale = new Vector3(scaleMin, scaleMin, 1f);
+		}
+		
 		public enum MenuSound {
 			GenericOpen,
 			GenericClose,

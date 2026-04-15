@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: ContentBundleAbsent
+  m_Name: ContentBundlePresent
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: -2489311424938760651
-    m_high: -2807485683391404501
+    m_low: -3101741822386731168
+    m_high: -7387598471601217928
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
@@ -54,7 +54,7 @@ MonoBehaviour:
         m_address:
           m_low: 681352171529052915
           m_high: 2314507893210082619
-      title: '{0} content bundle is inactive'
+      title: '{0} content bundle is active'
       description: 
     - m_language:
         m_address:
@@ -134,10 +134,10 @@ MonoBehaviour:
       m_address:
         m_low: 681352171529052915
         m_high: 2314507893210082619
-    title: '{0} content bundle is inactive'
+    title: '{0} content bundle is active'
     description: 
   m_shouldBeLocalized: 1
-  m_header: ItemBrowser-ObjectEntryRules
+  m_header: ItemBrowser-ObjectEntryRequirements
   references:
     version: 2
     RefIds: []

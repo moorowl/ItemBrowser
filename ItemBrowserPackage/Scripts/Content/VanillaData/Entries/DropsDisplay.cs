@@ -114,7 +114,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					formatFields = new[] {
 						$"BiomeNames/{entry.OnlyDropsInBiome}"
 					},
-					color = UserInterfaceUtility.DescriptionColor
+					color = UserInterfaceUtility.AlmostWhiteColor
 				});
 			}
 			
@@ -122,7 +122,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				description.AddPadding();
 				description.AddLine(new TextAndFormatFields {
 					text = entry.IsAffectedByPlayerCount && entry.IsAffectedByWorldMode ? "ItemBrowser-DynamicValues/PlayerCountAndWorldMode" : "ItemBrowser-DynamicValues/PlayerCount",
-					color = Color.white * 0.95f
+					color = UserInterfaceUtility.AlmostWhiteColor
 				});	
 			}
 			

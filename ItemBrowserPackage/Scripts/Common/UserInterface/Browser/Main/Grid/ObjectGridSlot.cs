@@ -67,7 +67,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 								ObjectUtility.GetLocalizedDisplayNameOrDefault(craftingSource.UsesStation ? craftingSource.Station : craftingSource.Recipe)
 							},
 							dontLocalizeFormatFields = true,
-							color = Color.white * 0.95f
+							color = UserInterfaceUtility.AlmostWhiteColor
 						});
 					}
 				}

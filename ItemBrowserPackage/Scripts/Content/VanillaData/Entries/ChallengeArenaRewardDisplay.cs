@@ -107,7 +107,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						formatFields = new[] {
 							$"BiomeNames/{entry.OnlyDropsInBiome}"
 						},
-						color = UserInterfaceUtility.DescriptionColor
+						color = UserInterfaceUtility.AlmostWhiteColor
 					});	
 				}
 			}

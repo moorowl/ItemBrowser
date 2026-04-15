@@ -1,12 +1,14 @@
-﻿using PugMod;
+﻿using ItemBrowser.Common.Api;
+using ItemBrowser.Common.Api.Entries;
+using PugMod;
 
-namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
-	public class ContentBundlePresent : ObjectEntryRequirement {
+namespace ItemBrowser.Content.VanillaData.Entries.Requirements {
+	public class ContentBundlePresentRequirement : ObjectEntryRequirement {
 		public readonly DataBlockAddress Address;
 
 		private readonly string _term;
 			
-		public ContentBundlePresent(DataBlockAddress address) {
+		public ContentBundlePresentRequirement(DataBlockAddress address) {
 			Address = address;
 			_term = ScriptableData.TryGetDataBlock<ContentBundleDataBlock>(address, out var dataBlock) ? dataBlock.name : null;
 		}
@@ -17,11 +19,11 @@ namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
 
 		public override string GetLocalizedDescription() {
 			if (_term == null)
-				return string.Format(API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/ContentBundlePresent"), Address.ToString());
+				return string.Format(API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRequirements/ContentBundlePresent"), Address.ToString());
 
 			var contentBundleDetails = API.Localization.GetLocalizedTerm($"ItemBrowser-ContentBundleDetails/{_term}");
 			return contentBundleDetails ?? string.Format(
-				API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/ContentBundlePresent"),
+				API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRequirements/ContentBundlePresent"),
 				API.Localization.GetLocalizedTerm($"ContentBundles/{_term}") ?? _term
 			);
 		}

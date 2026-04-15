@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: Merchant_2_HiveBossStatueActivated
+  m_Name: Merchant_CoreBossDefeated
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: -3394581553126159114
-    m_high: -2435147593577653525
+    m_low: 6986482066170509119
+    m_high: -4751314504417381224
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
@@ -54,7 +54,7 @@ MonoBehaviour:
         m_address:
           m_low: 681352171529052915
           m_high: 2314507893210082619
-      title: Only available after activating the Malugaz the Corrupted Statue
+      title: Core Commander has been defeated
       description: 
     - m_language:
         m_address:
@@ -134,10 +134,10 @@ MonoBehaviour:
       m_address:
         m_low: 681352171529052915
         m_high: 2314507893210082619
-    title: Only available after activating the Malugaz the Corrupted Statue
+    title: Core Commander has been defeated
     description: 
   m_shouldBeLocalized: 1
-  m_header: ItemBrowser-ObjectEntryDescriptions
+  m_header: ItemBrowser-ObjectEntryRequirements
   references:
     version: 2
     RefIds: []

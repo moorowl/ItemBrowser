@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: CraftingPrerequisitesList
+  m_Name: Merchant_LarvaBossStatueActivated
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: 4324628873394782938
-    m_high: 8978316280142116923
+    m_low: -7258544982036147518
+    m_high: 880835418586329675
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
     keys:
+    - m_low: 681352171529052915
+      m_high: 2314507893210082619
     - m_low: 8319415704751845611
       m_high: -6023042414290333943
     - m_low: -2957573344710624914
       m_high: 6297677370195620808
-    - m_low: 681352171529052915
-      m_high: 2314507893210082619
     - m_low: 6040640903323332866
       m_high: 4472318406855671320
     - m_low: 5554070574462901973
@@ -52,6 +52,12 @@ MonoBehaviour:
     values:
     - m_language:
         m_address:
+          m_low: 681352171529052915
+          m_high: 2314507893210082619
+      title: Ghorm the Devourer Statue has been activated
+      description: 
+    - m_language:
+        m_address:
           m_low: 8319415704751845611
           m_high: -6023042414290333943
       title: 
@@ -61,12 +67,6 @@ MonoBehaviour:
           m_low: -2957573344710624914
           m_high: 6297677370195620808
       title: 
-      description: 
-    - m_language:
-        m_address:
-          m_low: 681352171529052915
-          m_high: 2314507893210082619
-      title: ' or '
       description: 
     - m_language:
         m_address:
@@ -134,10 +134,10 @@ MonoBehaviour:
       m_address:
         m_low: 681352171529052915
         m_high: 2314507893210082619
-    title: ' or '
+    title: Ghorm the Devourer Statue has been activated
     description: 
   m_shouldBeLocalized: 1
-  m_header: ItemBrowser-ObjectEntryRules
+  m_header: ItemBrowser-ObjectEntryRequirements
   references:
     version: 2
     RefIds: []

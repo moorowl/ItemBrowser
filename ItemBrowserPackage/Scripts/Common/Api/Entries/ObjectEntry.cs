@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ItemBrowser.Common.Api.Entries.Requirements;
 using ItemBrowser.Common.UserInterface.Browser;
 
 namespace ItemBrowser.Common.Api.Entries {

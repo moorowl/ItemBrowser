@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: MerchantSpawning_0
+  m_Name: Merchant_CoreActivated
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: -1133622781758014587
-    m_high: 2448471245789250107
+    m_low: -7533188239812419634
+    m_high: 9089014339099033224
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
@@ -54,7 +54,7 @@ MonoBehaviour:
         m_address:
           m_low: 681352171529052915
           m_high: 2314507893210082619
-      title: Moves in after placing a {0} inside a habitable room
+      title: The Core has been activated
       description: 
     - m_language:
         m_address:
@@ -132,12 +132,12 @@ MonoBehaviour:
   m_prevImportPrimaryEntry:
     m_language:
       m_address:
-        m_low: 5072271549517713136
-        m_high: -6896136573278429030
-    title: Moves in after placing a {0} inside a habitable room
+        m_low: 681352171529052915
+        m_high: 2314507893210082619
+    title: The Core has been activated
     description: 
   m_shouldBeLocalized: 1
-  m_header: ItemBrowser-ObjectEntryDescriptions
+  m_header: ItemBrowser-ObjectEntryRequirements
   references:
     version: 2
     RefIds: []

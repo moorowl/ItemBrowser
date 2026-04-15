@@ -311,20 +311,13 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				return;
 			}
 
+			var visualObjectInfo = PugDatabase.GetObjectInfo(visualObject.objectData.objectID, visualObject.objectData.variation);
+			
 			icon.sprite = iconToUse;
-			icon.transform.localPosition = objectInfo.iconOffset;
-			
-			var spriteSize = icon.sprite.bounds.size;
-			if (spriteSize is { x: > 1f, y: > 1f } && IsCarriedObject(objectInfo)) {
-				spriteSize.x = 1f;
-				spriteSize.y = 1f;
-			}
-			var scale = Mathf.Min(1f / spriteSize.x, 1f / spriteSize.y);
-			icon.transform.localScale = new Vector3(scale, scale, 1f);
-			
+			UserInterfaceUtility.ApplyObjectIconTransform(icon, visualObjectInfo, 1);
+
 			colorReplacer.UpdateColorReplacerFromObjectData(visualObject);
 			Manager.ui.ApplyAnyIconGradientMap(visualObject, icon);
-			icon.transform.localPosition = objectInfo.iconOffset;
 
 			var rarityIndex = (int) objectInfo.rarity;
 			if (rarityIndex >= 0 && rarityIndex < rarityBorders.Length)
@@ -359,25 +352,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				amountNumberShadow.gameObject.SetActive(false);
 			
 			return false;
-		}
-
-		private static readonly HashSet<EquipmentSlotType> CarriedEquipmentSlotTypes = new() {
-			EquipmentSlotType.MeleeWeaponSlot,
-			EquipmentSlotType.RangeWeaponSlot,
-			EquipmentSlotType.ShovelSlot,
-			EquipmentSlotType.HoeSlot,
-			EquipmentSlotType.BugNet,
-			EquipmentSlotType.SeederSlot,
-			EquipmentSlotType.Shield,
-			EquipmentSlotType.InstrumentSlot,
-			EquipmentSlotType.FishingRodSlot
-		};
-
-		public static bool IsCarriedObject(ObjectInfo objectInfo) {
-			var objectType = objectInfo.objectType;
-			var equipmentSlotType = PlayerController.GetEquippedSlotTypeForObjectType(objectType, default, default, default, default);
-
-			return objectType != ObjectType.ThrowingWeapon && CarriedEquipmentSlotTypes.Contains(equipmentSlotType);
 		}
 		
 		private static bool CanPickUpStack(ObjectDataCD objectData) {

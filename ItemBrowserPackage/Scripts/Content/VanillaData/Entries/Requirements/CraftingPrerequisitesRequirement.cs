@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using ItemBrowser.Common.Api;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
 using PugMod;
 
-namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
-	public class CraftingPrerequisitesList : ObjectEntryRequirement {
+namespace ItemBrowser.Content.VanillaData.Entries.Requirements {
+	public class CraftingPrerequisitesRequirement : ObjectEntryRequirement {
 		public readonly CraftingPrerequisites Prerequisites;
 		
-		public CraftingPrerequisitesList(CraftingPrerequisites prerequisites) {
+		public CraftingPrerequisitesRequirement(CraftingPrerequisites prerequisites) {
 			Prerequisites = prerequisites;
 		}
 
@@ -16,13 +18,13 @@ namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
 		}
 
 		public override string GetLocalizedDescription() {
-			var or = API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/CraftingPrerequisitesList");
+			var or = API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRequirements/CraftingPrerequisites");
 			var prerequisites = new List<string>();
 
 			if (Prerequisites.ContentBundlePresent.hasValue) {
 				var contentBundleName = GetContentBundleName(Prerequisites.ContentBundlePresent.value);
 				prerequisites.Add(string.Format(
-					API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/ContentBundlePresent"),
+					API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRequirements/ContentBundlePresent"),
 					API.Localization.GetLocalizedTerm($"ContentBundles/{contentBundleName}") ?? contentBundleName
 				));
 			}
@@ -30,7 +32,7 @@ namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
 			if (Prerequisites.ContentBundleAbsent.hasValue) {
 				var contentBundleName = GetContentBundleName(Prerequisites.ContentBundleAbsent.value);
 				prerequisites.Add(string.Format(
-					API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/ContentBundleAbsent"),
+					API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRequirements/ContentBundleAbsent"),
 					API.Localization.GetLocalizedTerm($"ContentBundles/{contentBundleName}") ?? contentBundleName
 				));
 			}
@@ -51,7 +53,7 @@ namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
 			
 			foreach (var boss in bossDefeatedPrerequisites) {
 				prerequisites.Add(string.Format(
-					API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/BossDefeated"),
+					API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRequirements/BossDefeated"),
 					ObjectUtility.GetLocalizedDisplayNameOrDefault(boss)
 				));
 			}

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class ItemBrowserView : UIelement {
@@ -17,12 +18,23 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					Hide();
 			}
 		}
-		
+
+		private ItemBrowserView[] _subViews;
+		private ItemBrowserView[] SubViews {
+			get {
+				return _subViews ??= GetComponentsInChildren<ItemBrowserView>(true).Where(subView => subView != this).ToArray();
+			}
+		}
+
+		private void Awake() {
+			_subViews = GetComponentsInChildren<ItemBrowserView>(true).Where(subView => subView != this).ToArray();
+		}
+
 		private void Show() {
 			OnShow(!_hasBeenShownBefore);
 			
-			foreach (var subView in GetComponentsInChildren<ItemBrowserView>()) {
-				if (subView != this && subView.IsShowing)
+			foreach (var subView in SubViews) {
+				if (subView.gameObject.activeSelf && subView.IsShowing)
 					subView.Show();
 			}
 
@@ -33,8 +45,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private void Hide() {
 			OnHide();
 			
-			foreach (var subView in GetComponentsInChildren<ItemBrowserView>()) {
-				if (subView != this && !subView.IsShowing)
+			foreach (var subView in SubViews) {
+				if (subView.gameObject.activeSelf && !subView.IsShowing)
 					subView.Hide();
 			}
 

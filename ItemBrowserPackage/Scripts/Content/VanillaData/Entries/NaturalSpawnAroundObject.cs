@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Common.Api.Entries;
-using ItemBrowser.Common.Api.Entries.Requirements.Types;
+using ItemBrowser.Content.VanillaData.Entries.Requirements;
 using ItemBrowser.Utilities;
 using PugTilemap;
 using UnityEngine;
@@ -47,7 +47,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								};
 
 								if (spawn.onlySpawnsInSeason != Season.None)
-									entry.AddRequirement(new SeasonActive(spawn.onlySpawnsInSeason));
+									entry.AddRequirement(new SeasonActiveRequirement(spawn.onlySpawnsInSeason));
 								
 								if (critter.Biomes.Count > 0) {
 									registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry with {
@@ -82,7 +82,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 							};
 							
 							if (spawn.onlySpawnsInSeason != Season.None)
-								entry.AddRequirement(new SeasonActive(spawn.onlySpawnsInSeason));
+								entry.AddRequirement(new SeasonActiveRequirement(spawn.onlySpawnsInSeason));
 							
 							registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
 							registry.Register(ObjectEntryType.Usage, entry.Entity.Id, entry.Entity.Variation, entry);

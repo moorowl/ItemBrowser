@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Common.Api.Entries;
-using ItemBrowser.Common.Api.Entries.Requirements;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -31,7 +30,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					entry.Requirements.Count.ToString()
 				},
 				dontLocalizeFormatFields = true,
-				color = Color.white * 0.95f
+				color = UserInterfaceUtility.AlmostWhiteColor
 			});
 
 			foreach (var rule in entry.Requirements) {
@@ -42,7 +41,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 						rule.Requirement.GetLocalizedDescription()
 					},
 					dontLocalizeFormatFields = true,
-					color = (rule.IsFulfilled ? Color.white * 0.95f : UserInterfaceUtility.DescriptionColor)
+					color = (rule.IsFulfilled ? UserInterfaceUtility.AlmostWhiteColor : UserInterfaceUtility.DescriptionColor)
 				});
 			}
 		}

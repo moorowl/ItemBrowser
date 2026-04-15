@@ -1,12 +1,13 @@
-﻿using ItemBrowser.Utilities;
+﻿using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Utilities;
 using PugMod;
 using Unity.Collections;
 
-namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
-	public class HasNotBeenScanned : ObjectEntryRequirement {
+namespace ItemBrowser.Content.VanillaData.Entries.Requirements {
+	public class HasNotBeenScannedRequirement : ObjectEntryRequirement {
 		public readonly ObjectID ScannedObject;
 		
-		public HasNotBeenScanned(ObjectID scannedObject) {
+		public HasNotBeenScannedRequirement(ObjectID scannedObject) {
 			ScannedObject = scannedObject;
 		}
 
@@ -23,7 +24,7 @@ namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
 
 		public override string GetLocalizedDescription() {
 			return string.Format(
-				API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/HasNotBeenScanned"),
+				API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRequirements/HasNotBeenScanned"),
 				ObjectUtility.GetLocalizedDisplayNameOrDefault(ScannedObject)
 			);
 		}

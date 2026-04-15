@@ -53,7 +53,7 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 						(inInventory + inNearbyChests).ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = Color.white * 0.95f
+					color = UserInterfaceUtility.AlmostWhiteColor
 				});
 			}
 

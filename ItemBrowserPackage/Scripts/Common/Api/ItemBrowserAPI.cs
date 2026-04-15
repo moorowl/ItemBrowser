@@ -15,16 +15,15 @@ using Object = UnityEngine.Object;
 namespace ItemBrowser.Common.Api {
 	public static class ItemBrowserAPI {
 		private const string BrowserPrefabPath = "Assets/ItemBrowser/ItemBrowserPackage/Prefabs/Browser/ItemBrowserUI.prefab";
-
+		
 		public static ItemBrowserUI ItemBrowserUI { get; private set; }
 
 		internal static readonly ItemBrowserRegistry Registry = new();
 		internal static readonly ObjectEntryRegistry ObjectEntryRegistry = new();
 		private static readonly List<ItemBrowserPlugin> Plugins = new();
 		
-		private static bool _hasRunOnce;
-		private static bool _hasRunInCurrentWorld;
-		
+		private static bool _hasRegisteredPluginContent;
+
 		public static void AddPlugin(ItemBrowserPlugin instance, LoadedMod sourceMod) {
 			instance.AssociatedLoadedMod = sourceMod;
 			
@@ -38,43 +37,17 @@ namespace ItemBrowser.Common.Api {
 				throw new NullReferenceException($"Failed to load BrowserUI prefab at {BrowserPrefabPath}");
 			
 			ItemBrowserUI = Object.Instantiate(prefab, API.Rendering.UICamera.transform).GetComponent<ItemBrowserUI>();
-			
-			if (!_hasRunOnce) {
-				foreach (var plugin in Plugins) {
-					if (plugin.AutomaticallyRegisterFromAssets)
-						plugin.OnAutomaticallyRegisterFromAssets(Registry);
-				}
-			}
-			
-			var startTime = DateTime.UtcNow;
-			ObjectUtility.Bake();
-			Main.Log(nameof(ItemBrowserAPI), $"Baked ObjectUtility in {(DateTime.UtcNow - startTime).TotalMilliseconds}ms");
 
-			if (!_hasRunInCurrentWorld) {
-				startTime = DateTime.UtcNow;
-				StructureUtility.Bake();
-				Main.Log(nameof(ItemBrowserAPI), $"Baked StructureUtility in {(DateTime.UtcNow - startTime).TotalMilliseconds}ms");	
+			if (!_hasRegisteredPluginContent) {
+				RegisterPluginContent();
+				_hasRegisteredPluginContent = true;
 			}
 
-			if (!_hasRunOnce) {
-				foreach (var plugin in Plugins)
-					plugin.OnEarlyRegister(Registry);
-				
-				foreach (var plugin in Plugins)
-					plugin.OnRegister(Registry);
-			}
-
-			if (!_hasRunInCurrentWorld) {
-				startTime = DateTime.UtcNow;
-				ObjectEntryRegistry.RegisterFromProviders(Registry.EntryProviders);
-				Main.Log(nameof(ItemBrowserAPI), $"Registered entries from {Registry.EntryProviders.Count} providers in {(DateTime.UtcNow - startTime).TotalMilliseconds}ms");	
-			}
-			
-			_hasRunInCurrentWorld = true;
-			_hasRunOnce = true;
-
-			if (Manager.load.IsLoadingAndScreenBlack())
+			BakeLanguageSpecificContent();
+			if (Manager.load.IsScreenBlack()) {
+				BakeWorldSpecificContent();
 				Manager.main.StartCoroutine(TemporarilyShowBrowserToAvoidLagSpikes());
+			}
 		}
 
 		private static void UninitBrowserUI() {
@@ -82,6 +55,33 @@ namespace ItemBrowser.Common.Api {
 				Object.Destroy(ItemBrowserUI);
 		}
 
+		private static void RegisterPluginContent() {
+			foreach (var plugin in Plugins) {
+				if (plugin.AutomaticallyRegisterFromAssets)
+					plugin.OnAutomaticallyRegisterFromAssets(Registry);
+			}
+			
+			ObjectUtility.Bake();
+			
+			foreach (var plugin in Plugins)
+				plugin.OnEarlyRegister(Registry);
+				
+			foreach (var plugin in Plugins)
+				plugin.OnRegister(Registry);
+		}
+		
+		private static void BakeLanguageSpecificContent() {
+			ObjectUtility.Bake();
+		}
+		
+		private static void BakeWorldSpecificContent() {
+			StructureUtility.Bake();
+			
+			var startTime = DateTime.UtcNow;
+			ObjectEntryRegistry.RegisterFromProviders(Registry.EntryProviders);
+			Main.Log(nameof(ItemBrowserAPI), $"Registered entries from {Registry.EntryProviders.Count} providers in {(DateTime.UtcNow - startTime).TotalMilliseconds}ms");	
+		}
+		
 		private static IEnumerator TemporarilyShowBrowserToAvoidLagSpikes() {
 			ItemBrowserUI.IsShowing = true;
 
@@ -167,15 +167,15 @@ namespace ItemBrowser.Common.Api {
 			[HarmonyPatch(typeof(PlayerController), "ManagedUpdate")]
 			[HarmonyPostfix]
 			private static void PlayerController_ManagedUpdate(PlayerController __instance) {
-				if (_lastLanguage == LocalizationManager.CurrentLanguage)
+				if (!__instance.isLocal || _lastLanguage == LocalizationManager.CurrentLanguage)
 					return;
-
-				_lastLanguage = LocalizationManager.CurrentLanguage;
 
 				if (ItemBrowserUI != null) {
 					UninitBrowserUI();
 					InitBrowserUI();
 				}
+				
+				_lastLanguage = LocalizationManager.CurrentLanguage;
 			}
 
 			[HarmonyPatch(typeof(PlayerController), "OnOccupied")]
@@ -184,8 +184,8 @@ namespace ItemBrowser.Common.Api {
 				if (!__instance.isLocal)
 					return;
 
-				_hasRunInCurrentWorld = false;
-				Manager.main.StartCoroutine(InitBrowserUICoroutine());
+				_lastLanguage = LocalizationManager.CurrentLanguage;
+				__instance.StartCoroutine(InitBrowserUICoroutine());
 			}
 
 			[HarmonyPatch(typeof(PlayerController), "OnFree")]

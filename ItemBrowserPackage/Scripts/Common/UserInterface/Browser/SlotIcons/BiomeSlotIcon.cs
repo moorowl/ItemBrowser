@@ -48,7 +48,7 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 						$"BiomeNames/{biome}"
 					},
 					dontLocalize = true,
-					color = GetBiomeIcon(biome) == _objectsToDisplay.CurrentObjectData.objectID ? Color.white * 0.99f : UserInterfaceUtility.DescriptionColor
+					color = GetBiomeIcon(biome) == _objectsToDisplay.CurrentObjectData.objectID ? UserInterfaceUtility.AlmostWhiteColor : UserInterfaceUtility.DescriptionColor
 				});
 			}
 

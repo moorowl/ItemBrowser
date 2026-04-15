@@ -1,18 +1,20 @@
-﻿using ItemBrowser.Utilities;
+﻿using ItemBrowser.Common.Api;
+using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Utilities;
 using PugMod;
 
-namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
-	public class BossDefeated : ObjectEntryRequirement {
-		public readonly ObjectID Boss;
+namespace ItemBrowser.Content.VanillaData.Entries.Requirements {
+	public class EnemyDefeatedRequirement : ObjectEntryRequirement {
+		public readonly ObjectID Enemy;
 			
-		public BossDefeated(ObjectID boss) {
-			Boss = boss;
+		public EnemyDefeatedRequirement(ObjectID enemy) {
+			Enemy = enemy;
 		}
 
 		public override bool IsFulfilled() {
 			var worldInfo = ClientWorldStateSystem.WorldInfo;
 
-			return Boss switch {
+			return Enemy switch {
 				ObjectID.BirdBoss => worldInfo.birdBossBeenKilled,
 				ObjectID.OctopusBoss => worldInfo.octopusBossHasBeenKilled,
 				ObjectID.ScarabBoss => worldInfo.scarabHasBeenKilled,
@@ -29,8 +31,8 @@ namespace ItemBrowser.Common.Api.Entries.Requirements.Types {
 
 		public override string GetLocalizedDescription() {
 			return string.Format(
-				API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRules/BossDefeated"),
-				ObjectUtility.GetLocalizedDisplayNameOrDefault(Boss)
+				API.Localization.GetLocalizedTerm("ItemBrowser-ObjectEntryRequirements/EnemyDefeated"),
+				ObjectUtility.GetLocalizedDisplayNameOrDefault(Enemy)
 			);
 		}
 	}

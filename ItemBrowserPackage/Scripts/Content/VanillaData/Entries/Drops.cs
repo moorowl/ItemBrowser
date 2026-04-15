@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
-using ItemBrowser.Common.Api.Entries.Requirements.Types;
+using ItemBrowser.Content.VanillaData.Entries.Requirements;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using ItemBrowser.Utilities.Extensions;
@@ -174,10 +174,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 							};
 							
 							if (drop.requiredContentBundle.hasValue)
-								entry.AddRequirement(new ContentBundlePresent(drop.requiredContentBundle.value));
+								entry.AddRequirement(new ContentBundlePresentRequirement(drop.requiredContentBundle.value));
 							
 							if (drop.skipIfScanned.hasValue)
-								entry.AddRequirement(new HasNotBeenScanned(drop.skipIfScanned.value));
+								entry.AddRequirement(new HasNotBeenScannedRequirement(drop.skipIfScanned.value));
 							
 							AddNormalOrSceneEntry(entry.Result.Id, entry.Result.Variation, optionalSceneName, entry);
 							
@@ -357,7 +357,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 									IsAffectedByPlayerCount = drop.multiplayerAmountAdditionScaling > 0
 								};
 								if (group.season != Season.None)
-									entry.AddRequirement(new SeasonActive(group.season));
+									entry.AddRequirement(new SeasonActiveRequirement(group.season));
 								
 								AddNormalEntry(entry.Result.Id, entry.Result.Variation, entry);
 								

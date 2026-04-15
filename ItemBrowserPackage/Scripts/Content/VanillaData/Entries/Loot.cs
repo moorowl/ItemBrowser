@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
-using ItemBrowser.Common.Api.Entries.Requirements.Types;
+using ItemBrowser.Content.VanillaData.Entries.Requirements;
 using ItemBrowser.Utilities.Extensions;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
@@ -372,7 +372,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								};
 								
 								if (initialInventoryItem.requiredContentBundle.hasValue)
-									entry.AddRequirement(new ContentBundlePresent(initialInventoryItem.requiredContentBundle.value));
+									entry.AddRequirement(new ContentBundlePresentRequirement(initialInventoryItem.requiredContentBundle.value));
 								
 								AddEntryFromScene(entry.Result.Id, entry.Result.Variation, scene.Name, entry);
 							}
