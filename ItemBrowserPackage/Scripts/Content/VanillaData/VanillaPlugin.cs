@@ -90,7 +90,7 @@ namespace ItemBrowser.Content.VanillaData {
 		private static void AddSorters(ItemBrowserRegistry registry) {
 			// Item sorters
 			registry.AddItemSorter(new Sorter("ItemBrowser-Sorters/Alphabetical") {
-				Function = allObjectData => allObjectData.OrderBy(objectData => {
+				Function = allObjectData => allObjectData.OrderByDescending(objectData => {
 					var localizedDisplayName = ObjectUtility.GetLocalizedDisplayName(objectData);
 					return localizedDisplayName ?? $"ZZZ+{ObjectUtility.GetInternalName(objectData)}:{objectData.variation}";
 				})
@@ -113,7 +113,7 @@ namespace ItemBrowser.Content.VanillaData {
 			
 			// Creature sorters
 			registry.AddCreatureSorter(new Sorter("ItemBrowser-Sorters/Alphabetical") {
-				Function = allObjectData => allObjectData.OrderBy(objectData => {
+				Function = allObjectData => allObjectData.OrderByDescending(objectData => {
 					var localizedDisplayName = ObjectUtility.GetLocalizedDisplayName(objectData);
 					return localizedDisplayName ?? $"ZZZ+{ObjectUtility.GetInternalName(objectData)}:{objectData.variation}";
 				})

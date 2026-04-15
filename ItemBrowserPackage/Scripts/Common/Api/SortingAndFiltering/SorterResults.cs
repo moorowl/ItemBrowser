@@ -17,7 +17,7 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 			var scores = new Dictionary<ObjectDataCD, int>();
 			
 			foreach (var objectData in sorter.Function(ObjectUtility.GetAllObjects()))
-				scores.TryAdd(objectData, -scores.Count);
+				scores.TryAdd(objectData, scores.Count);
 
 			return new SorterResults(scores);
 		}
