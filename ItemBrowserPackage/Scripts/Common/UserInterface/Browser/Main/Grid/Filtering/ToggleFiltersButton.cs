@@ -22,8 +22,17 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtility.DescriptionColor
+				},
+				new() {
+					text = "ItemBrowser-General/FilteredResultsDesc",
+					formatFields = new[] {
+						gridView.ExcludedObjects.ToString()
+					},
+					dontLocalizeFormatFields = true,
+					color = UserInterfaceUtility.DescriptionColor
 				}
 			};
+
 			if (filtersPanel.HasBeenModified)
 				UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/RestoreDefaults", "UISecondInteract");
 			
