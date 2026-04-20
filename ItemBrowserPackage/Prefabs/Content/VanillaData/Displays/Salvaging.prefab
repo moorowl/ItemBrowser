@@ -287,6 +287,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6366707470054676481, guid: 43a739b2d2b45fe4bb5817b99deae7f4,
         type: 3}
+      propertyPath: alwaysShowAmount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6366707470054676481, guid: 43a739b2d2b45fe4bb5817b99deae7f4,
+        type: 3}
       propertyPath: rightUIElements.Array.size
       value: 0
       objectReference: {fileID: 0}

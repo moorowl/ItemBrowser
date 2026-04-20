@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Utilities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -18,28 +19,42 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					if (objectInfo == null)
 						continue;
 
-					var hasDurability = PugDatabase.HasComponent<DurabilityCD>(objectData);
-					var hasLevel = PugDatabase.HasComponent<LevelCD>(objectData);
+					var hasDurability = PugDatabase.TryGetComponent<DurabilityCD>(objectData, out var durabilityCD);
+					var hasLevel = PugDatabase.TryGetComponent<LevelCD>(objectData, out var levelCD);
 
 					if (!objectInfo.tags.Contains(ObjectCategoryTag.CanBeSalvaged) || objectInfo.rarity == Rarity.Legendary)
 						continue;
-					
-					foreach (var craftingObject in objectInfo.requiredObjectsToCraft) {
-						var minAmount = (int) math.round(craftingObject.amount * (Constants.minMaterialToGainFromSalvage * objectInfo.salvageMultiplier));
-						var maxAmount = (int) math.round(craftingObject.amount * (Constants.maxMaterialToGainFromSalvage * objectInfo.salvageMultiplier));
 
+					var totalScrapParts = 1;
+					if (hasDurability && hasLevel) {
+						var scrapPartsMultiplier = PugDatabase.GetComponent<DurabilityCD>(objectData).repairCostMultiplier * 2f;
+						totalScrapParts = (int) math.max(1f, math.round(levelCD.level * 2 * scrapPartsMultiplier));
+					}
+					
+					var scrapPartsEntry = new Salvaging {
+						Result = ObjectID.ScrapPart,
+						ResultAmount = (totalScrapParts, totalScrapParts),
+						ItemSalvaged = objectData.objectID
+					};
+					registry.Register(ObjectEntryType.Usage, scrapPartsEntry.ItemSalvaged, 0, scrapPartsEntry);
+
+					for (var i = 0; i < objectInfo.requiredObjectsToCraft.Count; i++) {
+						var craftingObject = objectInfo.requiredObjectsToCraft[i];
+
+						var minAmount = (int) (craftingObject.amount * (Constants.minMaterialToGainFromSalvage * objectInfo.salvageMultiplier));
+						var maxAmount = (int) (craftingObject.amount * (Constants.maxMaterialToGainFromSalvage * objectInfo.salvageMultiplier));
 						if (!hasDurability || !hasLevel)
 							minAmount = maxAmount;
-						
-						if (maxAmount > 0) {
-							var entry = new Salvaging {
-								Result = craftingObject.objectID,
-								ResultAmount = (minAmount, maxAmount),
-								ItemSalvaged = objectData.objectID
-							};
-							registry.Register(ObjectEntryType.Source, entry.Result, 0, entry);
-							registry.Register(ObjectEntryType.Usage, entry.ItemSalvaged, 0, entry);
-						}
+
+						maxAmount++;
+
+						var materialEntry = new Salvaging {
+							Result = craftingObject.objectID,
+							ResultAmount = (minAmount, maxAmount),
+							ItemSalvaged = objectData.objectID
+						};
+						registry.Register(ObjectEntryType.Source, materialEntry.Result, 0, materialEntry);
+						registry.Register(ObjectEntryType.Usage, materialEntry.ItemSalvaged, 0, materialEntry);
 					}
 				}
 			}

@@ -24,6 +24,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public bool linksSource;
 		public bool linksUsage;
 		public bool showAmountInTitle;
+		public bool alwaysShowAmount;
 
 		private SlotIcon _icon = EmptyIcon;
 		public SlotIcon Icon {
@@ -176,7 +177,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (!IsDiscovered)
 				title.text = API.Localization.GetLocalizedTerm("ItemBrowser-General/Undiscovered");
 			
-			if (showAmountInTitle && visualObject.objectID != ObjectID.None && amount.Max > 1) {
+			if (showAmountInTitle && visualObject.objectID != ObjectID.None && (amount.Max > 1 || alwaysShowAmount)) {
 				return new TextAndFormatFields {
 					text = "ItemBrowser-General/NameAndAmountFormat",
 					formatFields = new[] {
@@ -334,7 +335,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (amountNumber == null)
 				return false;
 			
-			if (amount.Max > 1 && !AmountIsShownAsBar()) {
+			if ((amount.Max > 1 || alwaysShowAmount) && !AmountIsShownAsBar()) {
 				var text = UserInterfaceUtility.FormatRange(amount);
 				
 				amountNumber.gameObject.SetActive(true);
