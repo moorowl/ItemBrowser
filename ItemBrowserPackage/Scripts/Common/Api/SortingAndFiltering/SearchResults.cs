@@ -7,7 +7,7 @@ using PugMod;
 namespace ItemBrowser.Common.Api.SortingAndFiltering {
 	public class SearchResults {
 		private static readonly List<char> CharactersToStrip = new() {
-			'\'', ' ', '-', '.', '\n'
+			'\'', ' ', '-', '.', ',', '\n'
 		};
 		
 		private readonly HashSet<ObjectDataCD> _matches;
