@@ -370,7 +370,7 @@ namespace ItemBrowser.Utilities {
 			if (PugDatabase.HasComponent<PetCD>(objectData))
 				return false;
 			
-			if (objectInfo.objectType is ObjectType.NonObtainable or ObjectType.Creature or ObjectType.Critter or ObjectType.PlayerType && !PugDatabase.HasComponent<CraftingCD>(objectData))
+			if (objectInfo.objectType is ObjectType.NonObtainable or ObjectType.Creature or ObjectType.Critter or ObjectType.PlayerType && !(PugDatabase.HasComponent<CraftingCD>(objectData) && !PugDatabase.HasComponent<CattleCD>(objectData)))
 				return true;
 
 			if (PugDatabase.HasComponent<DontSerializeCD>(objectData) && !PugDatabase.HasComponent<TileCD>(objectData) && !PugDatabase.HasComponent<TileCD>(objectData) && objectInfo.objectType is not ObjectType.Creature or ObjectType.Critter)
