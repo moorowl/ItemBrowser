@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Common.Api.Entries;
-using ItemBrowser.Common.Api.Entries.Requirements.Types;
+using ItemBrowser.Content.VanillaData.Entries.Requirements;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.Extensions;
 using Pug.Properties;
@@ -33,19 +33,12 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			};
 			
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
-				var dummyStations = allObjects.Where(entry => IsDummyStation(entry.ObjectData.objectID))
-					.Select(entry => entry.ObjectData.objectID)
-					.ToHashSet();
-				
 				// Normal stations
 				foreach (var (objectData, _) in allObjects) {
-					if (!PugDatabase.TryGetComponent<CraftingCD>(objectData, out var craftingCD) || !PugDatabase.TryGetComponent<ObjectPropertiesCD>(objectData, out var objectPropertiesCD) || dummyStations.Contains(objectData.objectID))
+					if (!PugDatabase.TryGetComponent<CraftingCD>(objectData, out var craftingCD) || !PugDatabase.TryGetComponent<ObjectPropertiesCD>(objectData, out var objectPropertiesCD) || IsDummyStation(objectData.objectID))
 						continue;
 					
 					if (!AcceptedCraftingTypes.Contains(craftingCD.craftingType))
-						continue;
-
-					if (ObjectUtility.GetLocalizedDisplayName(objectData.objectID, objectData.variation) == null)
 						continue;
 
 					var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
@@ -57,7 +50,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					if (graphicalPrefab == null || !graphicalPrefab.TryGetComponent<EntityMonoBehaviour>(out var entityMono) || (entityMono is not CraftingBuilding && entityMono is not PlayerController))
 						continue;
 					
-					using var canCraftObjects = GetUnfilteredRecipes(objectData, objectPropertiesCD, Allocator.Temp);
+					using var canCraftObjects = GetUnfilteredRecipes(objectData.objectID, objectPropertiesCD, Allocator.Temp);
 					var canCraftObjectsIndexesToInclude = new HashSet<int>();
 					var craftingPrerequisites = new List<CraftingPrerequisites>();
 					
@@ -65,16 +58,16 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						for (var i = 0; i < prerequisitesRef.Length; i++)
 							craftingPrerequisites.Add(prerequisitesRef[i]);
 					}
-					
+
 					if (PugDatabase.HasComponent<IncludedCraftingBuildingsBuffer>(objectData)) {
 						var includedCraftingBuildings = PugDatabase.GetBuffer<IncludedCraftingBuildingsBuffer>(objectData).ConvertToList();
 						var endIndex = 0;
 
 						foreach (var includedCraftingBuilding in includedCraftingBuildings) {
 							for (var i = 0; i < includedCraftingBuilding.amountOfCraftingOptions; i++) {
-								var shouldInclude = (dummyStations.Contains(includedCraftingBuilding.objectID) || includedCraftingBuilding.objectID == objectData.objectID)
-								                    && !IsCraftableInAnyBuilding(includedCraftingBuilding.objectID, GetIncludedBuildings(objectData.objectID));
+								var isCraftableInPreviousStation = includedCraftingBuildings.Skip(1).Any(includedCraftingBuilding => IsCraftableInIncludedStations(canCraftObjects[endIndex].objectID, includedCraftingBuilding.objectID));
 
+								var shouldInclude = (IsDummyStation(includedCraftingBuilding.objectID) || includedCraftingBuilding.objectID == objectData.objectID) && !isCraftableInPreviousStation;
 								if (shouldInclude)
 									canCraftObjectsIndexesToInclude.Add(endIndex);
 
@@ -104,7 +97,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						};
 
 						if (craftingPrerequisites.Count > 0 && craftingPrerequisites[i].HasAny())
-							entry.AddRequirement(new CraftingPrerequisitesList(craftingPrerequisites[i]));
+							entry.AddRequirement(new CraftingPrerequisitesRequirement(craftingPrerequisites[i]));
 						
 						registry.Register(ObjectEntryType.Source, entry.Result.Id, entry.Result.Variation, entry);
 						registry.Register(ObjectEntryType.Usage, entry.Station, 0, entry);
@@ -145,13 +138,14 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				}
 			}
 			
-			private static bool IsCraftableInAnyBuilding(ObjectID id, HashSet<ObjectID> buildings) {
-				foreach (var building in buildings) {
-					if (!PugDatabase.HasComponent<IncludedCraftingBuildingsBuffer>(building))
+			private static bool IsCraftableInIncludedStations(ObjectID item, ObjectID station) {
+				foreach (var includedStation in GetIncludedStations(station)) {
+					if (!PugDatabase.TryGetComponent<ObjectPropertiesCD>(station, out var stationObjectPropertiesCD))
 						continue;
 					
-					foreach (var includedCraftingBuildings in PugDatabase.GetBuffer<IncludedCraftingBuildingsBuffer>(building)) {
-						if (includedCraftingBuildings.objectID == id)
+					using var canCraftObjectsBuffer = GetUnfilteredRecipes(includedStation, stationObjectPropertiesCD, Allocator.Temp);
+					foreach (var canCraftObject in canCraftObjectsBuffer) {
+						if (canCraftObject.objectID == item)
 							return true;
 					}
 				}
@@ -159,7 +153,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				return false;
 			}
 
-			private static HashSet<ObjectID> GetIncludedBuildings(ObjectID id) {
+			private static HashSet<ObjectID> GetIncludedStations(ObjectID id) {
 				var includedBuildings = new HashSet<ObjectID>();
 				if (!PugDatabase.HasComponent<IncludedCraftingBuildingsBuffer>(id))
 					return includedBuildings;
@@ -167,7 +161,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				foreach (var includedBuilding in PugDatabase.GetBuffer<IncludedCraftingBuildingsBuffer>(id).ConvertToList().Skip(1)) {
 					includedBuildings.Add(includedBuilding.objectID);
 					
-					foreach (var subIncludedBuilding in GetIncludedBuildings(includedBuilding.objectID))
+					foreach (var subIncludedBuilding in GetIncludedStations(includedBuilding.objectID))
 						includedBuildings.Add(subIncludedBuilding);
 				}
 				
@@ -175,19 +169,15 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 			}
 
 			private static bool IsDummyStation(ObjectID id) {
-				if (id == ObjectID.Player || PugDatabase.HasComponent<PhysicsCollider>(id))
-					return false;
-				
-				return PugDatabase.TryGetComponent<ObjectPropertiesCD>(id, out var objectPropertiesCD)
-				       && !objectPropertiesCD.Has(PropertyID.PlaceableObject.placeableObject);
+				return ObjectUtility.GetLocalizedDisplayName(id) == null;
 			}
 			
-			private static NativeArray<CanCraftObjectsBuffer> GetUnfilteredRecipes(ObjectDataCD objectData, ObjectPropertiesCD objectPropertiesCD, Allocator allocator) {
+			private static NativeArray<CanCraftObjectsBuffer> GetUnfilteredRecipes(ObjectID station, ObjectPropertiesCD objectPropertiesCD, Allocator allocator) {
 				if (objectPropertiesCD.Has(PropertyID.Crafting.unfilteredRecipes))
 					return objectPropertiesCD.GetList<CanCraftObjectsBuffer>(PropertyID.Crafting.unfilteredRecipes, allocator);
 
-				if (PugDatabase.HasComponent<CanCraftObjectsBuffer>(objectData)) {
-					var canCraftObjectsBuffer = PugDatabase.GetBuffer<CanCraftObjectsBuffer>(objectData);
+				if (PugDatabase.HasComponent<CanCraftObjectsBuffer>(station)) {
+					var canCraftObjectsBuffer = PugDatabase.GetBuffer<CanCraftObjectsBuffer>(station);
 					var unfilteredRecipes = new NativeArray<CanCraftObjectsBuffer>(canCraftObjectsBuffer.Length, allocator);
 
 					for (var i = 0; i < canCraftObjectsBuffer.Length; i++)
