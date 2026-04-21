@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using I2.Loc;
 using ItemBrowser.Utilities;
 using PugMod;
 
@@ -9,6 +10,9 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 		private static readonly List<char> CharactersToStrip = new() {
 			'\'', ' ', '-', '.', ',', '\n'
 		};
+		private static readonly Dictionary<string, string> StrippedCharactersCache = new();
+		private static readonly Dictionary<ObjectDataCD, List<string>> ObjectTermsCache = new();
+		private static string _lastLanguage;
 		
 		private readonly HashSet<ObjectDataCD> _matches;
 
@@ -21,6 +25,9 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 		}
 		
 		private static string StripUnimportantCharacters(string term) {
+			if (StrippedCharactersCache.TryGetValue(term, out var cachedResult))
+				return cachedResult;
+			
 			var sb = new StringBuilder();
 			var normalized = term.ToLowerInvariant().Normalize(NormalizationForm.FormD);
 
@@ -33,34 +40,54 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 					sb.Append(character);
 			}
 
-			return sb.ToString().Normalize(NormalizationForm.FormC);
+			var result = sb.ToString().Normalize(NormalizationForm.FormC);
+			StrippedCharactersCache[term] = result;
+
+			return result;
+		}
+
+		private static void CheckInvalidateObjectTermsCache() {
+			if (LocalizationManager.CurrentLanguage == _lastLanguage)
+				return;
+
+			ObjectTermsCache.Clear();
+			_lastLanguage = LocalizationManager.CurrentLanguage;
+		}
+
+		private static List<string> GetObjectTerms(ObjectDataCD objectData) {
+			if (ObjectTermsCache.TryGetValue(objectData, out var cachedTerms))
+				return cachedTerms;
+			
+			var terms = new List<string>();
+			
+			var displayName = ObjectUtility.GetLocalizedDisplayName(objectData);
+			var displayNameNote = ObjectUtility.GetUnlocalizedDisplayNameNote(objectData);
+			if (displayNameNote != null)
+				displayNameNote = API.Localization.GetLocalizedTerm(displayNameNote);
+			var description = ObjectUtility.GetLocalizedDescription(objectData);
+
+			if (displayName != null)
+				terms.Add(StripUnimportantCharacters(displayName));
+			if (displayNameNote != null)
+				terms.Add(StripUnimportantCharacters(displayNameNote));
+			if (description != null)
+				terms.Add(StripUnimportantCharacters(description));
+			terms.Add(StripUnimportantCharacters(ObjectUtility.GetInternalName(objectData)));
+			terms.Add(((int) objectData.objectID).ToString());
+			
+			ObjectTermsCache[objectData] = terms;
+			return terms;
 		}
 
 		public static SearchResults Create(string term) {
 			term = StripUnimportantCharacters(term);
-			
+
+			CheckInvalidateObjectTermsCache();
+
 			var matches = new HashSet<ObjectDataCD>();
-			var termsToMatch = new List<string>(5);
-
 			foreach (var objectData in ObjectUtility.GetAllObjects()) {
-				var displayName = ObjectUtility.GetLocalizedDisplayName(objectData);
-				var displayNameNote = ObjectUtility.GetUnlocalizedDisplayNameNote(objectData);
-				if (displayNameNote != null)
-					displayNameNote = API.Localization.GetLocalizedTerm(displayNameNote);
-				var description = ObjectUtility.GetLocalizedDescription(objectData);
-				
-				termsToMatch.Clear();
-				if (displayName != null)
-					termsToMatch.Add(displayName);
-				if (displayNameNote != null)
-					termsToMatch.Add(displayNameNote);
-				if (description != null)
-					termsToMatch.Add(description);
-				termsToMatch.Add(ObjectUtility.GetInternalName(objectData));
-				termsToMatch.Add(((int) objectData.objectID).ToString());
-
-				foreach (var termToMatch in termsToMatch) {
-					if (StripUnimportantCharacters(termToMatch).Contains(term)) {
+				foreach (var termToMatch in GetObjectTerms(objectData)) {
+					if (termToMatch.Contains(term)) {
 						matches.Add(objectData);
 						break;
 					}
