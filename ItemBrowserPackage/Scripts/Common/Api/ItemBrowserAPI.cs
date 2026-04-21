@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using I2.Loc;
 using ItemBrowser.Common.Api.Entries;
@@ -65,9 +66,20 @@ namespace ItemBrowser.Common.Api {
 			
 			foreach (var plugin in Plugins)
 				plugin.OnEarlyRegister(Registry);
-				
+
 			foreach (var plugin in Plugins)
 				plugin.OnRegister(Registry);
+
+			DebugUtility.ExportData("NonPrimaryVariations", ObjectUtility.GetAllObjects()
+				.Where(objectData => !ObjectUtility.IsPrimaryVariation(objectData))
+				.OrderBy(objectData => (int) objectData.objectID * 10000 + objectData.variation)
+				.Select(objectData => new {
+					Id = ObjectUtility.GetInternalName(objectData),
+					Variation = objectData.variation,
+					AuthoringPrefabName = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).prefabInfos[0].ecsPrefab.name
+				})
+				.ToList()
+			);
 		}
 		
 		private static void BakeLanguageSpecificContent() {
