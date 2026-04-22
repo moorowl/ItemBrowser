@@ -41,16 +41,17 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					for (var i = 0; i < objectInfo.requiredObjectsToCraft.Count; i++) {
 						var craftingObject = objectInfo.requiredObjectsToCraft[i];
 
-						var minAmount = (int) (craftingObject.amount * (Constants.minMaterialToGainFromSalvage * objectInfo.salvageMultiplier));
-						var maxAmount = (int) (craftingObject.amount * (Constants.maxMaterialToGainFromSalvage * objectInfo.salvageMultiplier));
+						var minAmount = (craftingObject.amount * (Constants.minMaterialToGainFromSalvage * objectInfo.salvageMultiplier));
+						var maxAmount = (craftingObject.amount * (Constants.maxMaterialToGainFromSalvage * objectInfo.salvageMultiplier));
 						if (!hasDurability || !hasLevel)
 							minAmount = maxAmount;
 
-						maxAmount++;
+						if (!Mathf.Approximately(maxAmount % 1, 0f))
+							maxAmount++;
 
 						var materialEntry = new Salvaging {
 							Result = craftingObject.objectID,
-							ResultAmount = (minAmount, maxAmount),
+							ResultAmount = ((int) minAmount, (int) maxAmount),
 							ItemSalvaged = objectData.objectID
 						};
 						registry.Register(ObjectEntryType.Source, materialEntry.Result, 0, materialEntry);
