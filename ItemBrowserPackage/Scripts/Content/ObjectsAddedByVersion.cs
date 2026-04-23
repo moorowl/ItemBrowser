@@ -1483,6 +1483,15 @@ namespace ItemBrowser.Content {
 			ObjectID.RobotBoss
 		});
 		
+		public static readonly ObjectsAddedByVersion Ck121 = new("1.2.1", ObjectID.PotionPouch, new[] {
+			ObjectID.PotionPouch,
+			ObjectID.MediumPotionPouch,
+			ObjectID.LargePotionPouch,
+			ObjectID.CritterPouch,
+			ObjectID.MediumCritterPouch,
+			ObjectID.LargeCritterPouch
+		});
+		
 		public static readonly ObjectsAddedByVersion[] AllVersions = {
 			Ck10,
 			Ck101,
@@ -1491,7 +1500,8 @@ namespace ItemBrowser.Content {
 			Ck111,
 			Ck112,
 			Ck1129,
-			Ck12
+			Ck12,
+			Ck121
 		};
 	}
 }

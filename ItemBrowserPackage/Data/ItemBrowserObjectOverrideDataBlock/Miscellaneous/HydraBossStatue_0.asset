@@ -28,7 +28,7 @@ MonoBehaviour:
   overrideIcon: 1
   icon: {fileID: 21300000, guid: fad0fb0446ed12d40b0e21da14d08bb2, type: 3}
   showNameNote: 1
-  nameNote: FoodNouns/VoidHydraHeart
+  nameNote: hydras
   references:
     version: 2
     RefIds: []
