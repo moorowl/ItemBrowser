@@ -1,4 +1,6 @@
-﻿using ItemBrowser.Common.Api.Entries;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
 using ItemBrowser.Common.UserInterface.Browser;
@@ -12,6 +14,15 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public PugText plusText;
 		public PugText chanceText;
 		public PugText catchTypeText;
+		
+		public override IEnumerable<Fishing> OnSort(IEnumerable<Fishing> entries) {
+			return entries
+				.OrderBy(entry => entry.Biome == Biome.None ? 1 : 0)
+				.ThenBy(entry => (int) entry.Tileset * 1000 + (int) entry.Biome)
+				.ThenBy(entry => (int) entry.Type)
+				.ThenByDescending(entry => (int) (entry.Chance * 65535))
+				.ThenBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Result));
+		}
 		
 		protected override void OnRender(Fishing entry) {
 			resultSlot.Icon = new BasicSlotIcon(new ObjectDataCD {

@@ -31,53 +31,43 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					if (tilesets.Count == 0 || tilesets[0] == Tileset.Dirt)
 						continue;
 					
-					foreach (var drop in LootUtility.GetLootTableHelper(info.lootTableID).RandomPool) {
-						foreach (var tileset in tilesets) {
-							registry.Register(ObjectEntryType.Source, drop.Item, 0, new Fishing {
-								Result = drop.Item,
-								Tileset = tileset,
-								Type = CatchType.Loot,
-								Chance = drop.Chance
-							});
-						}
-					}
-					
-					foreach (var drop in LootUtility.GetLootTableHelper(info.fishLootTableID).RandomPool) {
-						foreach (var tileset in tilesets) {
-							registry.Register(ObjectEntryType.Source, drop.Item, 0, new Fishing {
-								Result = drop.Item,
-								Tileset = tileset,
-								Type = CatchType.Fish,
-								Chance = drop.Chance
-							});
-						}
-					}
+					AddEntriesFromTable(LootUtility.GetLootTableHelper(info.lootTableID), CatchType.Loot, new List<Biome>(), tilesets);
+					AddEntriesFromTable(LootUtility.GetLootTableHelper(info.fishLootTableID), CatchType.Fish, new List<Biome>(), tilesets);
 				}
 				
 				foreach (var info in biomeLoot) {
 					var biomes = info.biomes;
 					if (biomes.Count == 0 || biomes.Contains(Biome.None))
 						continue;
-					
-					foreach (var drop in LootUtility.GetLootTableHelper(info.lootTableID).RandomPool) {
-						foreach (var biome in biomes) {
-							registry.Register(ObjectEntryType.Source, drop.Item, 0, new Fishing {
+
+					AddEntriesFromTable(LootUtility.GetLootTableHelper(info.lootTableID), CatchType.Loot, biomes, new List<Tileset>());
+					AddEntriesFromTable(LootUtility.GetLootTableHelper(info.fishLootTableID), CatchType.Fish, biomes, new List<Tileset>());
+				}
+
+				void AddEntriesFromTable(LootUtility.LootTableHelper helper, CatchType catchType, List<Biome> biomes, List<Tileset> tilesets) {
+					foreach (var drop in helper.RandomPool) {
+						foreach (var tileset in tilesets) {
+							var entry = new Fishing {
 								Result = drop.Item,
-								Biome = biome,
-								Type = CatchType.Loot,
+								Tileset = tileset,
+								Type = catchType,
 								Chance = drop.Chance
-							});
+							};
+							registry.Register(ObjectEntryType.Source, drop.Item, 0, entry);
+							
+							if (TileUtility.TryGetAssociatedObject(TileType.water, entry.Tileset, out var associatedTilesetObject))
+								registry.Register(ObjectEntryType.Usage, associatedTilesetObject, entry);
 						}
-					}
-					
-					foreach (var drop in LootUtility.GetLootTableHelper(info.fishLootTableID).RandomPool) {
+						
 						foreach (var biome in biomes) {
-							registry.Register(ObjectEntryType.Source, drop.Item, 0, new Fishing {
+							var entry = new Fishing {
 								Result = drop.Item,
 								Biome = biome,
-								Type = CatchType.Fish,
+								Type = catchType,
 								Chance = drop.Chance
-							});
+							};
+							registry.Register(ObjectEntryType.Source, drop.Item, 0, entry);
+							registry.Register(ObjectEntryType.Usage, ObjectID.Water, 0, entry);
 						}
 					}
 				}
