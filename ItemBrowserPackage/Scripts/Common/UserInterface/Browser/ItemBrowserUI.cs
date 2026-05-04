@@ -7,7 +7,6 @@ using ItemBrowser.Common.Api.Themes;
 using ItemBrowser.Common.Options;
 using ItemBrowser.Common.UserInterface.TileGrid;
 using ItemBrowser.Utilities;
-using Pug.UnityExtensions;
 using PugMod;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -33,7 +32,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private Transform _tileGridRenderAnchor;
 
 		private float _timeToAutoUpdateObjectsToHighlightInInventory;
-		private readonly HashSet<ObjectID> _objectsToHighlightInInventory = new();
+		public readonly HashSet<ObjectID> ObjectsToHighlightInInventory = new();
 
 		private void Awake() {
 			gameObject.SetActive(false);
@@ -207,16 +206,25 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 		
 		private void UpdateObjectsToHighlightInInventory() {
-			_objectsToHighlightInInventory.Clear();
+			const int maxObjectsToHighlight = 128;
+            
+			ObjectsToHighlightInInventory.Clear();
 
-			if (mainView.gridWithItemsView.searchInput.HighlightSearchResults) {
-				foreach (var objectData in mainView.gridWithItemsView.FilteredObjects)
-					_objectsToHighlightInInventory.Add(objectData.objectID);
-			}
-			
-			if (mainView.gridWithCreaturesView.searchInput.HighlightSearchResults) {
-				foreach (var objectData in mainView.gridWithCreaturesView.FilteredObjects)
-					_objectsToHighlightInInventory.Add(objectData.objectID);
+			AddObjectsFromGrid(mainView.gridWithItemsView);
+			AddObjectsFromGrid(mainView.gridWithCreaturesView);
+
+			return;
+
+			void AddObjectsFromGrid(GridView view) {
+				if (!view.searchInput.HighlightSearchResults)
+					return;
+
+				foreach (var objectData in view.FilteredObjects) {
+					if (ObjectsToHighlightInInventory.Count >= maxObjectsToHighlight)
+						return;
+					
+					ObjectsToHighlightInInventory.Add(objectData.objectID);
+				}
 			}
 		}
 		
@@ -281,45 +289,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					
 					if (__instance.mouseInventory != null && __instance.mouseInventory.HasObject(0))
 						__instance.ReleaseGrabbedItemBackToInventory();
-				}
-			}
-			
-			[HarmonyPatch(typeof(UIMouse), "UpdateSlotHighlights")]
-			[HarmonyPostfix]
-			private static void UIMouse_UpdateSlotHighlights(UIMouse __instance) {
-				if (ItemBrowserAPI.ItemBrowserUI != null) {
-					var objectsToHighlight = ItemBrowserAPI.ItemBrowserUI._objectsToHighlightInInventory;
-					
-					if (Manager.ui.isChestInventoryUIShowing)
-						TryHighlightItemSlots(Manager.ui.chestInventoryUI.itemSlots, objectsToHighlight);
-
-					if (Manager.ui.isPlayerInventoryShowing) {
-						TryHighlightItemSlots(Manager.ui.playerInventoryUI.itemSlots, objectsToHighlight);
-
-						foreach (var pouchInventory in ((InventoryUI) Manager.ui.playerInventoryUI).pouchSlotsContainers)
-							TryHighlightItemSlots(pouchInventory.itemSlots, objectsToHighlight);
-					}
-
-					if (Manager.ui.itemSlotsBar.isShowing)
-						TryHighlightItemSlots(Manager.ui.itemSlotsBar.itemSlots, objectsToHighlight);
-				}
-			}
-
-			private static void TryHighlightItemSlots(List<SlotUIBase> itemSlots, HashSet<ObjectID> objectsToHighlight) {
-				foreach (var slot in itemSlots) {
-					if (slot.highlightBorder == null || slot.icon == null || !slot.isShowing)
-						continue;
-
-					var highlightAnyItem = objectsToHighlight.Count > 0;
-					var highlightThisItem = objectsToHighlight.Contains(slot.GetContainedObject().objectID);
-
-					if (highlightAnyItem) {
-						slot.highlightBorder.gameObject.SetActive(highlightThisItem);
-						slot.icon.SetAlpha(highlightThisItem ? 1f : 0.2f);
-					} else {
-						slot.highlightBorder.gameObject.SetActive(false);
-						slot.icon.SetAlpha(1f);
-					}
 				}
 			}
 
