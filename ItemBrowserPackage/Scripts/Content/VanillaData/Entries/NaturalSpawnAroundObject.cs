@@ -68,6 +68,9 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								}
 							}
 						} else {
+							if (ObjectUtility.GetLocalizedDisplayName(spawn.objectToSpawn) == null)
+								continue;
+							
 							var entry = new NaturalSpawnAroundObject {
 								Result = (spawn.objectToSpawn.objectID, ObjectUtility.GetPrimaryVariation(spawn.objectToSpawn)),
 								Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),

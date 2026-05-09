@@ -105,19 +105,21 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 					// Spawns on death
 					if (EntityUtility.TryGetComponentData<SpawnEntityOnDeathCD>(entity, world, out var spawnEntityOnDeathCD)) {
-						var entry = new Drops {
-							Result = (spawnEntityOnDeathCD.objectToSpawn, ObjectUtility.GetPrimaryVariation(spawnEntityOnDeathCD.objectToSpawn, spawnEntityOnDeathCD.objectVariation)),
-							Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
-							Chance = spawnEntityOnDeathCD.spawnChance,
-							ChanceForOne = spawnEntityOnDeathCD.spawnChance,
-							Amount = (1, 1),
-							Rolls = (1, 1),
-							MaxAmountCheckRadius = spawnEntityOnDeathCD.maxAmountCheckRadius,
-							MaxAmountAllowedWithinRadius = spawnEntityOnDeathCD.maxAmountAllowedWithinRadius
-						};
-						AddNormalOrSceneEntry(entry.Result.Id, entry.Result.Variation, optionalSceneName, entry);
+						if (ObjectUtility.GetLocalizedDisplayName(spawnEntityOnDeathCD.objectToSpawn, spawnEntityOnDeathCD.objectVariation) != null) {
+							var entry = new Drops {
+								Result = (spawnEntityOnDeathCD.objectToSpawn, ObjectUtility.GetPrimaryVariation(spawnEntityOnDeathCD.objectToSpawn, spawnEntityOnDeathCD.objectVariation)),
+								Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
+								Chance = spawnEntityOnDeathCD.spawnChance,
+								ChanceForOne = spawnEntityOnDeathCD.spawnChance,
+								Amount = (1, 1),
+								Rolls = (1, 1),
+								MaxAmountCheckRadius = spawnEntityOnDeathCD.maxAmountCheckRadius,
+								MaxAmountAllowedWithinRadius = spawnEntityOnDeathCD.maxAmountAllowedWithinRadius
+							};
+							AddNormalOrSceneEntry(entry.Result.Id, entry.Result.Variation, optionalSceneName, entry);
 						
-						genericPool.AddEntry(entry);
+							genericPool.AddEntry(entry);	
+						}
 					}
 					
 					// Boss chest
@@ -324,12 +326,9 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				// Normal objects
 				foreach (var (objectData, authoring) in allObjects) {
 					var entity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, pugDatabaseBankBlob, objectData.variation);
-					if (entity == Unity.Entities.Entity.Null || !ObjectUtility.IsPrimaryVariation(objectData))
+					if (entity == Unity.Entities.Entity.Null)
 						continue;
 
-					if (ItemBrowserAPI.IsDeprecatedObject(objectData))
-						continue;
-					
 					var primaryLootTable = new PrimaryLootTable();
 					var genericPool = primaryLootTable.CreateAndAddPool();
 					

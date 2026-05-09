@@ -15,10 +15,6 @@ namespace ItemBrowser.Content.VanillaData {
 	public class VanillaPlugin : ItemBrowserPlugin {
 		public override bool AutomaticallyRegisterFromAssets => true;
 
-		private const int UpdateGetObjectsInInventoryAndNearbyChestsFrames = 3;
-		private static HashSet<ObjectID> _objectsInInventoryAndNearbyChests;
-		private static int _lastGetObjectsInInventoryAndNearbyChests;
-
 		public override void OnEarlyRegister(ItemBrowserRegistry registry) {
 			foreach (var objectData in ObjectUtility.GetAllObjects()) {
 				var isIndexedItem = IsItemIndexed(objectData);
@@ -437,45 +433,18 @@ namespace ItemBrowser.Content.VanillaData {
 			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_Craftable") {
 				Icon = ObjectID.CopperWorkbench,
 				Function = objectData => {
-					var craftingHandler = Manager.main.player?.playerCraftingHandler;
-					if (craftingHandler == null)
-						return false;
-
 					var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
-					if (objectInfo == null)
+					if (objectInfo == null || !ItemBrowserAPI.ObjectEntryRegistry.GetEntries<Crafting>(ObjectEntryType.Source, objectData).Any())
 						return false;
 
-					if (!ItemBrowserAPI.ObjectEntryRegistry.GetEntries<Crafting>(ObjectEntryType.Source, objectData).Any())
-						return false;
-
-					var nearbyChests = craftingHandler.GetNearbyChests();
-					var recipeInfo = new CraftingHandler.RecipeInfo(objectInfo, 1);
-
-					return craftingHandler.HasMaterialsInCraftingInventoryToCraftRecipe(recipeInfo, true, nearbyChests, true);
+					return ObjectUtility.HasMaterialsInInventoryAndNearbyChestsToCraft(Manager.main.player, objectInfo);
 				},
 				FunctionIsDynamic = true,
 				CausesItemCraftingRequirementsToDisplay = true
 			});
-			registry.AddItemFilter(utilityGroup, new($"{utilityGroup}_InInventory") {
-				Icon = ObjectID.InventoryChest,
-				Function = objectData => {
-					if (Time.frameCount >= _lastGetObjectsInInventoryAndNearbyChests + UpdateGetObjectsInInventoryAndNearbyChestsFrames) {
-						_objectsInInventoryAndNearbyChests = ObjectUtility.GetObjectsInInventoryAndNearbyChests(Manager.main.player);
-						_lastGetObjectsInInventoryAndNearbyChests = Time.frameCount;
-					}
-					
-					return _objectsInInventoryAndNearbyChests.Contains(objectData.objectID);
-				},
-				FunctionIsDynamic = true
-			});
 			registry.AddItemFilter(utilityGroup, new($"{utilityGroup}_Discovered") {
 				Icon = ObjectID.Portal,
 				Function = objectData => ObjectUtility.HasBeenDiscovered(objectData),
-				FunctionIsDynamic = true
-			});
-			registry.AddItemFilter(utilityGroup, new($"{utilityGroup}_NonObtainable") {
-				Icon = ObjectID.WallObsidianBlock,
-				Function = ObjectUtility.IsNonObtainable,
 				FunctionIsDynamic = true
 			});
 			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_Technical_Item") {

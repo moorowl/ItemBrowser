@@ -44,9 +44,9 @@ namespace ItemBrowser.Common.Api {
 				_hasRegisteredPluginContent = true;
 			}
 
-			BakeLanguageSpecificContent();
+			ReloadLanguageSpecificContent();
 			if (Manager.load.IsScreenBlack()) {
-				BakeWorldSpecificContent();
+				ReloadWorldSpecificContent();
 				Manager.main.StartCoroutine(TemporarilyShowBrowserToAvoidLagSpikes());
 			}
 		}
@@ -82,11 +82,11 @@ namespace ItemBrowser.Common.Api {
 			);
 		}
 		
-		private static void BakeLanguageSpecificContent() {
+		private static void ReloadLanguageSpecificContent() {
 			ObjectUtility.Bake();
 		}
 		
-		private static void BakeWorldSpecificContent() {
+		private static void ReloadWorldSpecificContent() {
 			StructureUtility.Bake();
 			
 			var startTime = DateTime.UtcNow;

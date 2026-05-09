@@ -1,4 +1,5 @@
-﻿using Unity.Collections;
+﻿using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -13,6 +14,7 @@ namespace ItemBrowser.Common.Api {
 		public static NativeHashSet<DataBlockAddress> ActivatedContentBundles;
 		public static BlobAssetReference<LootTableBankBlob> LootTableBank;
 		public static BlobAssetReference<PugDatabase.PugDatabaseBank> PugDatabaseBank;
+		public static List<Entity> NearbyChests;
 		public static int PlayerCount;
 		public static bool HasRunAtLeastOnce;
 
@@ -41,27 +43,18 @@ namespace ItemBrowser.Common.Api {
 			if (!HasRunAtLeastOnce || ShouldUpdate(ref state, networkTime, 23, 0.2f)) {
 				HasRunAtLeastOnce = true;
 
-				// Update WorldInfo
 				WorldInfo = SystemAPI.GetSingleton<WorldInfoCD>();
-				
-				// Update WorldGenerationType
 				WorldGenerationType = SystemAPI.GetSingleton<WorldGenerationTypeCD>().Value;
-				
-				// Update CustomSceneTableCD
 				CustomSceneTable = SystemAPI.GetSingleton<CustomSceneTableCD>().Value;
+				LootTableBank = SystemAPI.GetSingleton<LootTableBankCD>().Value;
+				PugDatabaseBank = SystemAPI.GetSingleton<PugDatabase.DatabaseBankCD>().databaseBankBlob;
+				PlayerCount = _playerCountQuery.CalculateEntityCount();
+				NearbyChests = Manager.main.player?.playerCraftingHandler?.GetNearbyChests() ?? new List<Entity>();
 				
-				// Update ActivatedContentBundles
 				ActivatedContentBundles.Clear();
 				var activatedContentBundlesBuffer = SystemAPI.GetSingletonBuffer<ActivatedContentBundlesBuffer>();
 				foreach (var activatedContentBundles in activatedContentBundlesBuffer)
 					ActivatedContentBundles.Add(activatedContentBundles.ContentBundle);
-
-				LootTableBank = SystemAPI.GetSingleton<LootTableBankCD>().Value;
-
-				PugDatabaseBank = SystemAPI.GetSingleton<PugDatabase.DatabaseBankCD>().databaseBankBlob;
-
-				// Update PlayerCount
-				PlayerCount = _playerCountQuery.CalculateEntityCount();
 			}
 		}
 
@@ -74,7 +67,7 @@ namespace ItemBrowser.Common.Api {
 			HasRunAtLeastOnce = default;
 		}
 		
-		private static bool ShouldUpdate(ref SystemState state, NetworkTime networkTime, int offset, float minimumUpdateRate) {
+		public static bool ShouldUpdate(ref SystemState state, NetworkTime networkTime, int offset, float minimumUpdateRate) {
 			var num = math.max(1, (int) math.round(20f / minimumUpdateRate));
 			return !networkTime.ServerTick.IsValid || networkTime.ServerTick.TickIndexForValidTick % num == offset % num;
 		}

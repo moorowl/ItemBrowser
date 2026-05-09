@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using I2.Loc;
+using Inventory;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.Api.Overrides;
@@ -53,12 +54,14 @@ namespace ItemBrowser.Utilities {
 		private static readonly Dictionary<ObjectDataCD, HashSet<string>> AssociatedConditionCategories = new();
 		private static readonly Dictionary<ObjectDataCD, int> ArmorValues = new();
 		private static readonly Dictionary<ObjectDataCD, Sprite> IconOverrides = new();
+		private static readonly Dictionary<ObjectCategoryTag, HashSet<ObjectDataCD>> TagLookup = new();
 
 		internal static void Bake() {
 			BakeDisplayNamesAndNotes();
 			BakeCategories();
 			BakePrimaryVariations();
 			BakeConditions();
+			BakeTagLookup();
 		}
 
 		private static void BakeDisplayNamesAndNotes() {
@@ -114,9 +117,6 @@ namespace ItemBrowser.Utilities {
 				var localizedDescription = API.Localization.GetLocalizedTerm($"Items/{PlayerController.GetAnyObjectIDReplaceForNameAndDesc(objectData.objectID)}Desc");
 				if (localizedDescription != null)
 					Descriptions.TryAdd(objectData, localizedDescription);
-				
-				if (!Categories.ContainsKey(objectData.objectID))
-					Categories[objectData.objectID] = new HashSet<string>();
 			}
 			
 			// Setup display name sort orders
@@ -141,6 +141,11 @@ namespace ItemBrowser.Utilities {
 
 		private static void BakeCategories() {
 			Categories.Clear();
+
+			foreach (var objectData in GetAllObjects()) {
+				if (!Categories.ContainsKey(objectData.objectID))
+					Categories[objectData.objectID] = new HashSet<string>();
+			}
 			
 			foreach (var subCategory in ObjectIDCategoryManager.SubCategories) {
 				foreach (var objectId in subCategory.ObjectIds) {
@@ -252,6 +257,21 @@ namespace ItemBrowser.Utilities {
 			}
 		}
 
+		private static void BakeTagLookup() {
+			TagLookup.Clear();
+
+			foreach (var objectData in GetAllObjects()) {
+				var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
+
+				foreach (var tag in objectInfo.tags) {
+					if (!TagLookup.ContainsKey(tag))
+						TagLookup[tag] = new HashSet<ObjectDataCD>();
+					
+					TagLookup[tag].Add(objectData);
+				}
+			}
+		}
+		
 		public static string GetLocalizedDisplayName(ObjectDataCD objectData) {
 			return DisplayNames.GetValueOrDefault(objectData);
 		}
@@ -635,9 +655,32 @@ namespace ItemBrowser.Utilities {
 			
 			return amount;
 		}
+
+		public static bool HasMaterialsInInventoryAndNearbyChestsToCraft(PlayerController player, ObjectInfo recipeInfo) {
+			var objects = GetObjectsInInventoryAndNearbyChests(player);
+
+			if (recipeInfo.craftingSettings.canOnlyUseAnyMaterialsWithTag != ObjectCategoryTag.None && TagLookup.TryGetValue(recipeInfo.craftingSettings.canOnlyUseAnyMaterialsWithTag, out var objectsWithTag)) {
+				foreach (var objectData in objectsWithTag) {
+					if (objects.TryGetValue(objectData.objectID, out var amount) && amount >= 1)
+						return true;
+				}
+
+				return false;
+			}
+			
+			foreach (var craftingObject in recipeInfo.requiredObjectsToCraft) {
+				if (!objects.TryGetValue(craftingObject.objectID, out var amountInInventory))
+					return false;
+
+				if (craftingObject.amount > amountInInventory)
+					return false;
+			}
+
+			return true;
+		}
 		
-		public static HashSet<ObjectID> GetObjectsInInventoryAndNearbyChests(PlayerController player) {
-			var objects = new HashSet<ObjectID>();
+		public static Dictionary<ObjectID, int> GetObjectsInInventoryAndNearbyChests(PlayerController player) {
+			var objects = new Dictionary<ObjectID, int>();
 			
 			var querySystem = player.querySystem;
 			if (querySystem == null)
@@ -646,18 +689,23 @@ namespace ItemBrowser.Utilities {
 			var inventoryBufferLookup = querySystem.GetBufferLookup<InventoryBuffer>();
 			var containedObjectsBufferLookup = querySystem.GetBufferLookup<ContainedObjectsBuffer>();
 			
-			AddObjectsInEntity(player.entity, objects, inventoryBufferLookup, containedObjectsBufferLookup);
-			foreach (var chest in player.playerCraftingHandler.GetNearbyChests())
-				AddObjectsInEntity(chest, objects, inventoryBufferLookup, containedObjectsBufferLookup);
+			AddObjectsInEntity(player.entity, objects, ClientWorldStateSystem.PugDatabaseBank, inventoryBufferLookup, containedObjectsBufferLookup);
+			foreach (var chest in ClientWorldStateSystem.NearbyChests)
+				AddObjectsInEntity(chest, objects, ClientWorldStateSystem.PugDatabaseBank, inventoryBufferLookup, containedObjectsBufferLookup);
 
 			return objects;
 		}
 		
-		private static void AddObjectsInEntity(Entity entity, HashSet<ObjectID> objects, BufferLookup<InventoryBuffer> inventoryBufferLookup, BufferLookup<ContainedObjectsBuffer> containedObjectsBufferLookup) {
+		private static void AddObjectsInEntity(Entity entity, Dictionary<ObjectID, int> objects, BlobAssetReference<PugDatabase.PugDatabaseBank> pugDatabaseBlob, BufferLookup<InventoryBuffer> inventoryBufferLookup, BufferLookup<ContainedObjectsBuffer> containedObjectsBufferLookup) {
 			var containedObjectsBuffer = containedObjectsBufferLookup[entity];
 			foreach (var inventory in inventoryBufferLookup[entity]) {
-				for (var i = inventory.startIndex; i < inventory.startIndex + inventory.size; i++)
-					objects.Add(containedObjectsBuffer[i].objectID);
+				for (var i = inventory.startIndex; i < inventory.startIndex + inventory.size; i++) {
+					var objectData = containedObjectsBuffer[i];
+					var amount = PugDatabase.GetEntityObjectInfo(objectData.objectID, pugDatabaseBlob).isStackable ? objectData.amount : 1;
+
+					if (!objects.TryAdd(objectData.objectID, amount))
+						objects[objectData.objectID] += amount;
+				}
 			}
 		}
 		

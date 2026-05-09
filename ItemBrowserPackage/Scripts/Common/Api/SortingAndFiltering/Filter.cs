@@ -18,7 +18,6 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 		public FilterDelegate Function { get; set; }
 		// Causes the item list to constantly refresh. Should be used if the function checks something that can change during gameplay
 		public bool FunctionIsDynamic { get; set; }
-		public bool FunctionRequiresMainThread { get; set; }
 		public bool CausesItemCraftingRequirementsToDisplay { get; set; }
 		
 		public Filter(string name, string description = null) {
