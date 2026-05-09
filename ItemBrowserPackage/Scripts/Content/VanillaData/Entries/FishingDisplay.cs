@@ -17,7 +17,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		
 		public override IEnumerable<Fishing> OnSort(IEnumerable<Fishing> entries) {
 			return entries
-				.OrderBy(entry => entry.Biome == Biome.None ? 1 : 0)
+				.OrderBy(entry => entry.Biome == Biome.None ? 0 : 1)
 				.ThenBy(entry => (int) entry.Tileset * 1000 + (int) entry.Biome)
 				.ThenBy(entry => (int) entry.Type)
 				.ThenByDescending(entry => (int) (entry.Chance * 65535))
