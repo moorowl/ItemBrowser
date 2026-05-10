@@ -260,7 +260,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Icon = ObjectID.TinDagger,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
-					if (PugDatabase.HasComponent<HasWeaponDamageCD>(objectData) && !ObjectUtility.MiningToolObjectTypes.Contains(objectType) && !(PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam))
+					if (PugDatabase.HasComponent<HasWeaponDamageCD>(objectData) && !ObjectUtility.ToolObjectTypes.Contains(objectType) && objectType != ObjectType.PlaceablePrefab && !(PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam))
 						return true;
 
 					return PugDatabase.TryGetComponent<SecondaryUseCD>(objectData, out var secondaryUse) && secondaryUse.summonsMinion;
@@ -271,8 +271,9 @@ namespace ItemBrowser.Content.VanillaData {
 				Icon = ObjectID.Bucket,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
-					return ObjectUtility.ToolObjectTypes.Contains(objectType) || (PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam);
-				}
+					return (ObjectUtility.ToolObjectTypes.Contains(objectType) && objectType != ObjectType.PlaceablePrefab) || (PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam);
+				},
+				Group = equipmentGroup
 			});
 			registry.AddItemFilter(equipmentGroup, new Filter($"{equipmentGroup}_Armor") {
 				Icon = ObjectID.IronShield,
