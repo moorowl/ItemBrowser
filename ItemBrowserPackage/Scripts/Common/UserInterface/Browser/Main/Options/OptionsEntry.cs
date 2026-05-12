@@ -1,13 +1,18 @@
 using System.Collections.Generic;
 using ItemBrowser.Utilities;
+using PugMod;
+using Unity.Mathematics;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class OptionsEntry : ItemBrowserButton {
+		private const int MaxNameLength = 33;
+		
 		public PugText nameText;
 		public PugText valueText;
 		public float defaultTextOpacity;
 		public float disabledTextOpacity;
 
+		private string _nameTerm;
 		private OptionsEntryType _type;
 		
 		public override void OnLeftClicked(bool mod1, bool mod2) {
@@ -40,21 +45,22 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 		public override TextAndFormatFields GetHoverTitle() {
 			if (valueText.displayedTextString.Length > 0) {
+				var localizedName = API.Localization.GetLocalizedTerm(_nameTerm) ?? _nameTerm;
 				return new TextAndFormatFields {
-					text = $"{nameText.displayedTextString}: {valueText.displayedTextString}",
+					text = $"{localizedName}: {valueText.displayedTextString}",
 					dontLocalize = true
 				};
 			}
 
 			return new TextAndFormatFields {
-				text = nameText.GetText()
+				text = _nameTerm
 			};
 		}
 
 		public override List<TextAndFormatFields> GetHoverDescription() {
 			var lines = new List<TextAndFormatFields> {
 				new() {
-					text = nameText.GetText() + "Desc",
+					text = _nameTerm + "Desc",
 					color = UserInterfaceUtility.DescriptionColor
 				}
 			};
@@ -65,19 +71,29 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		public void SetNameAndType(string term, OptionsEntryType type) {
-			nameText.Render(term);
+			_nameTerm = term;
 			_type = type;
+
 			UpdateValueText();
 		}
 		
 		private void UpdateVisuals() {
 			canBeClicked = _type?.CanBeClicked?.Invoke() ?? true;
+
 			UpdateValueText();
 			UpdateTextOpacity();
 		}
 		
 		private void UpdateValueText() {
 			_type?.UpdateValueText?.Invoke(valueText, canBeClicked);
+
+			var localizedName = API.Localization.GetLocalizedTerm(_nameTerm) ?? _nameTerm;
+			var allowedLeftChars = MaxNameLength - valueText.displayedTextString.Length;
+			if (allowedLeftChars < localizedName.Length)
+				localizedName = localizedName[..math.max(0, allowedLeftChars - 3)].TrimEnd() + "...";
+
+			nameText.localize = false;
+			nameText.Render(localizedName);
 		}
 
 		private void UpdateTextOpacity() {
