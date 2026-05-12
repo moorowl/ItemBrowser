@@ -115,8 +115,11 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: 
-      description: 
+      title: "Mostrar informa\xE7\xF5es t\xE9cnicas"
+      description: "Mostra as seguintes informa\xE7\xF5es na descri\xE7\xE3o (se
+        aplic\xE1veis):\n- \xCDndice interno e varia\xE7\xF5es\n- Nome t\xE9cnico\n-
+        Tipo de ladrilho e conjunto de ladrilhos\n- Nome do prefab autoral\n- Nome
+        do prefab gr\xE1fico"
     - m_language:
         m_address:
           m_low: -998452581336238672

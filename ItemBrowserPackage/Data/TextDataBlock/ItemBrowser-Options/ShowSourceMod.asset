@@ -102,8 +102,9 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: 
-      description: 
+      title: Mostrar mod de origem
+      description: "Mostra, na descri\xE7\xE3o, o mod detectado do qual o objeto
+        veio."
     - m_language:
         m_address:
           m_low: -998452581336238672

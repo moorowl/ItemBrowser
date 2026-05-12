@@ -102,8 +102,8 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: 
-      description: 
+      title: '{0}'
+      description: Itens da categoria {0} que possuem efeitos.
     - m_language:
         m_address:
           m_low: -998452581336238672

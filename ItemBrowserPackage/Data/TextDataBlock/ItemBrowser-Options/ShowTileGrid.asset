@@ -102,8 +102,9 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: 
-      description: 
+      title: Mostrar grade de ladrilhos
+      description: "Mostra uma grade que representa as bordas dos ladrilhos e c\xE9lulas
+        de gera\xE7\xE3o de criaturas."
     - m_language:
         m_address:
           m_low: -998452581336238672

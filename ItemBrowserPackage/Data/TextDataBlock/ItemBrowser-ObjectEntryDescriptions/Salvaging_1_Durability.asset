@@ -103,7 +103,8 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: 
+      title: "Concede {0}-{1}, com base na durabilidade atual do item e/ou chance
+        aleat\xF3ria"
       description: 
     - m_language:
         m_address:

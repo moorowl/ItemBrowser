@@ -103,7 +103,8 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: 
+      title: '- Esta chance aumenta em {0}-{1}% em plantas cultivadas por jogadores
+        com o talento ''Especialista em jardinagem'''
       description: 
     - m_language:
         m_address:

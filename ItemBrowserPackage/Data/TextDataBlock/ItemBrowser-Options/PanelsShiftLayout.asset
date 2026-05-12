@@ -102,8 +102,9 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: 
-      description: 
+      title: Recentralizar janela
+      description: "Centraliza automaticamente a janela de pesquisa quando um painel
+        opcional \xE9 alternado."
     - m_language:
         m_address:
           m_low: -998452581336238672
