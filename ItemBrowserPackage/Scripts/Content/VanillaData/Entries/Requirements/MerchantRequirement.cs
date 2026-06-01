@@ -11,13 +11,11 @@ namespace ItemBrowser.Content.VanillaData.Entries.Requirements {
 		}
 
 		public override bool IsFulfilled() {
-			var worldInfo = ClientWorldStateSystem.WorldInfo;
-
 			return Requirement switch {
-				MerchantItemRequirement.HiveBossStatueActivated => worldInfo.hiveBossStatueIsActivated,
-				MerchantItemRequirement.LarvaBossStatueActivated => worldInfo.larvaBossStatueIsActivated,
-				MerchantItemRequirement.CoreActivated => worldInfo.coreIsActivated,
-				MerchantItemRequirement.CoreBossDefeated => worldInfo.coreBossHasBeenKilled,
+				MerchantItemRequirement.HiveBossStatueActivated => ClientWorldStateSystem.HiveBossStatueIsActivated,
+				MerchantItemRequirement.LarvaBossStatueActivated => ClientWorldStateSystem.LarvaBossStatueIsActivated,
+				MerchantItemRequirement.CoreActivated => ClientWorldStateSystem.WorldInfo.coreIsActivated,
+				MerchantItemRequirement.CoreBossDefeated => ClientWorldStateSystem.WorldInfo.coreBossHasBeenKilled,
 				_ => true
 			};
 		}
