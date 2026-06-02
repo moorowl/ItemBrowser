@@ -119,7 +119,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				return;
 			
 			var player = Manager.main.player;
-			player.playerCommandSystem.CreateAndDropEntity(containedObjectData.objectID, player.WorldPosition, CanPickUpStack(containedObjectData) ? Constants.inventoryMaxAmountPerSlot : 1, player.entity, containedObjectData.variation);
+			player.playerCommandSystem.CreateAndDropEntity(containedObjectData.objectID, player.WorldPosition, GetAmountToPickUp(containedObjectData).Amount, player.entity, containedObjectData.variation);
 			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.AddObjectToInventory, this);
 		}
 
@@ -221,7 +221,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				}
 
 				if (CanCheatInObjects)
-					UserInterfaceUtility.AppendButtonHint(lines, CanPickUpStack(containedObjectData) ? "ItemBrowser-ButtonHints/GiveStack" : "ItemBrowser-ButtonHints/GiveOne", "ControlMapper/ItemBrowser-SpawnItem");
+					UserInterfaceUtility.AppendButtonHint(lines, GetAmountToPickUp(containedObjectData).Hint, "ControlMapper/ItemBrowser-SpawnItem");
 				
 				UserInterfaceUtility.AppendButtonHint(lines, IsFavorited ? "ItemBrowser-ButtonHints/RemoveFavorite" : "ItemBrowser-ButtonHints/AddFavorite", "ToggleLocking");
 			}
@@ -356,11 +356,23 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			
 			return false;
 		}
-		
-		private static bool CanPickUpStack(ObjectDataCD objectData) {
-			return InputHelper.IsPickUpTenHeld && PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation) is {
+
+		private static (int Amount, string Hint) GetAmountToPickUp(ObjectDataCD objectData) {
+			const string giveStackHint = "ItemBrowser-ButtonHints/GiveStack";
+			const string giveTenHint = "ItemBrowser-ButtonHints/GiveTen";
+			const string giveOneHint = "ItemBrowser-ButtonHints/GiveOne";
+			
+			var isStackable = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation) is {
 				isStackable: true
 			};
+
+			if (isStackable && InputHelper.IsPickUpStackHeld)
+				return (Constants.inventoryMaxAmountPerSlot, giveStackHint);
+
+			if (isStackable && InputHelper.IsPickUpTenHeld)
+				return (10, giveTenHint);
+
+			return (1, giveOneHint);
 		}
 	}
 }

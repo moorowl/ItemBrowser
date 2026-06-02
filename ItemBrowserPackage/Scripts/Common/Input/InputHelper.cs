@@ -15,13 +15,14 @@ namespace ItemBrowser.Common.Input {
 		private const PlayerInput.InputType ToggleBrowserInput = (PlayerInput.InputType) 39000;
 		private const PlayerInput.InputType ShowSourcesInput = (PlayerInput.InputType) 39001;
 		private const PlayerInput.InputType ShowUsagesInput = (PlayerInput.InputType) 39002;
-		private const PlayerInput.InputType ShowTechnicalInfoInput = (PlayerInput.InputType) 39003;
 		private const PlayerInput.InputType SpawnItemInput = (PlayerInput.InputType) 39004;
 		private const PlayerInput.InputType ToggleTileGridInput = (PlayerInput.InputType) 39005;
+		private const PlayerInput.InputType ShowTechnicalInfoInput = (PlayerInput.InputType) 39006;
 
 		public static bool IsShowTechnicalInfoHeld => OptionsManager.Instance.AlwaysShowTechnicalInfo || Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(ShowTechnicalInfoInput);
 		public static bool IsSpawnItemPressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(SpawnItemInput);
 		public static bool IsPickUpTenHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_10);
+		public static bool IsPickUpStackHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_HALF);
 		public static bool IsToggleFavoritePressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.LOCKING_TOGGLE);
 		public static bool IsToggleTileGridPressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(ToggleTileGridInput);
 		
@@ -77,7 +78,7 @@ namespace ItemBrowser.Common.Input {
 			});
 			InputAdder.AddKeybind(userData, new InputAdder.KeybindConfiguration((int) ShowTechnicalInfoInput, gameplayCategoryId, gameplayInputCategoryId) {
 				Name = "ItemBrowser-ShowTechnicalInfo",
-				KeyboardKey = KeyboardKeyCode.LeftShift,
+				KeyboardKey = KeyboardKeyCode.LeftAlt,
 				JoystickElementId = 14
 			});
 			InputAdder.AddKeybind(userData, new InputAdder.KeybindConfiguration((int) ToggleTileGridInput, gameplayCategoryId, gameplayInputCategoryId) {
