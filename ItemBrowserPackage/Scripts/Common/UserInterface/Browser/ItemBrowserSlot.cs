@@ -222,6 +222,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 				if (CanCheatInObjects)
 					UserInterfaceUtility.AppendButtonHint(lines, CanPickUpStack(containedObjectData) ? "ItemBrowser-ButtonHints/GiveStack" : "ItemBrowser-ButtonHints/GiveOne", "ControlMapper/ItemBrowser-SpawnItem");
+				
+				UserInterfaceUtility.AppendButtonHint(lines, IsFavorited ? "ItemBrowser-ButtonHints/RemoveFavorite" : "ItemBrowser-ButtonHints/AddFavorite", "ToggleLocking");
 			}
 			
 			return lines;
