@@ -53,7 +53,7 @@ namespace ItemBrowser.Common.Api {
 
 		private static void UninitBrowserUI() {
 			if (ItemBrowserUI != null)
-				Object.Destroy(ItemBrowserUI);
+				Object.Destroy(ItemBrowserUI.gameObject);
 		}
 
 		private static void RegisterPluginContent() {
