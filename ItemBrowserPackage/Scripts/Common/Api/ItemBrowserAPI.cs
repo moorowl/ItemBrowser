@@ -32,7 +32,7 @@ namespace ItemBrowser.Common.Api {
 			Plugins.Add(instance);
 		}
 		
-		private static void InitBrowserUI() {
+		private static void InitBrowserUI(bool reloadWorldSpecificContent, bool reloadLanguageSpecificContent) {
 			var prefab = Main.AssetBundle.LoadAsset<GameObject>(BrowserPrefabPath);
 			if (prefab == null)
 				throw new NullReferenceException($"Failed to load BrowserUI prefab at {BrowserPrefabPath}");
@@ -44,11 +44,13 @@ namespace ItemBrowser.Common.Api {
 				_hasRegisteredPluginContent = true;
 			}
 
-			ReloadLanguageSpecificContent();
-			if (Manager.load.IsScreenBlack()) {
+			if (reloadLanguageSpecificContent)
+				ReloadLanguageSpecificContent();
+			if (reloadWorldSpecificContent)
 				ReloadWorldSpecificContent();
+			
+			if (Manager.load.IsScreenBlack())
 				Manager.main.StartCoroutine(TemporarilyShowBrowserToAvoidLagSpikes());
-			}
 		}
 
 		private static void UninitBrowserUI() {
@@ -57,6 +59,8 @@ namespace ItemBrowser.Common.Api {
 		}
 
 		private static void RegisterPluginContent() {
+			Main.Log(nameof(ItemBrowserAPI), "RegisterPluginContent");
+			
 			foreach (var plugin in Plugins) {
 				if (plugin.AutomaticallyRegisterFromAssets)
 					plugin.OnAutomaticallyRegisterFromAssets(Registry);
@@ -83,10 +87,14 @@ namespace ItemBrowser.Common.Api {
 		}
 		
 		private static void ReloadLanguageSpecificContent() {
+			Main.Log(nameof(ItemBrowserAPI), "ReloadLanguageSpecificContent");
+			
 			ObjectUtility.Bake();
 		}
 		
 		private static void ReloadWorldSpecificContent() {
+			Main.Log(nameof(ItemBrowserAPI), "ReloadWorldSpecificContent");
+			
 			StructureUtility.Bake();
 			
 			var startTime = DateTime.UtcNow;
@@ -171,6 +179,7 @@ namespace ItemBrowser.Common.Api {
 		public static bool IsPooledElement(UIelement element) {
 			return Registry.ElementPools.ContainsKey(element.GetType());
 		}
+
 		
 		[HarmonyPatch]
 		public static class Patches {
@@ -184,7 +193,7 @@ namespace ItemBrowser.Common.Api {
 
 				if (ItemBrowserUI != null) {
 					UninitBrowserUI();
-					InitBrowserUI();
+					InitBrowserUI(false, true);
 				}
 				
 				_lastLanguage = LocalizationManager.CurrentLanguage;
@@ -197,7 +206,7 @@ namespace ItemBrowser.Common.Api {
 					return;
 
 				_lastLanguage = LocalizationManager.CurrentLanguage;
-				__instance.StartCoroutine(InitBrowserUICoroutine());
+				__instance.StartCoroutine(InitBrowserOnWorldEnteredRoutine());
 			}
 
 			[HarmonyPatch(typeof(PlayerController), "OnFree")]
@@ -209,11 +218,11 @@ namespace ItemBrowser.Common.Api {
 				UninitBrowserUI();
 			}
 
-			private static IEnumerator InitBrowserUICoroutine() {
+			private static IEnumerator InitBrowserOnWorldEnteredRoutine() {
 				// Have to wait for active content bundles to be synced
 				yield return new WaitUntil(() => ClientWorldStateSystem.HasRunAtLeastOnce);
-				
-				InitBrowserUI();
+
+				InitBrowserUI(true, true);
 			}
 		}
 	}
