@@ -15,8 +15,6 @@ namespace ItemBrowser.Common.Api {
 		public static BlobAssetReference<LootTableBankBlob> LootTableBank;
 		public static BlobAssetReference<PugDatabase.PugDatabaseBank> PugDatabaseBank;
 		public static List<Entity> NearbyChests;
-		public static bool LarvaBossStatueIsActivated;
-		public static bool HiveBossStatueIsActivated;
 		public static int PlayerCount;
 		public static bool HasRunAtLeastOnce;
 
@@ -53,20 +51,6 @@ namespace ItemBrowser.Common.Api {
 				PlayerCount = _playerCountQuery.CalculateEntityCount();
 				NearbyChests = Manager.main.player?.playerCraftingHandler?.GetNearbyChests() ?? new List<Entity>();
 
-				// we can't just use the fields in WorldInfoCD because they aren't synced to clients
-				LarvaBossStatueIsActivated = false;
-				HiveBossStatueIsActivated = false;
-				foreach (var bossStatue in SystemAPI.Query<RefRO<BossStatueCD>>()) {
-					switch (bossStatue.ValueRO.acceptsCrystalID) {
-						case ObjectID.LarvaBossCrystal:
-							LarvaBossStatueIsActivated = true;
-							break;
-						case ObjectID.HiveBossCrystal:
-							HiveBossStatueIsActivated = true;
-							break;
-					}
-				}
-				
 				ActivatedContentBundles.Clear();
 				var activatedContentBundlesBuffer = SystemAPI.GetSingletonBuffer<ActivatedContentBundlesBuffer>();
 				foreach (var activatedContentBundles in activatedContentBundlesBuffer)
