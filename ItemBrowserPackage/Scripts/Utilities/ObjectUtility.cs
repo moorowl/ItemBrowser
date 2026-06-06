@@ -710,7 +710,7 @@ namespace ItemBrowser.Utilities {
 		}
 		
 		public static List<(ObjectID Id, List<Biome> Biomes, List<Tileset> Tilesets)> GetAllCritterSpawnAreas(List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
-			return allObjects
+			var spawnAreas = allObjects
 				.Where(entry => PugDatabase.TryGetComponent<ObjectPropertiesCD>(entry.ObjectData, out var propertiesCD) && propertiesCD.Has(PropertyID.Critter.spawnContinuously))
 				.GroupBy(entry => entry.ObjectData.objectID)
 				.Select(group => {
@@ -731,6 +731,14 @@ namespace ItemBrowser.Utilities {
 					);
 				})
 				.ToList();
+
+			// Hardcoded case for blackbugs in passage TODO
+			foreach (var spawnArea in spawnAreas) {
+				if (spawnArea.biomesToSpawnIn.Count == 0 && spawnArea.tilesetsToSpawnIn.Count == 0)
+					spawnArea.biomesToSpawnIn.Add(Biome.Passage);
+			}
+			
+			return spawnAreas;
 		}
 		
 		private static readonly HashSet<EquipmentSlotType> CarriedEquipmentSlotTypes = new() {
