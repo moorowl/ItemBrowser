@@ -20,6 +20,19 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				text = "ItemBrowser-ObjectEntryDescriptions/CookingIngredient_0",
 				color = UserInterfaceUtility.DescriptionColor
 			});
+			
+			description.AddPadding();
+
+			foreach (var givesConditionsWhenConsumedBuffer in PugDatabase.GetBuffer<GivesConditionsWhenConsumedBuffer>(entry.Ingredient)) {
+				var conditionData = givesConditionsWhenConsumedBuffer.conditionDataContainer.conditionDataWhenCooked;
+
+				if (conditionData.conditionID != ConditionID.None && conditionData.value != 0) {
+					var text = ConditionUI.GetConditionTextAndFormatFields(default, conditionData, false, false, false);
+					text.color = UserInterfaceUtility.DescriptionColor;
+					text.dontLocalizeFormatFields = true;
+					description.AddLine(text);
+				}
+			}
 		}
 	}
 }
