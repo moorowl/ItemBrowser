@@ -14,21 +14,19 @@ public class Main : IMod {
 	public const string Version = "1.3.1";
 	public const string InternalName = "ItemBrowser";
 	public const string DisplayName = "Item Browser";
-	
-	internal static LoadedMod ModInfo { get; private set; }
+
 	internal static AssetBundle AssetBundle { get; private set; }
 	
 	public void EarlyInit() {
 		Log(nameof(Main), $"Mod version: {Version}");
 
-		ModInfo = API.ModLoader.LoadedMods.FirstOrDefault(modInfo => modInfo.Handlers.Contains(this));
-		AssetBundle = ModInfo!.AssetBundles[0];
+		AssetBundle = API.ModLoader.LoadedMods.First(modInfo => modInfo.Handlers.Contains(this)).AssetBundles[0];
 	}
 
 	public void Init() {
 		OptionsManager.Instance.Init();
 
-		ItemBrowserAPI.AddPlugin(new VanillaPlugin(), ModInfo);
+		ItemBrowserAPI.AddPlugin(new VanillaPlugin(), this);
 
 		ModUtility.Bake();
 	}

@@ -22,13 +22,14 @@ namespace ItemBrowser.Common.Api {
 		internal static readonly ItemBrowserRegistry Registry = new();
 		internal static readonly ObjectEntryRegistry ObjectEntryRegistry = new();
 		private static readonly List<ItemBrowserPlugin> Plugins = new();
-		
+
 		private static bool _hasRegisteredPluginContent;
 
-		public static void AddPlugin(ItemBrowserPlugin instance, LoadedMod sourceMod) {
-			instance.AssociatedLoadedMod = sourceMod;
+		public static void AddPlugin(ItemBrowserPlugin instance, IMod sourceMod) {
+			var modInfo = API.ModLoader.LoadedMods.First(modInfo => modInfo.Handlers.Contains(sourceMod));
+			instance.AssociatedLoadedMod = modInfo;
 			
-			Main.Log(nameof(ItemBrowserAPI), $"Added plugin {instance.GetType().GetNameChecked()} from {sourceMod.Metadata.name}");
+			Main.Log(nameof(ItemBrowserAPI), $"Added plugin {instance.GetType().GetNameChecked()} from {modInfo.Metadata.name}");
 			Plugins.Add(instance);
 		}
 		
