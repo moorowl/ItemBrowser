@@ -139,7 +139,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					}
 					
 					// Drops
-					if (EntityUtility.TryGetComponentData<ChanceToDropLootCD>(entity, world, out var chanceToDropLootCD) && EntityUtility.TryGetBuffer<DropsLootBuffer>(entity, world, out var dropsLootBuffer)) {
+					if (EntityUtility.TryGetComponentData<ChanceToDropLootCD>(entity, world, out var chanceToDropLootCD) && !EntityUtility.HasComponentData<SpawnsItemsOnUseCD>(entity, world) && EntityUtility.TryGetBuffer<DropsLootBuffer>(entity, world, out var dropsLootBuffer)) {
 						var groupedDrops = dropsLootBuffer.ConvertToList().GroupBy(entry => entry.lootDropID).Select(group => new DropsLootBuffer {
 							lootDropID = group.First().lootDropID,
 							amount = group.Sum(entry => entry.amount),

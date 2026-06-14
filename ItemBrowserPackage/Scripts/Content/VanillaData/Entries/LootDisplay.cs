@@ -142,7 +142,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 				foreach (var dungeon in entry.FoundInDungeons) {
 					structureInfo.AddLine(new TextAndFormatFields {
-						text = "ItemBrowser-ObjectEntryDescriptions/Loot_4",
+						text = "ItemBrowser-ObjectEntryDescriptions/Loot_5",
 						formatFields = new[] {
 							dungeon.Name
 						},
@@ -162,7 +162,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					structureInfo.AddLine(new TextAndFormatFields {
 						text = "ItemBrowser-ObjectEntryDescriptions/Loot_4",
 						formatFields = new[] {
-							StructureUtility.GetPersistentSceneName(scene.Name)
+							StructureUtility.GetPersistentSceneName(scene.Name),
+							scene.Amount.ToString()
 						},
 						dontLocalizeFormatFields = true,
 						color = UserInterfaceUtility.DescriptionColor

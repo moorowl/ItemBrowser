@@ -147,7 +147,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				structureInfo.AddLine(new TextAndFormatFields {
 					text = "ItemBrowser-ObjectEntryDescriptions/Drops_6",
 					formatFields = new[] {
-						StructureUtility.GetPersistentSceneName(scene.Name)
+						StructureUtility.GetPersistentSceneName(scene.Name),
+						scene.Amount.ToString()
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtility.DescriptionColor
