@@ -5,24 +5,57 @@ using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Content.VanillaData.Entries;
 using ItemBrowser.Utilities;
+using Pug.UnityExtensions;
+using PugMod;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
-	public class ObjectGridSlot : ItemBrowserSlot {
+	public class VirtualObjectListSlot : ItemBrowserSlot {
 		public FiltersPanel filtersPanel;
-		public GridView gridView;
-
-		private ObjectDataCD _previousObjectData;
+		public ObjectListView objectListView;
+		public PugText nameText;
+		public float discoveredNameOpacity = 0.75f;
+		public float undiscoveredNameOpacity = 0.33f;
 		
-		public void SetObject(ObjectData objectData, ObjectGrid craftingSelectorUI) {
-			if (!_previousObjectData.EqualsExact(objectData))
-				Icon = new BasicSlotIcon(objectData);
+		private ObjectDataCD _previousObjectData;
+		private bool _wasDiscovered;
+		
+		public void SetObject(ObjectData objectData) {
+			if (_previousObjectData.EqualsExact(objectData))
+				return;
 
-			//slotsUIContainer = craftingSelectorUI;
+			Icon = new BasicSlotIcon(objectData);
+			UpdateNameText(IsDiscovered);
+				
+			_previousObjectData = objectData;
+		}
+
+		protected override void LateUpdate() {
+			base.LateUpdate();
+
+			if (nameText != null) {
+				var isDiscovered = IsDiscovered;
+				if (isDiscovered != _wasDiscovered) {
+					UpdateNameText(isDiscovered);
+					_wasDiscovered = isDiscovered;
+				}
+			}
+		}
+
+		private void UpdateNameText(bool isDiscovered) {
+			if (nameText == null)
+				return;
+
+			var containedObjectData = Icon.ContainedObject.objectData;
+			var nameColor = Manager.text.GetRarityColor(PugDatabase.GetObjectInfo(containedObjectData.objectID, containedObjectData.variation)?.rarity ?? Rarity.Common);
+
+			nameText.style.color = nameColor.ColorWithNewAlpha(isDiscovered ? discoveredNameOpacity : undiscoveredNameOpacity);
+			nameText.Render(isDiscovered ? ObjectUtility.GetLocalizedDisplayNameOrDefault(containedObjectData) : API.Localization.GetLocalizedTerm("ItemBrowser-General/Undiscovered"));
 		}
 
 		public override void OnFavoritedStateChanged() {
-			gridView.RequestListRefresh(true);
+			objectListView.RequestListRefresh(true);
 		}
 
 		public override List<PugDatabase.MaterialInfo> GetRequiredMaterials(bool isRepairing, bool isReinforcing) {

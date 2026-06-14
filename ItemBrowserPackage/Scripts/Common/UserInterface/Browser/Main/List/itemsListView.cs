@@ -5,17 +5,17 @@ using ItemBrowser.Common.Api.SortingAndFiltering;
 using ItemBrowser.Utilities;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
-	public class GridWithCreaturesView : GridView {
+	public class ItemsListView : ObjectListView {
 		protected override List<Sorter> GetSorters() {
-			return ItemBrowserAPI.Registry.CreatureSorters;
+			return ItemBrowserAPI.Registry.ItemSorters;
 		}
 
 		protected override List<(string Group, Filter Filter)> GetFilters() {
-			return ItemBrowserAPI.Registry.CreatureFilters;
+			return ItemBrowserAPI.Registry.ItemFilters;
 		}
 
 		protected override List<ObjectDataCD> GetIncludedObjects() {
-			return ObjectUtility.GetAllObjects().Where(ItemBrowserAPI.IsCreatureIndexed).ToList();
+			return ObjectUtility.GetAllObjects().Where(ItemBrowserAPI.IsItemIndexed).ToList();
 		}
 	}
 }

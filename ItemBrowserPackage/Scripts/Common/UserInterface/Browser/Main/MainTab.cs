@@ -5,6 +5,7 @@
 		Creatures,
 		History,
 		Cooking,
-		Options
+		Options,
+		Checklist
 	}
 }

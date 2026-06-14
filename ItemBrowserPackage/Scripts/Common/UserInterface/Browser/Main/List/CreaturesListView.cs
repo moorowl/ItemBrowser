@@ -4,18 +4,18 @@ using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.SortingAndFiltering;
 using ItemBrowser.Utilities;
 
-namespace ItemBrowser.Common.UserInterface.Browser {
-	public class GridWithItemsView : GridView {
+namespace ItemBrowser.Common.UserInterface.Browser { 
+	public class CreaturesListView : ObjectListView {
 		protected override List<Sorter> GetSorters() {
-			return ItemBrowserAPI.Registry.ItemSorters;
+			return ItemBrowserAPI.Registry.CreatureSorters;
 		}
 
 		protected override List<(string Group, Filter Filter)> GetFilters() {
-			return ItemBrowserAPI.Registry.ItemFilters;
+			return ItemBrowserAPI.Registry.CreatureFilters;
 		}
 
 		protected override List<ObjectDataCD> GetIncludedObjects() {
-			return ObjectUtility.GetAllObjects().Where(ItemBrowserAPI.IsItemIndexed).ToList();
+			return ObjectUtility.GetAllObjects().Where(ItemBrowserAPI.IsCreatureIndexed).ToList();
 		}
 	}
 }

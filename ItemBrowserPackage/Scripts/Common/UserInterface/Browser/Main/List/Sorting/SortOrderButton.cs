@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using ItemBrowser.Utilities;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class SortOrderButton : ItemBrowserButton {
-		public GridView gridView;
+		public ObjectListView objectListView;
 		public Sprite ascendingSprite;
 		public Sprite descendingSprite;
 		public List<SpriteRenderer> spritesToUpdate;
@@ -14,20 +15,20 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		protected override void LateUpdate() {
 			base.LateUpdate();
 
-			if (gridView.UseReverseSorting == _previousState)
+			if (objectListView.UseReverseSorting == _previousState)
 				return;
 			
-			var newSprite = gridView.UseReverseSorting ? descendingSprite : ascendingSprite;
+			var newSprite = objectListView.UseReverseSorting ? descendingSprite : ascendingSprite;
 			foreach (var sr in spritesToUpdate)
 				sr.sprite = newSprite;
 				
-			_previousState = gridView.UseReverseSorting;
+			_previousState = objectListView.UseReverseSorting;
 		}
 
 		public override List<TextAndFormatFields> GetHoverDescription() {
 			return new() {
 				new() {
-					text = gridView.UseReverseSorting ? "ItemBrowser-SortingOrders/Descending" : "ItemBrowser-SortingOrders/Ascending",
+					text = objectListView.UseReverseSorting ? "ItemBrowser-SortingOrders/Descending" : "ItemBrowser-SortingOrders/Ascending",
 					color = UserInterfaceUtility.DescriptionColor
 				}
 			};

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ItemBrowser.Common.Api;
+using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using Newtonsoft.Json;
 using PugMod;
@@ -60,6 +62,14 @@ namespace ItemBrowser.Common.Options {
 			get => _data.PanelsShiftLayout;
 			set {
 				_data.PanelsShiftLayout = value;
+				_isDirty = true;
+			}
+		}
+		
+		public VirtualObjectListLayout ListLayout {
+			get => _data.ListLayout;
+			set {
+				_data.ListLayout = value;
 				_isDirty = true;
 			}
 		}
@@ -189,7 +199,7 @@ namespace ItemBrowser.Common.Options {
 			public bool ShowButtonHints { get; set; } = true;
 			public bool AlwaysShowTechnicalInfo { get; set; }
 			public bool PanelsShiftLayout { get; set; }
-			
+			public VirtualObjectListLayout ListLayout { get; set; } = VirtualObjectListLayout.Grid;
 			public Guid Theme { get; set; }
 			public List<OptionsObjectData> Favorites { get; set; } = new();
 		}

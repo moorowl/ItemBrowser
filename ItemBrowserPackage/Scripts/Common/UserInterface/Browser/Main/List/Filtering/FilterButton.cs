@@ -3,10 +3,11 @@ using ItemBrowser.Common.Api.SortingAndFiltering;
 using ItemBrowser.Utilities;
 using Pug.UnityExtensions;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class FilterButton : ItemBrowserButton {
-		public GridView gridView;
+		public ObjectListView objectListView;
 		public SpriteRenderer toggledBackground;
 		public SpriteRenderer[] icons;
 		public PugText[] symbols;
@@ -22,7 +23,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					return;
 				
 				_currentState = value;
-				gridView.OnFilterStateChanged(Filter);
+				objectListView.OnFilterStateChanged(Filter);
 			}
 		}
 

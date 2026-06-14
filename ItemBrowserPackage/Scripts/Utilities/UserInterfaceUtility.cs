@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using I2.Loc;
 using ItemBrowser.Common.Options;
 using UnityEngine;
 
@@ -84,14 +85,14 @@ namespace ItemBrowser.Utilities {
 		public static void ApplyObjectIconTransform(SpriteRenderer sr, ObjectInfo objectInfo, float desiredScale) {
 			sr.transform.localPosition = objectInfo.iconOffset;
 			
-			var iconSize = new Vector3(1f, 1f, 0f);
+			var iconSize = new Vector3(desiredScale, desiredScale, 0f);
 			if (sr.sprite.bounds.size is { x: > 1f, y: > 1f } && !ObjectUtility.IsCarriedObject(objectInfo.objectType))
 				iconSize = sr.sprite.bounds.size;
 
-			var scaleMin = Mathf.Min(1f / iconSize.x, 1f / iconSize.y);
+			var scaleMin = Mathf.Min(desiredScale / iconSize.x, desiredScale / iconSize.y);
 			sr.transform.localScale = new Vector3(scaleMin, scaleMin, 1f);
 		}
-		
+
 		public enum MenuSound {
 			GenericOpen,
 			GenericClose,

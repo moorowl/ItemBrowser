@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using ItemBrowser.Utilities;
+using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class ToggleFiltersButton : ItemBrowserButton {
-		public GridView gridView;
+		public ObjectListView objectListView;
 		public FiltersPanel filtersPanel;
 
 		public override TextAndFormatFields GetHoverTitle() {
@@ -17,8 +18,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				new() {
 					text = "ItemBrowser-General/FilteredResults",
 					formatFields = new[] {
-						gridView.IncludedObjects.ToString(),
-						(gridView.IncludedObjects + gridView.ExcludedObjects).ToString()
+						objectListView.IncludedObjects.ToString(),
+						(objectListView.IncludedObjects + objectListView.ExcludedObjects).ToString()
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtility.DescriptionColor
@@ -26,7 +27,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				new() {
 					text = "ItemBrowser-General/FilteredResultsDesc",
 					formatFields = new[] {
-						gridView.ExcludedObjects.ToString()
+						objectListView.ExcludedObjects.ToString()
 					},
 					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtility.DescriptionColor

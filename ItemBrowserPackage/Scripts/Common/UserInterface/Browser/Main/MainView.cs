@@ -4,11 +4,12 @@ using ItemBrowser.Common.Options;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class MainView : ItemBrowserView {
-		public GridWithItemsView gridWithItemsView;
-		public GridWithCreaturesView gridWithCreaturesView;
+		public ItemsListView itemsListView;
+		public CreaturesListView creaturesListView;
 		public HistoryView historyView;
 		public OptionsView optionsView;
 		public Transform tabButtonsRoot;
@@ -120,8 +121,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		
 		private MainSubView GetTabView(MainTab tab) {
 			return tab switch {
-				MainTab.Items => gridWithItemsView,
-				MainTab.Creatures => gridWithCreaturesView,
+				MainTab.Items => itemsListView,
+				MainTab.Creatures => creaturesListView,
 				MainTab.History => historyView,
 				MainTab.Options => optionsView,
 				_ => throw new ArgumentOutOfRangeException()

@@ -15,6 +15,8 @@ using Random = UnityEngine.Random;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class ItemBrowserUI : ItemBrowserView {
+		public const int MaxObjectsToHighlightPerView = 80;
+		
 		public static event Action<ItemBrowserUI> OnInit;
 		public static event Action<ItemBrowserUI> OnUninit;
 		
@@ -206,24 +208,25 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 		
 		private void UpdateObjectsToHighlightInInventory() {
-			const int maxObjectsToHighlight = 128;
-            
 			ObjectsToHighlightInInventory.Clear();
 
-			AddObjectsFromGrid(mainView.gridWithItemsView);
-			AddObjectsFromGrid(mainView.gridWithCreaturesView);
+			AddObjectsFromGrid(mainView.itemsListView);
+			AddObjectsFromGrid(mainView.creaturesListView);
 
 			return;
 
-			void AddObjectsFromGrid(GridView view) {
-				if (!view.searchInput.HighlightSearchResults)
+			void AddObjectsFromGrid(ObjectListView view) {
+				if (!view.HighlightSearchResults)
 					return;
 
+				var index = 0;
 				foreach (var objectData in view.FilteredObjects) {
-					if (ObjectsToHighlightInInventory.Count >= maxObjectsToHighlight)
-						return;
+					if (index >= MaxObjectsToHighlightPerView)
+						break;
 					
 					ObjectsToHighlightInInventory.Add(objectData.objectID);
+
+					index++;
 				}
 			}
 		}

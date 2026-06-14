@@ -2,6 +2,7 @@
 using System.Linq;
 using ItemBrowser.Common.Api.SortingAndFiltering;
 using ItemBrowser.Utilities;
+using ItemBrowser.Utilities.Extensions;
 using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
@@ -24,9 +25,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 		public float WindowWidth => background.size.x;
 		public bool HasBeenModified => _filterButtons.Any(button => button.CurrentState != button.Filter.DefaultState());
-		public bool HasDynamicFiltersEnabled => _filterButtons.Any(button => button.Filter.FunctionIsDynamic && button.CurrentState != FilterState.None);
 		public bool DisplayItemCraftingRequirements => _filterButtons.Any(button => button.Filter.CausesItemCraftingRequirementsToDisplay && button.CurrentState != FilterState.None);
 		
+		public IEnumerable<Filter> ActiveDynamicFilters => _filterButtons.Where(button => button.Filter.FunctionIsDynamic && button.CurrentState != FilterState.None)
+			.Select(filterButton => filterButton.Filter);
 		public IEnumerable<IEnumerable<Filter>> FiltersToInclude => _filterButtons
 			.Where(filterButton => filterButton.CurrentState == FilterState.Include)
 			.Select(filterButton => filterButton.Filter)
@@ -99,7 +101,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public void Clear() {
 			_height = 0f;
 			_filterButtons.Clear();
-			scrollWindow.ResetScroll();	
+			scrollWindow.ResetScrollValueImmediately(this);	
 			
 			for (var i = 0; i < container.childCount; i++)
 				Destroy(container.GetChild(i).gameObject);

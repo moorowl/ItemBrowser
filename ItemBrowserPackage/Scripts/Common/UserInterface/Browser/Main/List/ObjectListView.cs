@@ -7,20 +7,21 @@ using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using PugMod;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
-	public abstract class GridView : MainSubView {
+	public abstract class ObjectListView : MainSubView {
 		private const float DynamicFiltersRefreshInterval = 1f;
 		
-		public ObjectGrid objectList;
+		public VirtualObjectList objectList;
 		public SearchBar searchInput;
-		public SearchBar[] otherSearchInputsToSync;
+		public ObjectListView[] otherListsToSyncSearchWith;
 		public SpriteMask searchInputMask;
 		public FiltersPanel[] filtersPanels;
 		
 		private bool _requestedListRefresh;
 		private bool _requestedListRefreshPreservesScroll;
-		private float _lastListRefreshTime;
+		private float _lastListRefreshFromDynamicFiltersTime;
 		private Task<(bool PreserveScroll, List<ObjectDataCD> Objects)> _listRefreshTask;
 
 		private List<ObjectDataCD> _filteredObjects = new();
@@ -30,9 +31,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		
 		private FiltersPanel PrimaryFiltersPanel => filtersPanels[0];
 		private readonly Dictionary<Filter, FilterResults> _filterResults = new();
+		private FilterResults _discoveryModeFilterResults;
 		
 		private string _lastSearchTerm = string.Empty;
+		private bool _isSearchTermEmpty;
 		private SearchResults _searchResults;
+		public bool HighlightSearchResults { get; set; }
 
 		private List<Sorter> _sorters;
 		private readonly List<SorterResults> _sorterResults = new();
@@ -41,25 +45,18 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public Sorter CurrentSorter => _sorters[_currentSorterIndex];
 		
 		protected override void OnShow(bool isFirstTimeShowing) {
-			objectList.ShowContainerUI();
-			
 			if (isFirstTimeShowing) {
 				SetupFiltersAndSorting();
 				RequestListRefresh(false);
 			} else {
 				RequestListRefresh(true);
 			}
-			
-			objectList.ShowContainerUI();
 
+			UpdateDynamicFilterResults();
 			UpdateListRefresh();
 			AdjustWindowPosition();
 		}
 
-		protected override void OnHide() {
-			objectList.HideContainerUI();
-		}
-		
 		private void SetupFiltersAndSorting() {
 			_searchResults = SearchResults.Create("");
 			
@@ -89,18 +86,52 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		protected override void LateUpdate() {
 			base.LateUpdate();
 
-			UpdateSearch();
+			UpdateDynamicFilterResults();
+			UpdateSearch(false);
 			UpdateListRefresh();
 			TryAutoSelectFirstSlot();
 		}
 
-		private void UpdateSearch() {
+		private void UpdateDynamicFilterResults() {
+			var hasDynamicFiltersActive = PrimaryFiltersPanel.ActiveDynamicFilters.Any() || OptionsManager.Instance.DiscoveryMode;
+
+			if (hasDynamicFiltersActive && Time.time >= _lastListRefreshFromDynamicFiltersTime + DynamicFiltersRefreshInterval) {
+				var shouldRefresh = false;
+
+				foreach (var filter in PrimaryFiltersPanel.ActiveDynamicFilters) {
+					var updatedFilterResults = FilterResults.Create(filter);
+
+					if (!_filterResults.ContainsKey(filter) || !FilterResults.Equals(updatedFilterResults, _filterResults[filter])) {
+						_filterResults[filter] = updatedFilterResults;
+						shouldRefresh = true;
+					}
+				}
+
+				var updatedDiscoveryModeFilterResults = FilterResults.Create(new Filter(string.Empty) {
+					Function = objectData => ObjectUtility.HasBeenDiscovered(objectData, true)
+				});
+				if (_discoveryModeFilterResults == null || !FilterResults.Equals(updatedDiscoveryModeFilterResults, _discoveryModeFilterResults)) {
+					_discoveryModeFilterResults = updatedDiscoveryModeFilterResults;
+					shouldRefresh = true;
+				}
+
+				if (shouldRefresh)
+					RequestListRefresh(true);
+				
+				_lastListRefreshFromDynamicFiltersTime = Time.time;
+			}
+		}
+
+		private void UpdateSearch(bool doNotSyncWithOtherLists) {
 			var currentSearchTerm = searchInput.GetInputText();
+			_isSearchTermEmpty = string.IsNullOrWhiteSpace(currentSearchTerm);
 			if (currentSearchTerm == _lastSearchTerm)
 				return;
 
-			foreach (var otherSearchInput in otherSearchInputsToSync)
-				otherSearchInput.SetInputText(currentSearchTerm);
+			if (!doNotSyncWithOtherLists) {
+				foreach (var otherList in otherListsToSyncSearchWith)
+					otherList.SetSearchTermFromOtherList(currentSearchTerm);	
+			}
 
 			AdjustSearchFieldPosition();
 			RequestListRefresh(false);
@@ -109,9 +140,16 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			_lastSearchTerm = currentSearchTerm;
 		}
 
+		public void SetSearchTermFromOtherList(string term) {
+			searchInput.SetInputText(term);
+			
+			UpdateSearch(true);
+			UpdateListRefresh();
+		}
+
 		private void TryAutoSelectFirstSlot() {
 			if (Manager.ui.currentSelectedUIElement == null || Manager.ui.currentSelectedUIElement is BlockingUIElement || !SnapPoint.HasSnapPoint(Manager.ui.currentSelectedUIElement))
-				objectList.TrySelectSlot(0);
+				objectList.TrySelectListItem(0);
 		}
 		
 		public void OnFilterStateChanged(Filter filter) {
@@ -159,8 +197,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 		public void ClearSearch() {
 			searchInput.ResetText();
-			foreach (var otherSearchInput in otherSearchInputsToSync)
-				otherSearchInput.ResetText();
+
+			UpdateSearch(false);
+			UpdateListRefresh();
 		}
 		
 		private void AdjustWindowPosition() {
@@ -185,12 +224,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		private void UpdateListRefresh() {
-			UpdateAutoListRefresh();
-			
 			if (_listRefreshTask is { IsCompletedSuccessfully: true }) {
 				_filteredObjects = _listRefreshTask.Result.Objects;
 				objectList.SetObjects(_filteredObjects, _listRefreshTask.Result.PreserveScroll);
-				_lastListRefreshTime = Time.time;
 				_listRefreshTask = null;
 			}
 
@@ -200,12 +236,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				_requestedListRefresh = false;
 			}
 		}
-		
-		private void UpdateAutoListRefresh() {
-			if ((PrimaryFiltersPanel.HasDynamicFiltersEnabled || OptionsManager.Instance.DiscoveryMode) && Time.time >= _lastListRefreshTime + DynamicFiltersRefreshInterval)
-				RequestListRefresh(true);
-		}
-		
+
 		private Task<(bool, List<ObjectDataCD>)> RunListRefreshTask(bool preserveScrollPosition) {
 			// Filtering
 			return Task.Run(() => {
@@ -213,13 +244,13 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				var filteredObjects = UseReverseSorting
 					? allObjects
 						.Where(MatchesFilters)
-						.OrderByDescending(objectData => OptionsManager.Instance.IsFavorited(objectData) ? 1 : 0)
+						.OrderByDescending(objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.Favorited) ? 1 : 0)
 						.ThenByDescending(objectData => _sorterResults[_currentSorterIndex].GetScore(objectData))
 						.ThenByDescending(objectData => _sorterResults[0].GetScore(objectData))
 						.ToList()
 					: allObjects
 						.Where(MatchesFilters)
-						.OrderByDescending(objectData => OptionsManager.Instance.IsFavorited(objectData) ? 1 : 0)
+						.OrderByDescending(objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.Favorited) ? 1 : 0)
 						.ThenBy(objectData => _sorterResults[_currentSorterIndex].GetScore(objectData))
 						.ThenBy(objectData => _sorterResults[0].GetScore(objectData))
 						.ToList();
@@ -229,33 +260,11 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 				return (preserveScrollPosition, filteredObjects);
 			});
-
-			/*var allObjects = GetIncludedObjects();
-			var filteredObjects = UseReverseSorting
-				? allObjects
-					.Where(MatchesFilters)
-					.OrderByDescending(objectData => OptionsManager.Instance.IsFavorited(objectData) ? 1 : 0)
-					.ThenByDescending(objectData => _sorterResults[_currentSorterIndex].GetScore(objectData))
-					.ThenByDescending(objectData => _sorterResults[0].GetScore(objectData))
-					.ToList()
-				: allObjects
-					.Where(MatchesFilters)
-					.OrderByDescending(objectData => OptionsManager.Instance.IsFavorited(objectData) ? 1 : 0)
-					.ThenBy(objectData => _sorterResults[_currentSorterIndex].GetScore(objectData))
-					.ThenBy(objectData => _sorterResults[0].GetScore(objectData))
-					.ToList();
-
-			_filteredObjects = filteredObjects;
-			IncludedObjects = _filteredObjects.Count;
-			ExcludedObjects = allObjects.Count - IncludedObjects;
-
-			objectList.SetObjects(_filteredObjects, preserveScrollPosition);
-			_refreshedListTime = Time.time;*/
 		}
 
 		private bool MatchesFilters(ObjectDataCD objectData) {
 			return _searchResults.Matches(objectData)
-			       && (!OptionsManager.Instance.DiscoveryMode || ObjectUtility.HasBeenDiscovered(objectData, true))
+			       && (!OptionsManager.Instance.DiscoveryMode || !_isSearchTermEmpty || _discoveryModeFilterResults.Matches(objectData))
 			       && PrimaryFiltersPanel.FiltersToInclude.All(group => group.Any(filter => _filterResults[filter].Matches(objectData)))
 			       && !PrimaryFiltersPanel.FiltersToExclude.Any(group => group.Any(filter => _filterResults[filter].Matches(objectData)));
 		}

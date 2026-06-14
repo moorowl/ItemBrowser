@@ -360,7 +360,7 @@ TextureImporter:
         width: 10
         height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -369,6 +369,72 @@ TextureImporter:
       bones: []
       spriteID: c3fb11915db653d40bbb26134ffe4468
       internalID: 118495685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ui_icon_0
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a063ce9ce3b96924e8cd2c7ab8a9b21d
+      internalID: 745449105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ui_icon_layout_list
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 377574be07c4b32478a58c3006e35f01
+      internalID: -299494484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ui_icon_layout_grid
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04ea2c2322a207e498bf54c96f4bba1d
+      internalID: -791144543
       vertices: []
       indices: 
       edges: []
@@ -387,6 +453,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      ui_icon_0: 745449105
       ui_icon_cheat: 77498136
       ui_icon_clear_search: -1281604667
       ui_icon_cycle: 169372963
@@ -394,6 +461,8 @@ TextureImporter:
       ui_icon_filter: -392396922
       ui_icon_help: 1986276185
       ui_icon_help_old: -2036461585
+      ui_icon_layout_grid: -791144543
+      ui_icon_layout_list: -299494484
       ui_icon_requirement: 118495685
       ui_icon_settings: 160195236
       ui_icon_sort: 278813827

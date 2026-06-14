@@ -2,6 +2,7 @@
 using System.Linq;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Utilities;
+using ItemBrowser.Utilities.Extensions;
 using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
@@ -51,7 +52,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 		
 		private void ClearList() {
-			scrollWindow.ResetScroll();
+			scrollWindow.ResetScrollValueImmediately(this);
 			
 			_height = 0f;
 			_firstEntry = null;
