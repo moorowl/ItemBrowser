@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
@@ -25,6 +26,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public bool linksUsage;
 		public bool showAmountInTitle;
 		public bool alwaysShowAmount;
+		public bool alwaysDiscovered;
+		public Gradient temporarilyDiscoveredGradient;
 
 		private SlotIcon _icon = EmptyIcon;
 		public SlotIcon Icon {
@@ -121,6 +124,11 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			var player = Manager.main.player;
 			player.playerCommandSystem.CreateAndDropEntity(containedObjectData.objectID, player.WorldPosition, GetAmountToPickUp(containedObjectData).Amount, player.entity, containedObjectData.variation);
 			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.AddObjectToInventory, this);
+			PlayBumpAnimation();
+		}
+
+		public void PlayBumpAnimation() {
+			SetAnimationTrigger(AnimID.scaleUp);
 		}
 
 		public virtual void OnFavoritedStateChanged() { }
