@@ -37,7 +37,6 @@ namespace ItemBrowser.Content.VanillaData {
 		public override void OnRegister(ItemBrowserRegistry registry) {
 			AddProviders(registry);
 			AddSorters(registry);
-			AddGroups(registry);
 			AddFilters(registry);
 		}
 
@@ -119,19 +118,6 @@ namespace ItemBrowser.Content.VanillaData {
 			});
 			registry.AddCreatureSorter(new Sorter("ItemBrowser-Sorters/Level") {
 				Function = allObjectData => allObjectData.OrderBy(ObjectUtility.GetBaseLevel)
-			});
-		}
-		
-		private static void AddGroups(ItemBrowserRegistry registry) {
-			// Item groups
-			registry.AddItemGroup(new Group("ItemBrowser-Groups/Mod") {
-				Function = objectData => {
-					var associatedModId = ModUtility.GetAssociatedMod(objectData);
-					if (associatedModId == ModUtility.UnknownModId)
-						return ("ItemBrowser-Groups/Mod_Unknown", -1, true);
-					
-					return (ModUtility.GetDisplayName(associatedModId), 0, false);
-				}
 			});
 		}
 		

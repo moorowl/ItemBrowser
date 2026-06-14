@@ -18,9 +18,6 @@ namespace ItemBrowser.Common.Api {
 
 		internal readonly List<Sorter> ItemSorters = new();
 		internal readonly List<Sorter> CreatureSorters = new();
-		
-		internal readonly List<Group> ItemGroups = new();
-		internal readonly List<Group> CreatureGroups = new();
 
 		internal readonly List<ObjectEntryProvider> EntryProviders = new();
 		internal readonly Dictionary<Type, ObjectEntryDisplayBase> EntryToDisplayComponent = new();
@@ -90,14 +87,6 @@ namespace ItemBrowser.Common.Api {
 
 		public void AddCreatureSorter(Sorter sorter) {
 			CreatureSorters.Add(sorter);
-		}
-		
-		public void AddItemGroup(Group group) {
-			ItemGroups.Add(group);
-		}
-
-		public void AddCreatureGroup(Group group) {
-			CreatureGroups.Add(group);
 		}
 		
 		public void AddPooledElement(PooledElement element) {
