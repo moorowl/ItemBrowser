@@ -19,6 +19,15 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					valueText.Render("ItemBrowser-Options/Unavailable");
 				else
 					valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.CheatMode ? "Enabled" : "Disabled")}");
+			},
+			GetDescription = (lines, canBeClicked) => {
+				if (!canBeClicked) {
+					lines[^1].paddingBeneath = UserInterfaceUtility.DescriptionPadding;
+					lines.Add(new TextAndFormatFields {
+						text = "ItemBrowser-Options/CheatModeUnavailable",
+						color = Manager.ui.brokenColor
+					});
+				}
 			}
 		};
 		private readonly OptionsEntryType _clearFavorites = new() {
