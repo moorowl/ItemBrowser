@@ -65,7 +65,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				}
 			};
 
-			_type?.GetDescription?.Invoke(lines);
+			_type?.GetDescription?.Invoke(lines, canBeClicked);
 
 			return lines;
 		}

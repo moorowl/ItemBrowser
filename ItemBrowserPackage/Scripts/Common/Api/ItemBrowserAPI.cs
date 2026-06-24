@@ -8,6 +8,7 @@ using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using PugMod;
+using Unity.Entities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -18,12 +19,14 @@ namespace ItemBrowser.Common.Api {
 		private const string BrowserPrefabPath = "Assets/ItemBrowser/ItemBrowserPackage/Prefabs/Browser/ItemBrowserUI.prefab";
 		
 		public static ItemBrowserUI ItemBrowserUI { get; private set; }
+		public static string CurrentCharacterGuid { get; private set; }
 
 		internal static readonly ItemBrowserRegistry Registry = new();
 		internal static readonly ObjectEntryRegistry ObjectEntryRegistry = new();
 		private static readonly List<ItemBrowserPlugin> Plugins = new();
 
 		private static bool _hasRegisteredPluginContent;
+		private static string _lastLanguage;
 
 		public static void AddPlugin(ItemBrowserPlugin instance, IMod sourceMod) {
 			var modInfo = API.ModLoader.LoadedMods.First(modInfo => modInfo.Handlers.Contains(sourceMod));
@@ -49,14 +52,20 @@ namespace ItemBrowser.Common.Api {
 				ReloadLanguageSpecificContent();
 			if (reloadWorldSpecificContent)
 				ReloadWorldSpecificContent();
+
+			CurrentCharacterGuid = Manager.saves.GetCharacterGuid().ToString();
 			
 			if (Manager.load.IsScreenBlack())
 				Manager.main.StartCoroutine(TemporarilyShowBrowserToAvoidLagSpikes());
+			
+			API.Client.OnObjectSpawnedOnClient += DiscoverNearbyObjects;
 		}
 
 		private static void UninitBrowserUI() {
 			if (ItemBrowserUI != null)
 				Object.Destroy(ItemBrowserUI.gameObject);
+			
+			API.Client.OnObjectSpawnedOnClient -= DiscoverNearbyObjects;
 		}
 
 		private static void RegisterPluginContent() {
@@ -82,6 +91,15 @@ namespace ItemBrowser.Common.Api {
 					Id = ObjectUtility.GetInternalName(objectData),
 					Variation = objectData.variation,
 					AuthoringPrefabName = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).prefabInfos[0].ecsPrefab.name
+				})
+				.ToList()
+			);
+			DebugUtility.ExportData("Indestructibles", ObjectUtility.GetAllObjects()
+				.Where(ObjectUtility.IsIndestructible)
+				.OrderBy(objectData => (int) objectData.objectID * 10000 + objectData.variation)
+				.Select(objectData => new {
+					Id = ObjectUtility.GetInternalName(objectData),
+					Variation = objectData.variation
 				})
 				.ToList()
 			);
@@ -181,23 +199,66 @@ namespace ItemBrowser.Common.Api {
 			return Registry.ElementPools.ContainsKey(element.GetType());
 		}
 
-		
-		[HarmonyPatch]
-		public static class Patches {
-			private static string _lastLanguage;
-
-			[HarmonyPatch(typeof(PlayerController), "ManagedUpdate")]
-			[HarmonyPostfix]
-			private static void PlayerController_ManagedUpdate(PlayerController __instance) {
-				if (!__instance.isLocal || _lastLanguage == LocalizationManager.CurrentLanguage)
-					return;
-
+		private static void ReloadIfLanguageChanged() {
+			if (_lastLanguage != LocalizationManager.CurrentLanguage) {
 				if (ItemBrowserUI != null) {
 					UninitBrowserUI();
 					InitBrowserUI(false, true);
 				}
 				
-				_lastLanguage = LocalizationManager.CurrentLanguage;
+				_lastLanguage = LocalizationManager.CurrentLanguage;	
+			}
+		}
+
+		private static void DiscoverNearbyTiles() {
+			return;
+			
+			if (Time.frameCount % 60 == 0) {
+				Manager.audio.ambientSoundsHandler.GetNearbyTileData(out var tileCounts).Complete();
+
+				foreach (var entry in tileCounts) {
+					if (entry.Value == 0)
+						continue;
+
+					if (TileUtility.TryGetAssociatedObject(entry.Key.TileType, entry.Key.Tileset, out var associatedObjectData) && associatedObjectData.objectID != ObjectID.None) {
+						associatedObjectData.variation = ObjectUtility.GetPrimaryVariation(associatedObjectData);
+							
+						if (Manager.saves.SetObjectAsDiscovered(associatedObjectData))
+							Main.Log(nameof(ItemBrowserAPI), $"Discovered tile {associatedObjectData.objectID}:{associatedObjectData.variation}");
+					}
+				}
+			}
+		}
+
+		private static void DiscoverNearbyObjects(Entity entity, EntityManager entityManager, GameObject graphicalObject) {
+			return;
+			
+			// Discover placed objects and creatures
+			var objectData = entityManager.GetComponentData<ObjectDataCD>(entity);
+			objectData.variation = 0;
+			objectData.amount = 0;
+
+			if (objectData.objectID != ObjectID.None)
+				Manager.saves.SetObjectAsDiscovered(objectData);
+		}
+		
+		private static IEnumerator InitBrowserOnWorldEnteredRoutine() {
+			// Have to wait for active content bundles to be synced
+			yield return new WaitUntil(() => ClientWorldStateSystem.HasRunAtLeastOnce);
+
+			InitBrowserUI(true, true);
+		}
+		
+		[HarmonyPatch]
+		public static class Patches {
+			[HarmonyPatch(typeof(PlayerController), "ManagedUpdate")]
+			[HarmonyPostfix]
+			private static void PlayerController_ManagedUpdate(PlayerController __instance) {
+				if (!__instance.isLocal)
+					return;
+
+				ReloadIfLanguageChanged();
+				DiscoverNearbyTiles();
 			}
 
 			[HarmonyPatch(typeof(PlayerController), "OnOccupied")]
@@ -217,13 +278,6 @@ namespace ItemBrowser.Common.Api {
 					return;
 
 				UninitBrowserUI();
-			}
-
-			private static IEnumerator InitBrowserOnWorldEnteredRoutine() {
-				// Have to wait for active content bundles to be synced
-				yield return new WaitUntil(() => ClientWorldStateSystem.HasRunAtLeastOnce);
-
-				InitBrowserUI(true, true);
 			}
 		}
 	}

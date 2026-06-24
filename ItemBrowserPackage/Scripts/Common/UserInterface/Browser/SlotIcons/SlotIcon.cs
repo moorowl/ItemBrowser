@@ -7,6 +7,13 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 		public virtual ContainedObjectsBuffer VisualObject => ContainedObject;
 		public virtual (int Min, int Max) Amount => ContainedObject.objectID == ObjectID.None ? (VisualObject.amount, VisualObject.amount) : (ContainedObject.amount, ContainedObject.amount);
 
+		public virtual bool HasBeenDiscovered(SlotUIBase slot, out float temporaryTimeRemaining) {
+			temporaryTimeRemaining = 0f;
+			return true;
+		}
+
+		public virtual void SetTemporarilyDiscovered(SlotUIBase slot, float? duration = null) { }
+		
 		public virtual void Update(SlotUIBase slot) { }
 
 		public virtual bool ShowDetails(SlotUIBase slot, DetailsTab initialTab) {

@@ -25,6 +25,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public GameObject tileGridPrefab;
 		public MainView mainView;
 		public DetailsView detailsView;
+		public Gradient temporarilyDiscoveredGradient;
 
 		public ItemBrowserTheme CurrentTheme { get; private set; }
 		private List<ItemBrowserTheme> _allThemes;
@@ -241,6 +242,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				return;
 			
 			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.ToggleBrowser, this);
+		}
+
+		public Color GetTemporarilyDiscoveredColor() {
+			return temporarilyDiscoveredGradient?.Evaluate(Time.time % 1f) ?? Color.white;
 		}
 		
 		[HarmonyPatch]

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using Pug.UnityExtensions;
@@ -10,7 +11,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public List<TextAndFormatFields> Description { get; set; } = new();
 		
 		public GameObject optionalToggledMarker;
-
+		public GameObject[] markersToDisableWhenDisabled;
+		public GameObject[] markersToEnableWhenDisabled;
+		
 		private float _height;
 		private UIScrollWindow _scrollWindow;
 		
@@ -32,6 +35,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (boxCollider != null)
 				_height = boxCollider.size.y;
 
+			LateUpdate();
+		}
+
+		protected virtual void OnEnable() {
 			LateUpdate();
 		}
 		
@@ -59,6 +66,15 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			
 			if (optionalToggledMarker != null)
 				optionalToggledMarker.SetActive(canBeClicked && (IsToggled || leftClickIsHeldDown || (onRightClick != null && onRightClick.GetPersistentEventCount() > 0 && rightClickIsHeldDown)));
+
+			if (markersToEnableWhenDisabled != null) {
+				foreach (var marker in markersToEnableWhenDisabled)
+					marker.gameObject.SetActive(!canBeClicked);
+			}
+			if (markersToDisableWhenDisabled != null) {
+				foreach (var marker in markersToDisableWhenDisabled)
+					marker.gameObject.SetActive(canBeClicked);
+			}
 		}
 		
 		public override void OnSelected() {

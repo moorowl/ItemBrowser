@@ -22,7 +22,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			}
 		};
 		private readonly OptionsEntryType _clearFavorites = new() {
-			CanBeClicked = () => OptionsManager.Instance.FavoritesCount >= 1,
 			OnLeftClick = () => {
 				Manager.menu.centerPopUpText.StartNewDisplaySequence(
 					"ItemBrowser-Options/ClearFavoritesAreYouSure",
@@ -39,7 +38,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 						if (response.IsCancel)
 							return;
 
-						OptionsManager.Instance.RemoveAllFavorites();
+						OptionsManager.Instance.RemoveTagFromAll(ObjectTagType.Favorited);
 			
 						foreach (var itemSlot in API.Rendering.UICamera.transform.GetComponentsInChildren<ItemBrowserSlot>(true))
 							itemSlot.OnFavoritedStateChanged();
@@ -49,6 +48,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					backgroundAlpha: 0.9f,
 					pauseGame: false
 				);
+				Manager.ui.DeselectAnySelectedUIElement();
+				Manager.ui.mouse.UpdateMouseUIInput(out _, out _);
 			}
 		};
 		private readonly OptionsEntryType _theme = new() {
@@ -92,6 +93,14 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			},
 			UpdateValueText = (valueText, _) => {
 				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.AlwaysShowTechnicalInfo ? "Always" : "KeyHeld")}");
+			}
+		};
+		private readonly OptionsEntryType _hideUndiscovered = new() {
+			OnLeftClick = () => {
+				OptionsManager.Instance.DiscoveryMode = !OptionsManager.Instance.DiscoveryMode;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.DiscoveryMode ? "Enabled" : "Disabled")}");
 			}
 		};
 		private readonly OptionsEntryType _showTileGrid = new() {
@@ -139,6 +148,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			// Appearance
 			AddSection("ItemBrowser-Options/Appearance");
 			AddEntry("ItemBrowser-Options/Theme", _theme);
+			// AddEntry("ItemBrowser-Options/HideUndiscovered", _hideUndiscovered);
 			AddEntry("ItemBrowser-Options/ShowSourceMod", _showSourceMod);
 			AddEntry("ItemBrowser-Options/ShowButtonHints", _showButtonHints);
 			AddEntry("ItemBrowser-Options/ShowTechnicalInfo", _showTechnicalInfo);

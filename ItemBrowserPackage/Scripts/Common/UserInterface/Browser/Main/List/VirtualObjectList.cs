@@ -84,9 +84,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			_prevStartIndex = 0;
 			
 			UpdateList();
-			
-			if (!preserveScrollPosition)
-				uiScrollWindow.ResetScrollValueImmediately(this);
+			uiScrollWindow.SetScrollValueImmediately(preserveScrollPosition ? uiScrollWindow.GetScrollValue() : 1f, this);
 		}
 
 		public void SetLayout(VirtualObjectListLayout layout) {

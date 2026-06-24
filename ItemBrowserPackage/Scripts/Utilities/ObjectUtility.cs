@@ -348,20 +348,6 @@ namespace ItemBrowser.Utilities {
 			return GetAssociatedConditionCategories(new ObjectDataCD { objectID = id, variation = variation });
 		}
 
-		public static bool HasBeenDiscovered(ObjectDataCD objectData, bool considerNonObtainablesDiscovered = false) {
-			if (objectData.objectID == ObjectID.None)
-				return false;
-			
-			if (considerNonObtainablesDiscovered)
-				return IsNonObtainable(objectData) || Manager.saves.HasDiscoveredObject(objectData.objectID, objectData.variation);
-			
-			return Manager.saves.HasDiscoveredObject(objectData.objectID, objectData.variation);
-		}
-		
-		public static bool HasBeenDiscovered(ObjectID id, int variation = 0, bool considerNonObtainablesDiscovered = false) {
-			return HasBeenDiscovered(new ObjectDataCD { objectID = id, variation = variation }, considerNonObtainablesDiscovered);
-		}
-
 		public static Sprite GetIcon(ObjectDataCD objectData, bool preferSmallIcons = false) {
 			var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
 			if (objectInfo == null)

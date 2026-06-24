@@ -14,6 +14,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public DetailsView detailsView;
 		public EntriesList entriesList;
 		public PugText selectedCategoryLabel;
+		public PugText selectedCategoryCountLabel;
 		public SwapCategoryButton nextCategoryButton;
 		public SwapCategoryButton previousCategoryButton;
 		public SwapCategoryButton categoryButtonPrefab;
@@ -87,6 +88,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			SelectedCategoryTerm = "";
 			
 			selectedCategoryLabel.gameObject.SetActive(false);
+			selectedCategoryCountLabel.gameObject.SetActive(false);
 			nextCategoryButton.canBeClicked = false;
 			previousCategoryButton.canBeClicked = false;
 
@@ -109,6 +111,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			selectedCategoryLabel.gameObject.SetActive(true);
 			selectedCategoryLabel.Render(entriesInCategory[0].Category.GetTitle(detailsView.IsSelectedObjectNonObtainable));
 			SelectedCategoryTerm = entriesInCategory[0].Category.GetTitle(detailsView.IsSelectedObjectNonObtainable);
+			
+			selectedCategoryCountLabel.gameObject.SetActive(true);
+			selectedCategoryCountLabel.Render($"{category + 1}/{_entries.Count}");
 
 			if (_entries.Count >= 2) {
 				var nextCategoryIndex = SelectedCategory + 1;

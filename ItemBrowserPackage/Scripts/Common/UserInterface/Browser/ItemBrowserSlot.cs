@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Common.Api;
@@ -27,7 +28,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public bool showAmountInTitle;
 		public bool alwaysShowAmount;
 		public bool alwaysDiscovered;
-		public Gradient temporarilyDiscoveredGradient;
 
 		private SlotIcon _icon = EmptyIcon;
 		public SlotIcon Icon {
@@ -39,21 +39,17 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 		
 		public bool IsSelected => hoverBorder.gameObject.activeSelf;
-		public bool IsFavorited => OptionsManager.Instance.IsFavorited(FavoritedKey);
-		public bool CanBeFavorited => FavoritedKey.objectID != ObjectID.None;
+		public bool IsFavorited => OptionsManager.Instance.HasTag(FavoritedKey, ObjectTagType.Favorited);
+		public bool CanBeFavorited => FavoritedKey.objectID != ObjectID.None && HasBeenDiscovered && !HasBeenDiscoveredTemporarily;
+		public bool HasBeenDiscovered => alwaysDiscovered || _icon.HasBeenDiscovered(this, out _);
+		public bool HasBeenDiscoveredTemporarily => _icon.HasBeenDiscovered(this, out var temporaryTimeRemaining) && temporaryTimeRemaining > 0f;
 		private ObjectDataCD FavoritedKey => new() {
 			objectID = Icon.ContainedObject.objectID,
 			variation = Icon.ContainedObject.variation
 		};
-		public bool IsDiscoveredTemporarily => Time.time <= _temporaryShowUndiscoveredObjectUntil;
-		public bool IsDiscovered => !OptionsManager.Instance.DiscoveryMode
-		                            || Icon.ContainedObject.objectID == ObjectID.None
-		                            || IsDiscoveredTemporarily
-		                            || ObjectUtility.HasBeenDiscovered(Icon.ContainedObject.objectData, true);
-		
+
 		private float _height;
 		private UIScrollWindow _scrollWindow;
-		private float _temporaryShowUndiscoveredObjectUntil;
 		private bool _wasDiscovered;
 		
 		public override float localScrollPosition => _scrollWindow != null ? -Mathf.Abs(_scrollWindow.scrollingContent.position.y - transform.position.y) + _scrollWindow.scrollingContent.GetChild(0).localPosition.y : 0f;
@@ -76,6 +72,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			UpdateVisuals();
 		}
 
+		private void OnEnable() {
+			UpdateVisuals();
+		}
+
 		public void OnScrollWindowChanged(UIScrollWindow scrollWindow) {
 			_scrollWindow = scrollWindow;
 		}
@@ -90,7 +90,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				favoritedBorder.gameObject.SetActive(IsFavorited);
 			}
 
-			var isDiscovered = IsDiscovered;
+			var isDiscovered = HasBeenDiscovered;
 			if (isDiscovered != _wasDiscovered) {
 				UpdateVisuals();
 				_wasDiscovered = isDiscovered;
@@ -101,15 +101,13 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		private void UpdateFavoriting() {
-			var input = Manager.input.singleplayerInputModule;
-			
 			if (IsSelected && CanBeFavorited && InputHelper.IsToggleFavoritePressed) {
 				if (IsFavorited) {
 					UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.Unfavorite, this);
-					OptionsManager.Instance.RemoveFavorite(FavoritedKey);
+					OptionsManager.Instance.RemoveTag(FavoritedKey, ObjectTagType.Favorited);
 				} else {
 					UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.Favorite, this);
-					OptionsManager.Instance.AddFavorite(FavoritedKey);
+					OptionsManager.Instance.AddTag(FavoritedKey, ObjectTagType.Favorited);
 				}
 
 				OnFavoritedStateChanged();
@@ -128,6 +126,11 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		public void PlayBumpAnimation() {
+			Manager.main.StartCoroutine(PlayBumpAnimationWhenShowing());
+		}
+
+		private IEnumerator PlayBumpAnimationWhenShowing() {
+			yield return new WaitUntil(() => gameObject.activeInHierarchy);
 			SetAnimationTrigger(AnimID.scaleUp);
 		}
 
@@ -145,7 +148,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public override void OnLeftClicked(bool mod1, bool mod2) {
 			base.OnLeftClicked(mod1, mod2);
 
-			if (!IsDiscovered && !IsDiscoveredTemporarily) {
+			if (!HasBeenDiscovered) {
 				SetDiscoveredTemporarily();
 				return;
 			}
@@ -157,7 +160,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public override void OnRightClicked(bool mod1, bool mod2) {
 			base.OnRightClicked(mod1, mod2);
 
-			if (!IsDiscovered && !IsDiscoveredTemporarily) {
+			if (!HasBeenDiscovered) {
 				SetDiscoveredTemporarily();
 				return;
 			}
@@ -167,33 +170,23 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		private void SetDiscoveredTemporarily() {
-			_temporaryShowUndiscoveredObjectUntil = Time.time + 10f;
+			_icon.SetTemporarilyDiscovered(this, 10f);
 		}
 
 		public override TextAndFormatFields GetHoverTitle() {
-			if (!IsDiscovered) {
-				return new TextAndFormatFields {
-					text = "ItemBrowser-General/Undiscovered"
-				};
-			}
-			
 			var title = _icon.GetHoverTitle(this);
 			var visualObject = _icon.VisualObject;
 			var amount = _icon.Amount;
-			var isDiscovered = IsDiscovered;
 
-			if (!IsDiscovered)
-				title.text = API.Localization.GetLocalizedTerm("ItemBrowser-General/Undiscovered");
-			
-			if (showAmountInTitle && visualObject.objectID != ObjectID.None && (amount.Max > 1 || alwaysShowAmount)) {
-				return new TextAndFormatFields {
+			if (visualObject.objectID != ObjectID.None && HasBeenDiscovered && showAmountInTitle && (amount.Max > 1 || alwaysShowAmount)) {
+				title = new TextAndFormatFields {
 					text = "ItemBrowser-General/NameAndAmountFormat",
 					formatFields = new[] {
 						title.dontLocalize ? title.text : API.Localization.GetLocalizedTerm(title.text) ?? title.text,
 						amount.Min != amount.Max ? $"{amount.Min}-{amount.Max}" : amount.Min.ToString()
 					},
 					dontLocalizeFormatFields = true,
-					color = isDiscovered ? Manager.text.GetRarityColor(PugDatabase.GetObjectInfo(visualObject.objectID).rarity) : Color.white
+					color = title.color
 				};
 			}
 
@@ -201,20 +194,42 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 		
 		public override List<TextAndFormatFields> GetHoverDescription() {
-			if (!IsDiscovered)
-				return new List<TextAndFormatFields>();
-			
 			var lines = _icon.GetHoverDescription(this) ?? new List<TextAndFormatFields>();
-			
+
+			if (!HasBeenDiscovered) {
+				UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/DiscoverTemporarily", "UIInteract");
+				return lines;
+			}
+
 			var containedObjectData = _icon.ContainedObject.objectData;
 			if (containedObjectData.objectID != ObjectID.None) {
 				if (IsFavorited) {
 					lines.Add(new TextAndFormatFields {
 						text = "ItemBrowser-General/Favorited",
 						color = Color.yellow
-					});	
+					});
 				}
+			}
+			
+			if (_icon.HasBeenDiscovered(this, out var temporaryTimeRemaining) && temporaryTimeRemaining > 0f) {
+				if (temporaryTimeRemaining <= 99f) {
+					lines.Add(new TextAndFormatFields {
+						text = "ItemBrowser-General/DiscoveredTemporarilySeconds",
+						formatFields = new[] {
+							Mathf.CeilToInt(temporaryTimeRemaining).ToString()
+						},
+						dontLocalizeFormatFields = true,
+						color = ItemBrowserAPI.ItemBrowserUI.GetTemporarilyDiscoveredColor()
+					});
+				} else {
+					lines.Add(new TextAndFormatFields {
+						text = "ItemBrowser-General/DiscoveredTemporarily",
+						color = ItemBrowserAPI.ItemBrowserUI.GetTemporarilyDiscoveredColor()
+					});
+				}
+			}
 
+			if (containedObjectData.objectID != ObjectID.None) {
 				var hasSources = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, containedObjectData).Any();
 				var hasUsages = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Usage, containedObjectData).Any();
 				
@@ -231,14 +246,15 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				if (CanCheatInObjects)
 					UserInterfaceUtility.AppendButtonHint(lines, GetAmountToPickUp(containedObjectData).Hint, "ControlMapper/ItemBrowser-SpawnItem");
 				
-				UserInterfaceUtility.AppendButtonHint(lines, IsFavorited ? "ItemBrowser-ButtonHints/RemoveFavorite" : "ItemBrowser-ButtonHints/AddFavorite", "ToggleLocking");
+				if (CanBeFavorited)
+					UserInterfaceUtility.AppendButtonHint(lines, IsFavorited ? "ItemBrowser-ButtonHints/RemoveFavorite" : "ItemBrowser-ButtonHints/AddFavorite", "ToggleLocking");
 			}
 			
 			return lines;
 		}
 		
 		public override List<TextAndFormatFields> GetHoverStats(bool previewReinforced) {
-			return !IsDiscovered ? new List<TextAndFormatFields>() : _icon.GetHoverStats(this, previewReinforced);
+			return _icon.GetHoverStats(this, previewReinforced);
 		}
 		
 		public override bool GetDurabilityOrFullnessOrXp(out int durability, out int maxDurability, out AmountType amountType) {
@@ -275,17 +291,13 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			
 			return false;
 		}
-
-		public override HoverTitleIconType GetHoverTitleIconType() {
-			return HoverTitleIconType.None;
-		}
-
+		
 		public override HoverWindowAlignment GetHoverWindowAlignment() {
 			return UserInterfaceUtility.IsUsingMouseAndKeyboard ? HoverWindowAlignment.BOTTOM_RIGHT_OF_CURSOR : HoverWindowAlignment.BOTTOM_RIGHT_OF_SCREEN;
 		}
 
 		protected override ContainedObjectsBuffer GetSlotObject() {
-			return IsDiscovered ? _icon.ContainedObject : default;
+			return HasBeenDiscovered ? _icon.ContainedObject : default;
 		}
 		
 		public override UIelement GetAdjacentUIElement(Direction.Id dir, Vector3 currentPosition) {
@@ -311,28 +323,26 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				return;
 			}
 
-			if (!PugDatabase.TryGetObjectInfo(visualObject.objectID, out var objectInfo, visualObject.variation) || !IsDiscovered) {
+			if (!PugDatabase.TryGetObjectInfo(visualObject.objectID, out var objectInfo, visualObject.variation)) {
 				SetMissingIcon(true);
 				return;
 			}
-
-			var iconToUse = ObjectUtility.GetIcon(visualObject.objectData, preferSmallIcons);
-			if (iconToUse == null) {
-				SetMissingIcon(true);
-				return;
-			}
-
-			var visualObjectInfo = PugDatabase.GetObjectInfo(visualObject.objectData.objectID, visualObject.objectData.variation);
 			
-			icon.sprite = iconToUse;
-			UserInterfaceUtility.ApplyObjectIconTransform(icon, visualObjectInfo, 1);
-
-			colorReplacer.UpdateColorReplacerFromObjectData(visualObject);
-			Manager.ui.ApplyAnyIconGradientMap(visualObject, icon);
-
 			var rarityIndex = (int) objectInfo.rarity;
 			if (rarityIndex >= 0 && rarityIndex < rarityBorders.Length)
 				background.sprite = rarityBorders[rarityIndex];
+
+			var iconToUse = ObjectUtility.GetIcon(visualObject.objectData, preferSmallIcons);
+			if (iconToUse == null || !HasBeenDiscovered) {
+				SetMissingIcon(true);
+				return;
+			}
+
+			icon.sprite = iconToUse;
+			UserInterfaceUtility.ApplyObjectIconTransform(icon, objectInfo, 1f);
+
+			colorReplacer.UpdateColorReplacerFromObjectData(visualObject);
+			Manager.ui.ApplyAnyIconGradientMap(visualObject, icon);
 		}
 
 		private void SetMissingIcon(bool isVisible) {

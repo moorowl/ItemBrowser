@@ -17,6 +17,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public PugText nameText;
 		public float discoveredNameOpacity = 0.75f;
 		public float undiscoveredNameOpacity = 0.33f;
+		public int maxNameTextLength = 15;
 		
 		private ObjectDataCD _previousObjectData;
 		private bool _wasDiscovered;
@@ -26,7 +27,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				return;
 
 			Icon = new BasicSlotIcon(objectData);
-			UpdateNameText(IsDiscovered);
+			UpdateNameText(HasBeenDiscovered);
 				
 			_previousObjectData = objectData;
 		}
@@ -35,7 +36,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			base.LateUpdate();
 
 			if (nameText != null) {
-				var isDiscovered = IsDiscovered;
+				var isDiscovered = HasBeenDiscovered;
 				if (isDiscovered != _wasDiscovered) {
 					UpdateNameText(isDiscovered);
 					_wasDiscovered = isDiscovered;
@@ -51,7 +52,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			var nameColor = Manager.text.GetRarityColor(PugDatabase.GetObjectInfo(containedObjectData.objectID, containedObjectData.variation)?.rarity ?? Rarity.Common);
 
 			nameText.style.color = nameColor.ColorWithNewAlpha(isDiscovered ? discoveredNameOpacity : undiscoveredNameOpacity);
-			nameText.Render(isDiscovered ? ObjectUtility.GetLocalizedDisplayNameOrDefault(containedObjectData) : API.Localization.GetLocalizedTerm("ItemBrowser-General/Undiscovered"));
+			nameText.Render(isDiscovered
+				? UserInterfaceUtility.TruncateToFit(ObjectUtility.GetLocalizedDisplayNameOrDefault(containedObjectData), maxNameTextLength)
+				: API.Localization.GetLocalizedTerm("ItemBrowser-General/Undiscovered")
+			);
 		}
 
 		public override void OnFavoritedStateChanged() {

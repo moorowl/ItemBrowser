@@ -5,7 +5,9 @@ using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.Options;
 using ItemBrowser.Utilities;
+using ItemBrowser.Utilities.DataStructures;
 using ItemBrowser.Utilities.Extensions;
+using PugMod;
 using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
@@ -16,6 +18,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public EntriesView entriesUsageView;
 		public SelectedObjectSlot selectedObjectSlot;
 		public PugText selectedTabLabel;
+		public PugText selectedTabCountLabel;
 		public SwapTabButton nextTabButton;
 		public SwapTabButton previousTabButton;
 		public InfoboxPanel infoboxPanel;
@@ -37,6 +40,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		protected override void OnShow(bool isFirstTimeShowing) {
 			if (SelectedObject.objectID != ObjectID.None)
 				ApplyState(GetCurrentState());
+		}
+
+		protected override void OnHide() {
+			DiscoveredTracker<ObjectDataCD>.ClearTemporarilyDiscovered(SelectedObject);
 		}
 
 		protected override void LateUpdate() {
@@ -139,6 +146,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					? $"ItemBrowser-DetailsTabs/{SelectedTab}_NonObtainable"
 					: $"ItemBrowser-DetailsTabs/{SelectedTab}";
 				selectedTabLabel.Render(selectedTabLabelTerm);
+				selectedTabCountLabel.Render($"{_allAvailableTabs.IndexOf(SelectedTab) + 1}/{_allAvailableTabs.Count}");
 				
 				if (nextTabButton.canBeClicked)
 					nextTabButton.SetTab(_allAvailableTabs[GetNextTabIndex(1)]);
@@ -151,6 +159,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					GetTabView(tab).IsShowing = SelectedTab == tab;
 			}
 			
+			DiscoveredTracker<ObjectDataCD>.ClearTemporarilyDiscovered(previousState.ObjectData);
+			DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(SelectedObject);
+			
 			GetTabView(SelectedTab).OnApplyState(_currentState, previousState);
 			infoboxPanel.OnApplyState(_currentState, previousState);
 			
@@ -158,6 +169,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 		
 		public void ClearState() {
+			DiscoveredTracker<ObjectDataCD>.ClearTemporarilyDiscovered(_currentState.ObjectData);
+			
 			_currentState = new DetailsState();
 			_previousStateStack.Clear();
 		}

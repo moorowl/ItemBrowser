@@ -27,6 +27,14 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 		public override void Update(SlotUIBase slot) {
 			_objectsToDisplay.Update(slot);
 		}
+		
+		public override bool HasBeenDiscovered(SlotUIBase slot, out float temporaryTimeRemaining) {
+			return DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_objectsToDisplay.CurrentObjectData, out temporaryTimeRemaining);
+		}
+
+		public override void SetTemporarilyDiscovered(SlotUIBase slot, float? duration = null) {
+			DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(_objectsToDisplay.CurrentObjectData, duration);
+		}
 
 		public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
 			return new TextAndFormatFields {

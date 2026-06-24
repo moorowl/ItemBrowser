@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
-using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.SlotIcons {
 	public class BiomeSlotIcon : SlotIcon {
@@ -24,6 +23,14 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 			_objectsToDisplay.Update(slot);
 		}
 
+		public override bool HasBeenDiscovered(SlotUIBase slot, out float temporaryTimeRemaining) {
+			return DiscoveredTracker<Biome>.HasBeenDiscovered(_biomes[_objectsToDisplay.CurrentObjectDataIndex], out temporaryTimeRemaining);
+		}
+
+		public override void SetTemporarilyDiscovered(SlotUIBase slot, float? duration = null) {
+			DiscoveredTracker<Biome>.SetTemporarilyDiscovered(_biomes[_objectsToDisplay.CurrentObjectDataIndex], duration);
+		}
+
 		public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
 			if (_biomes.Length > 1) {
 				return new TextAndFormatFields {
@@ -32,7 +39,7 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 			}
 
 			return new TextAndFormatFields {
-				text = $"BiomeNames/{_biomes[0]}"
+				text = DiscoveredTracker<Biome>.HasBeenDiscovered(_biomes[0], out _) ? $"BiomeNames/{_biomes[0]}" : "ItemBrowser-General/Undiscovered"
 			};
 		}
 
@@ -45,7 +52,7 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 				lines.Add(new TextAndFormatFields {
 					text = "- {0}",
 					formatFields = new[] {
-						$"BiomeNames/{biome}"
+						DiscoveredTracker<Biome>.HasBeenDiscovered(biome, out _) ? $"BiomeNames/{biome}" : "ItemBrowser-General/Undiscovered"
 					},
 					dontLocalize = true,
 					color = GetBiomeIcon(biome) == _objectsToDisplay.CurrentObjectData.objectID ? UserInterfaceUtility.AlmostWhiteColor : UserInterfaceUtility.DescriptionColor

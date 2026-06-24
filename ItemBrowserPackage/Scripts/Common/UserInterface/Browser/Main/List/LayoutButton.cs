@@ -11,24 +11,11 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public Sprite listLayoutIcon;
 
 		private VirtualObjectListLayout _previousLayout;
-
-		protected override void Awake() {
-			base.Awake();
-
-			UpdateVisuals();
-		}
-		
-		private void OnEnable() {
-			UpdateVisuals();
-		}
 		
 		protected override void LateUpdate() {
 			base.LateUpdate();
 
-			if (_previousLayout != OptionsManager.Instance.ListLayout) {
-				UpdateVisuals();
-				_previousLayout = OptionsManager.Instance.ListLayout;
-			}
+			UpdateVisuals();
 		}
 
 		public override void OnLeftClicked(bool mod1, bool mod2) {

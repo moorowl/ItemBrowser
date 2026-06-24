@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class SearchBar : TextInputField {
+		private const float DoubleClickThreshold = 0.5f;
+		
 		public ObjectListView objectListView;
 		public GameObject highlightBorder;
 		
@@ -35,6 +37,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			base.LateUpdate();
 
 			DeselectIfUsingController();
+			UpdateHighlightSearchResultsInput();
 			UpdateVisuals();
 		}
 
@@ -42,6 +45,24 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (_oldHighlightSearchResults != objectListView.HighlightSearchResults) {
 				highlightBorder.SetActive(objectListView.HighlightSearchResults);
 				_oldHighlightSearchResults = objectListView.HighlightSearchResults;
+			}
+		}
+
+		private void UpdateHighlightSearchResultsInput() {
+			if (string.IsNullOrWhiteSpace(GetInputText())) {
+				objectListView.HighlightSearchResults = false;
+				return;
+			}
+
+			var input = Manager.input.singleplayerInputModule;
+			if (!selectedMarker.activeSelf || !input.WasButtonPressedDownThisFrame(PlayerInput.InputType.UI_INTERACT, true))
+				return;
+
+			if (Time.time <= _lastLeftClicked + DoubleClickThreshold) {
+				objectListView.HighlightSearchResults = !objectListView.HighlightSearchResults;
+				_lastLeftClicked = 0f;
+			} else {
+				_lastLeftClicked = Time.time;
 			}
 		}
 

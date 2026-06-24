@@ -81,64 +81,97 @@ namespace ItemBrowser.Common.Options {
 				_isDirty = true;
 			}
 		}
-
-		public int FavoritesCount => _favorites.Count;
-
-		private HashSet<ObjectDataCD> _favorites;
+		
+		private readonly Dictionary<string, Dictionary<ObjectDataCD, HashSet<ObjectTagType>>> _tags = new();
 		
 		private OptionsData _data;
 		private bool _hasInit;
 		private bool _isDirty;
 		private float _lastSavedTime;
 
-		public bool IsFavorited(ObjectDataCD objectData) {
-			return _favorites.Contains(objectData);
+		public bool HasTag(ObjectDataCD objectData, ObjectTagType tag) {
+			if (!_tags.TryGetValue(ItemBrowserAPI.CurrentCharacterGuid, out var objectToTags))
+				return false;
+			
+			return objectToTags.TryGetValue(objectData, out var tags) && tags.Contains(tag);
 		}
 		
-		public bool AddFavorite(ObjectDataCD objectData) {
-			if (!IsFavorited(objectData)) {
-				_favorites.Add(objectData);
-				_data.Favorites.Add(new OptionsObjectData {
-					InternalName = ObjectUtility.GetInternalName(objectData),
-					Variation = objectData.variation
-				});
-				
-				_isDirty = true;
+		public bool AddTag(ObjectDataCD objectData, ObjectTagType tag) {
+			if (!_tags.TryGetValue(ItemBrowserAPI.CurrentCharacterGuid, out var objectToTags)) {
+				objectToTags = new Dictionary<ObjectDataCD, HashSet<ObjectTagType>>();
+				_tags[ItemBrowserAPI.CurrentCharacterGuid] = objectToTags;
 			}
 			
-			return false;
-		}
-
-		public bool RemoveFavorite(ObjectDataCD objectData) {
-			if (_favorites.Remove(objectData)) {
-				var internalName = ObjectUtility.GetInternalName(objectData);
-				for (var i = 0; i < _data.Favorites.Count; i++) {
-					if (_data.Favorites[i].InternalName == internalName && _data.Favorites[i].Variation == objectData.variation) {
-						_data.Favorites.RemoveAtSwapBack(i);
-						break;
-					}
-				}
-				
-				_isDirty = true;
+			if (!objectToTags.TryGetValue(objectData, out var tags)) {
+				tags = new HashSet<ObjectTagType>();
+				objectToTags[objectData] = tags;
 			}
 
-			return false;
+			if (!tags.Add(tag))
+				return false;
+
+			_isDirty = true;
+			return true;
+		}
+		
+		public bool RemoveTag(ObjectDataCD objectData, ObjectTagType tag) {
+			if (!_tags.TryGetValue(ItemBrowserAPI.CurrentCharacterGuid, out var objectToTags))
+				return false;
+
+			if (!objectToTags.TryGetValue(objectData, out var tags) || !tags.Remove(tag))
+				return false;
+
+			_isDirty = true;
+			return true;
 		}
 
-		public void RemoveAllFavorites() {
-			_favorites.Clear();
-			_data.Favorites.Clear();
+		public void RemoveTagFromAll(ObjectTagType tag) {
+			if (!_tags.TryGetValue(ItemBrowserAPI.CurrentCharacterGuid, out var objectToTags))
+            	return;
+			
+			foreach (var tags in objectToTags.Values)
+				tags.Remove(tag);
+
 			_isDirty = true;
+		}
+
+		private void OnPostDeserialize() {
+			_tags.Clear();
+			
+			foreach (var (guid, characterSpecificOptions) in _data.Characters) {
+				Main.Log(nameof(OptionsManager), $"Loaded tags from character {guid}");
+				_tags[guid] = characterSpecificOptions.TaggedObjects
+					.Where(objectData => API.Authoring.GetObjectID(objectData.InternalName) != ObjectID.None)
+					.ToDictionary(
+						objectData => new ObjectDataCD { objectID = API.Authoring.GetObjectID(objectData.InternalName), variation = objectData.Variation },
+						objectData => objectData.Tags.ToHashSet()
+					);
+			}
+		}
+
+		private void OnPreSerialize() {
+			_data.Characters.Clear();
+			
+			foreach (var (guid, taggedObjects) in _tags) {
+				Main.Log(nameof(OptionsManager), $"Saved tags from character {guid}");
+				_data.Characters[guid] = _data.Characters.GetValueOrDefault(guid, new CharacterSpecificOptionsData()) with {
+					TaggedObjects = taggedObjects
+						.Where(objectAndTags => objectAndTags.Value.Count > 0)
+						.Select(objectAndTags => new TagObjectData {
+							InternalName = ObjectUtility.GetInternalName(objectAndTags.Key.objectID),
+							Variation = objectAndTags.Key.variation,
+							Tags = objectAndTags.Value.ToList()
+						})
+						.ToList()
+				};
+			}
 		}
 		
 		private void SetData(OptionsData data) {
 			_data = data;
 			_isDirty = false;
-			
-			_favorites = _data.Favorites.Select(favoriteData => new ObjectDataCD {
-				objectID = API.Authoring.GetObjectID(favoriteData.InternalName),
-				variation = favoriteData.Variation
-			}).Where(objectData => objectData.objectID != ObjectID.None).ToHashSet();
+
+			OnPostDeserialize();
 		}
 		
 		public void Init() {
@@ -160,6 +193,8 @@ namespace ItemBrowser.Common.Options {
 		}
 		
 		public void Save() {
+			OnPreSerialize();
+			
 			if (!API.ConfigFilesystem.DirectoryExists(Main.InternalName))
 				API.ConfigFilesystem.CreateDirectory(Main.InternalName);
 			
@@ -190,8 +225,8 @@ namespace ItemBrowser.Common.Options {
 				SetDefaults();
 			}
 		}
-		
-		private class OptionsData {
+
+		private record OptionsData {
 			public int Version { get; set; } = CurrentVersion;
 			public bool CheatMode { get; set; }
 			public bool DiscoveryMode { get; set; }
@@ -201,12 +236,17 @@ namespace ItemBrowser.Common.Options {
 			public bool PanelsShiftLayout { get; set; }
 			public VirtualObjectListLayout ListLayout { get; set; } = VirtualObjectListLayout.Grid;
 			public Guid Theme { get; set; }
-			public List<OptionsObjectData> Favorites { get; set; } = new();
+			public Dictionary<string, CharacterSpecificOptionsData> Characters { get; set; } = new();
+		}
+
+		private record CharacterSpecificOptionsData {
+			public List<TagObjectData> TaggedObjects { get; set; } = new();
 		}
 		
-		private record OptionsObjectData {
+		private record TagObjectData {
 			public string InternalName { get; set; }
 			public int Variation { get; set; }
+			public List<ObjectTagType> Tags { get; set; } = new();
 		}
 	}
 }

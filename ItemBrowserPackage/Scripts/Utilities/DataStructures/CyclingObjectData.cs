@@ -9,10 +9,10 @@ namespace ItemBrowser.Utilities.DataStructures {
 			
 		private readonly List<ObjectDataCD> _objectsToDisplay;
 		private readonly float _cycleSpeed;
-		private int _currentObjectDataIndex;
 		private float _lastCycledTime;
 			
-		public ObjectDataCD CurrentObjectData => _objectsToDisplay.Count > 0 ? _objectsToDisplay[_currentObjectDataIndex] : default;
+		public ObjectDataCD CurrentObjectData => _objectsToDisplay.Count > 0 ? _objectsToDisplay[CurrentObjectDataIndex] : default;
+		public int CurrentObjectDataIndex { get; private set; }
 
 		public CyclingObjectData(IEnumerable<ObjectDataCD> objectsToDisplay, float cycleSpeed = DefaultCycleSpeed) {
 			_objectsToDisplay = objectsToDisplay.ToList();
@@ -33,9 +33,9 @@ namespace ItemBrowser.Utilities.DataStructures {
 				_lastCycledTime = Time.time;
 				
 			if (Time.time >= _lastCycledTime + _cycleSpeed) {
-				_currentObjectDataIndex++;
-				if (_currentObjectDataIndex >= _objectsToDisplay.Count)
-					_currentObjectDataIndex = 0;
+				CurrentObjectDataIndex++;
+				if (CurrentObjectDataIndex >= _objectsToDisplay.Count)
+					CurrentObjectDataIndex = 0;
 
 				_lastCycledTime = Time.time;
 				if (slot is ItemBrowserSlot basicItemSlot)

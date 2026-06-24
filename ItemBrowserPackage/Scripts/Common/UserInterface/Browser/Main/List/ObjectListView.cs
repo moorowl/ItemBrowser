@@ -59,6 +59,15 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 		private void SetupFiltersAndSorting() {
 			_searchResults = SearchResults.Create("");
+
+			// Setup sorters
+			_currentSorterIndex = 0;
+			_sorters = GetSorters();
+			_sorterResults.Clear();
+			UseReverseSorting = true;
+			
+			foreach (var sorter in _sorters)
+				_sorterResults.Add(SorterResults.Create(sorter));
 			
 			// Setup filters
 			PrimaryFiltersPanel.Clear();
@@ -72,15 +81,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				foreach (var filter in group.Value)
 					OnFilterStateChanged(filter);
 			}
-
-			// Setup sorters
-			_currentSorterIndex = 0;
-			_sorters = GetSorters();
-			_sorterResults.Clear();
-			UseReverseSorting = true;
-			
-			foreach (var sorter in _sorters)
-				_sorterResults.Add(SorterResults.Create(sorter));
 		}
 
 		protected override void LateUpdate() {
@@ -100,15 +100,17 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 				foreach (var filter in PrimaryFiltersPanel.ActiveDynamicFilters) {
 					var updatedFilterResults = FilterResults.Create(filter);
+					_filterResults[filter] = updatedFilterResults;
+					shouldRefresh = true;
 
-					if (!_filterResults.ContainsKey(filter) || !FilterResults.Equals(updatedFilterResults, _filterResults[filter])) {
+					/*if (!_filterResults.ContainsKey(filter) || !FilterResults.Equals(updatedFilterResults, _filterResults[filter])) {
 						_filterResults[filter] = updatedFilterResults;
 						shouldRefresh = true;
-					}
+					}*/
 				}
 
 				var updatedDiscoveryModeFilterResults = FilterResults.Create(new Filter(string.Empty) {
-					Function = objectData => ObjectUtility.HasBeenDiscovered(objectData, true)
+					Function = objectData => DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(objectData, out var temporaryTimeRemaining) && temporaryTimeRemaining <= 0f
 				});
 				if (_discoveryModeFilterResults == null || !FilterResults.Equals(updatedDiscoveryModeFilterResults, _discoveryModeFilterResults)) {
 					_discoveryModeFilterResults = updatedDiscoveryModeFilterResults;
@@ -224,9 +226,16 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		private void UpdateListRefresh() {
-			if (_listRefreshTask is { IsCompletedSuccessfully: true }) {
-				_filteredObjects = _listRefreshTask.Result.Objects;
-				objectList.SetObjects(_filteredObjects, _listRefreshTask.Result.PreserveScroll);
+			if (_listRefreshTask is { IsCompleted: true }) {
+				if (_listRefreshTask.IsCompletedSuccessfully) {
+					_filteredObjects = _listRefreshTask.Result.Objects;
+					objectList.SetObjects(_filteredObjects, _listRefreshTask.Result.PreserveScroll);
+				} else {
+					Main.Log($"{nameof(ObjectListView)}+{name}", $"List refresh task didn't complete successfully, retrying");
+					Main.Log(_listRefreshTask.Exception);
+					_requestedListRefresh = true;
+				}
+				
 				_listRefreshTask = null;
 			}
 

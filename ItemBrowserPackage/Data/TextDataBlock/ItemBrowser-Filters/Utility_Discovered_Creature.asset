@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: Utility_Discovered
+  m_Name: Utility_Discovered_Creature
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: 6270397775731155091
-    m_high: 6909298978168652059
+    m_low: 996467644578383680
+    m_high: 587938522391158665
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
@@ -67,7 +67,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Discovered
-      description: Items that have been picked up by you
+      description: Creatures that have been encountered by you
     - m_language:
         m_address:
           m_low: 6040640903323332866
@@ -103,7 +103,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: Descobertos
-      description: "Itens que foram coletados at\xE9 agora."
+      description: "Criaturas que voc\xEA j\xE1 encontrou."
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 681352171529052915
         m_high: 2314507893210082619
     title: Discovered
-    description: Items that have been picked up by you
+    description: Creatures that have been encountered by you
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

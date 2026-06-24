@@ -25,8 +25,7 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 
 				if (tileset == null) {
 					_visualObjects = new CyclingObjectData(GetObjectsToDisplay(_tileType).OrderBy(objectData => PugDatabase.TryGetComponent<LevelCD>(objectData, out var levelCD) ? levelCD.level : 0));
-				}
-				else {
+				} else {
 					var objectInfo = PugDatabase.TryGetTileItemInfo(_tileType == TileType.ground ? TileType.wall : _tileType, (int)tileset);
 					if (objectInfo != null) {
 						_staticObject = new BasicSlotIcon(new ObjectDataCD {
@@ -40,12 +39,35 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 			public override void Update(SlotUIBase slot) {
 				_visualObjects?.Update(slot);
 			}
+			
+			public override bool HasBeenDiscovered(SlotUIBase slot, out float temporaryTimeRemaining) {
+				if (_staticObject != null)
+					return DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_staticObject.ContainedObject.objectData, out temporaryTimeRemaining);
+				if (_visualObjects != null)
+					return DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_visualObjects.CurrentObjectData, out temporaryTimeRemaining);
+
+				temporaryTimeRemaining = 0f;
+				return true;
+			}
+
+			public override void SetTemporarilyDiscovered(SlotUIBase slot, float? duration = null) {
+				if (_staticObject != null)
+					DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(_staticObject.ContainedObject.objectData, duration);
+				if (_visualObjects != null)
+					DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(_visualObjects.CurrentObjectData, duration);
+			}
 
 			public override bool ShowDetails(SlotUIBase slot, DetailsTab initialTab) {
 				return _staticObject != null && _staticObject.ShowDetails(slot, initialTab);
 			}
 
 			public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
+				if (!HasBeenDiscovered(slot, out _)) {
+					return new TextAndFormatFields {
+						text = "ItemBrowser-General/Undiscovered"
+					};
+				}
+				
 				return new TextAndFormatFields {
 					text = TileUtility.GetLocalizedDisplayName(_tileType, _tileset == Tileset.MAX_VALUE ? null : _tileset),
 					dontLocalize = true
@@ -53,10 +75,16 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 			}
 
 			public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
+				if (!HasBeenDiscovered(slot, out _))
+					return base.GetHoverDescription(slot);
+				
 				return _staticObject != null ? _staticObject.GetHoverDescription(slot) : base.GetHoverDescription(slot);
 			}
 
 			public override List<TextAndFormatFields> GetHoverStats(SlotUIBase slot, bool previewReinforced) {
+				if (!HasBeenDiscovered(slot, out _))
+					return base.GetHoverStats(slot, previewReinforced);
+				
 				return _staticObject != null ? _staticObject.GetHoverStats(slot, previewReinforced) : base.GetHoverStats(slot, previewReinforced);
 			}
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using I2.Loc;
 using ItemBrowser.Common.Options;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace ItemBrowser.Utilities {
@@ -91,6 +92,13 @@ namespace ItemBrowser.Utilities {
 
 			var scaleMin = Mathf.Min(desiredScale / iconSize.x, desiredScale / iconSize.y);
 			sr.transform.localScale = new Vector3(scaleMin, scaleMin, 1f);
+		}
+
+		public static string TruncateToFit(string text, int maxCharacters) {
+			if (text.Length <= maxCharacters)
+				return text;
+			
+			return text[..(maxCharacters - 3)].TrimEnd() + "...";
 		}
 
 		public enum MenuSound {

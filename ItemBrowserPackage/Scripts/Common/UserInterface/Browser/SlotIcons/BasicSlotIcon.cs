@@ -41,6 +41,14 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 		public override void Update(SlotUIBase slot) {
 			_objectsToDisplay.Update(slot);
 		}
+		
+		public override bool HasBeenDiscovered(SlotUIBase slot, out float temporaryTimeRemaining) {
+			return DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_objectsToDisplay.CurrentObjectData, out temporaryTimeRemaining);
+		}
+
+		public override void SetTemporarilyDiscovered(SlotUIBase slot, float? duration = null) {
+			DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(_objectsToDisplay.CurrentObjectData, duration);
+		}
 
 		public override bool ShowDetails(SlotUIBase slot, DetailsTab initialTab) {
 			return ItemBrowserAPI.ItemBrowserUI.ShowDetails(_objectsToDisplay.CurrentObjectData, initialTab);
@@ -51,6 +59,12 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 				text = ObjectUtility.GetLocalizedDisplayNameOrDefault(_objectsToDisplay.CurrentObjectData),
 				dontLocalize = true
 			};
+			
+			if (!DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_objectsToDisplay.CurrentObjectData, out _)) {
+				objectName = new TextAndFormatFields {
+					text = "ItemBrowser-General/Undiscovered"
+				};
+			}
 
 			var objectInfo = PugDatabase.GetObjectInfo(_objectsToDisplay.CurrentObjectData.objectID);
 			if (objectInfo != null)
@@ -60,6 +74,9 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 		}
 
 		public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
+			if (!DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_objectsToDisplay.CurrentObjectData, out _))
+				return new List<TextAndFormatFields>();
+			
 			var objectData = _objectsToDisplay.CurrentObjectData;
 			var term = ObjectUtility.GetInternalName(objectData);
 
@@ -134,6 +151,9 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 		}
 
 		public override List<TextAndFormatFields> GetHoverStats(SlotUIBase slot, bool previewReinforced) {
+			if (!HasBeenDiscovered(slot, out _))
+				return base.GetHoverStats(slot, previewReinforced);
+			
 			var lines = slot.GetHoverStats(ContainedObject, previewReinforced, false);
 
 			var displayNameNote = ObjectUtility.GetUnlocalizedDisplayNameNote(_objectsToDisplay.CurrentObjectData);
