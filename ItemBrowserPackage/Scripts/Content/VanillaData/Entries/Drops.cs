@@ -97,10 +97,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				}
 
 				void AddEntriesFromPrefab(World world, ObjectDataCD objectData, Entity entity, PrimaryLootTable lootTable, PrimaryLootTable.Pool genericPool, string optionalSceneName = null) {
-					if (EntityUtility.TryGetComponentData<SnakeMovementStateCD>(entity, world, out var snakeMovementStateCD) && snakeMovementStateCD.tailObjectId == objectData.objectID)
-						return;
-					
-					if (EntityUtility.HasComponentData<ProjectileCD>(entity, world) || EntityUtility.HasComponentData<MortarProjectileCD>(entity, world))
+					if (ObjectUtility.IsIndestructible(objectData))
 						return;
 
 					// Spawns on death

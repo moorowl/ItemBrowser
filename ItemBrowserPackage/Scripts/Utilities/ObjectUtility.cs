@@ -403,6 +403,30 @@ namespace ItemBrowser.Utilities {
 		public static bool IsNonObtainable(ObjectID id, int variation = 0) {
 			return IsNonObtainable(new ObjectDataCD { objectID = id, variation = variation });
 		}
+
+		public static bool IsIndestructible(ObjectDataCD objectData) {
+			if (PugDatabase.HasComponent<AllowHealthRegenerationInCombatCD>(objectData) && PugDatabase.GetComponent<HealthCD>(objectData).maxHealth >= 9999999 && PugDatabase.GetComponent<HealthRegenerationCD>(objectData).NormalizedHealthIncreasePerFiveSeconds >= 1f)
+				return true;
+			
+			if (PugDatabase.TryGetComponent<DamageReductionCD>(objectData, out var damageReductionCD) && damageReductionCD.reduction >= 9999999)
+				return true;
+			
+			if (PugDatabase.HasComponent<ProjectileCD>(objectData) || PugDatabase.HasComponent<MortarProjectileCD>(objectData))
+				return true;
+			
+			if (PugDatabase.TryGetComponent<SnakeMovementStateCD>(objectData, out var snakeMovementStateCD) && snakeMovementStateCD.tailObjectId == objectData.objectID)
+				return true;
+			
+			var primaryPrefabEntity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, ClientWorldStateSystem.PugDatabaseBank, objectData.variation);
+			if (primaryPrefabEntity != Entity.Null && EntityUtility.IsComponentEnabled<IndestructibleCD>(primaryPrefabEntity, API.Client.World))
+				return true;
+
+			return false;
+		}
+		
+		public static bool IsIndestructible(ObjectID id, int variation = 0) {
+			return IsIndestructible(new ObjectDataCD { objectID = id, variation = variation });
+		}
 		
 		public static IEnumerable<ObjectDataCD> GroupAndSumObjects(IEnumerable<ObjectDataCD> objects, bool ignoreVariation) {
 			return objects.GroupBy(objectData => ignoreVariation ? (int) objectData.objectID : (((int) objectData.objectID) * 10000) + objectData.variation)
