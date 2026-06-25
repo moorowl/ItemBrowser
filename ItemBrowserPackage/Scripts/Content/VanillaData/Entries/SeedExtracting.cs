@@ -34,7 +34,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								ExtractedAmount = minMaxRandomAmountOverride.y > 0f
 									? ((int) minMaxRandomAmountOverride.x, (int) minMaxRandomAmountOverride.y)
 									: ((int) extractorCD.defaultMinMaxRandomExtractedOutputAmount.x, (int) extractorCD.defaultMinMaxRandomExtractedOutputAmount.y),
-								TimeToExtract = extractableData.craftingTimeOverride > 0 ? extractableData.craftingTimeOverride : extractorCD.defaultExtractionTime,
+								TimeToExtract = 1f + (extractableData.craftingTimeOverride > 0 ? extractableData.craftingTimeOverride : extractorCD.defaultExtractionTime),
 								Plant = (extractable.objectID, extractable.variation),
 								Extractor = (objectData.objectID, objectData.variation)
 							};	
