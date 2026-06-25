@@ -7,6 +7,7 @@ using ItemBrowser.Common.Api.SortingAndFiltering;
 using ItemBrowser.Common.Options;
 using ItemBrowser.Content.VanillaData.Entries;
 using ItemBrowser.Utilities;
+using ItemBrowser.Utilities.DataStructures;
 using Pug.Properties;
 using PugMod;
 using UnityEngine;
@@ -429,10 +430,19 @@ namespace ItemBrowser.Content.VanillaData {
 				FunctionIsDynamic = true,
 				CausesItemCraftingRequirementsToDisplay = true
 			});
-			registry.AddItemFilter(utilityGroup, new($"{utilityGroup}_Discovered") {
-				Icon = ObjectID.Portal,
-				Function = objectData => ObjectUtility.HasBeenDiscovered(objectData),
+			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_Discovered_Item") {
+				Icon = ObjectID.CartographyTable,
+				Function = objectData => Manager.saves.HasDiscoveredObject(objectData.objectID, objectData.variation),
 				FunctionIsDynamic = true
+			});
+			/*8registry.AddCreatureFilter(utilityGroup, new Filter($"{utilityGroup}_Discovered_Creature") {
+				Icon = ObjectID.CartographyTable,
+				Function = objectData => Manager.saves.HasDiscoveredObject(objectData.objectID),
+				FunctionIsDynamic = true
+			});*/
+			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_NonObtainable") {
+				Icon = ObjectID.WallObsidianBlock,
+				Function = ObjectUtility.IsNonObtainable
 			});
 			registry.AddItemFilter(utilityGroup, new Filter($"{utilityGroup}_Technical_Item") {
 				Icon = ObjectID.MechanicalPart,
@@ -454,9 +464,6 @@ namespace ItemBrowser.Content.VanillaData {
 				Function = objectData => !ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, objectData).Any(),
 				DefaultState = () => OptionsManager.Instance.CheatMode ? FilterState.None : FilterState.Exclude
 			});
-			/*registry.AddItemFilter(utilityGroup, new($"{utilityGroup}_IsNonObtainable") {
-				Function = objectData => ObjectUtils.IsNonObtainable(objectData.objectID, objectData.variation)
-			});*/
 		}
 		
 		private static readonly HashSet<FactionID> UnusedCreatureFactions = new() {
