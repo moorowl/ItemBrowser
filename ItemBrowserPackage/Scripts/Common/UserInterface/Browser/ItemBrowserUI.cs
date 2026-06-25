@@ -5,7 +5,6 @@ using HarmonyLib;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Themes;
 using ItemBrowser.Common.Options;
-using ItemBrowser.Common.UserInterface.TileGrid;
 using ItemBrowser.Utilities;
 using PugMod;
 using UnityEngine;
@@ -22,7 +21,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		
 		public Transform root;
 		public GameObject background;
-		public GameObject tileGridPrefab;
 		public MainView mainView;
 		public DetailsView detailsView;
 		public Gradient temporarilyDiscoveredGradient;
@@ -30,9 +28,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public ItemBrowserTheme CurrentTheme { get; private set; }
 		private List<ItemBrowserTheme> _allThemes;
 		private readonly List<ThemedRenderer> _themedRenderers = new();
-		
-		public TileGridHandler TileGrid { get; private set; }
-		private Transform _tileGridRenderAnchor;
 
 		private float _timeToAutoUpdateObjectsToHighlightInInventory;
 		public readonly HashSet<ObjectID> ObjectsToHighlightInInventory = new();
@@ -47,9 +42,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				.ToList();
 			var currentThemeIndex = _allThemes.FindIndex(theme => theme.Address == OptionsManager.Instance.Theme);
 			ApplyTheme(_allThemes[currentThemeIndex > -1 ? currentThemeIndex : 0]);
-			
-			_tileGridRenderAnchor = Manager.camera.GetRenderAnchor();
-			TileGrid = Instantiate(tileGridPrefab, _tileGridRenderAnchor).GetComponent<TileGridHandler>();
 
 			ThemedRenderer.OnEnabled += AddThemedRenderer;
 			ThemedRenderer.OnDisabled += RemoveThemedRenderer;
@@ -60,11 +52,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			ThemedRenderer.OnDisabled -= RemoveThemedRenderer;
 			
 			OnUninit?.Invoke(this);
-			
-			if (TileGrid != null) {
-				Destroy(TileGrid.gameObject);
-				Manager.camera.ReturnRenderAnchor(_tileGridRenderAnchor);
-			}
 		}
 
 		private void ApplyTheme(ItemBrowserTheme theme) {

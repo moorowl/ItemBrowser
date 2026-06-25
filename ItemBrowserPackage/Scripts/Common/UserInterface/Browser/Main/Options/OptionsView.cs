@@ -112,15 +112,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.DiscoveryMode ? "Enabled" : "Disabled")}");
 			}
 		};
-		private readonly OptionsEntryType _showTileGrid = new() {
-			OnLeftClick = () => {
-				ItemBrowserAPI.ItemBrowserUI.TileGrid.IsShowing = !ItemBrowserAPI.ItemBrowserUI.TileGrid.IsShowing;
-			},
-			UpdateValueText = (valueText, _) => {
-				valueText.Render($"ItemBrowser-Options/{(ItemBrowserAPI.ItemBrowserUI.TileGrid.IsShowing ? "Enabled" : "Disabled")}");
-			}
-		};
-		
+
 		public Transform scrollContainer;
 		public OptionsEntry entryTemplate;
 		public OptionsSection sectionTemplate;
@@ -163,9 +155,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			AddEntry("ItemBrowser-Options/ShowTechnicalInfo", _showTechnicalInfo);
 			AddEntry("ItemBrowser-Options/PanelsShiftLayout", _panelsShiftLayout);
 			
-			// Extras
-			AddSection("ItemBrowser-Options/Extras");
-			AddEntry("ItemBrowser-Options/ShowTileGrid", _showTileGrid);
 			
 			foreach (var scrollItem in scrollContainer.GetComponentsInChildren<IScrollItem>())
 				scrollItem.OnScrollWindowChanged(scrollWindow);

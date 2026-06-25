@@ -16,7 +16,6 @@ namespace ItemBrowser.Common.Input {
 		private const PlayerInput.InputType ShowSourcesInput = (PlayerInput.InputType) 39001;
 		private const PlayerInput.InputType ShowUsagesInput = (PlayerInput.InputType) 39002;
 		private const PlayerInput.InputType SpawnItemInput = (PlayerInput.InputType) 39004;
-		private const PlayerInput.InputType ToggleTileGridInput = (PlayerInput.InputType) 39005;
 		private const PlayerInput.InputType ShowTechnicalInfoInput = (PlayerInput.InputType) 39006;
 
 		public static bool IsShowTechnicalInfoHeld => OptionsManager.Instance.AlwaysShowTechnicalInfo || Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(ShowTechnicalInfoInput);
@@ -24,8 +23,7 @@ namespace ItemBrowser.Common.Input {
 		public static bool IsPickUpTenHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_10);
 		public static bool IsPickUpStackHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_HALF);
 		public static bool IsToggleFavoritePressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.LOCKING_TOGGLE);
-		public static bool IsToggleTileGridPressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(ToggleTileGridInput);
-		
+
 		[HarmonyPatch(typeof(InputManager), "LateUpdate")]
 		[HarmonyPostfix]
 		public static void InputManager_LateUpdate(InputManager __instance) {
@@ -80,11 +78,6 @@ namespace ItemBrowser.Common.Input {
 				Name = "ItemBrowser-ShowTechnicalInfo",
 				KeyboardKey = KeyboardKeyCode.LeftAlt,
 				JoystickElementId = 14
-			});
-			InputAdder.AddKeybind(userData, new InputAdder.KeybindConfiguration((int) ToggleTileGridInput, gameplayCategoryId, gameplayInputCategoryId) {
-				Name = "ItemBrowser-ToggleTileGrid",
-				KeyboardKey = KeyboardKeyCode.F6,
-				KeyboardKeyModifier = ModifierKey.Shift
 			});
 		}
 	}
