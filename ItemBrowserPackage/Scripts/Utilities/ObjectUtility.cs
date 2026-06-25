@@ -51,6 +51,7 @@ namespace ItemBrowser.Utilities {
 		private static readonly Dictionary<ObjectDataCD, string> Descriptions = new();
 		private static readonly Dictionary<ObjectID, HashSet<string>> Categories = new();
 		private static readonly Dictionary<ObjectDataCD, int> PrimaryVariations = new();
+		private static readonly Dictionary<ObjectDataCD, HashSet<ConditionID>> AssociatedConditions = new();
 		private static readonly Dictionary<ObjectDataCD, HashSet<string>> AssociatedConditionCategories = new();
 		private static readonly Dictionary<ObjectDataCD, int> ArmorValues = new();
 		private static readonly Dictionary<ObjectDataCD, Sprite> IconOverrides = new();
@@ -178,6 +179,7 @@ namespace ItemBrowser.Utilities {
 		}
 		
 		private static void BakeConditions() {
+			AssociatedConditions.Clear();
 			AssociatedConditionCategories.Clear();
 			ArmorValues.Clear();
 
@@ -248,6 +250,7 @@ namespace ItemBrowser.Utilities {
 					.Max();
 
 				ArmorValues.TryAdd(objectData, highestArmorValue);
+				AssociatedConditions.TryAdd(objectData, associatedConditions.Select(condition => condition.Id).ToHashSet());
 				AssociatedConditionCategories.TryAdd(objectData, associatedConditions
 					.Select(associatedCondition => associatedCondition.Id)
 					.Where(id => id != ConditionID.None)
@@ -338,6 +341,14 @@ namespace ItemBrowser.Utilities {
 		
 		public static bool IsPrimaryVariation(ObjectID id, int variation) {
 			return IsPrimaryVariation(new ObjectDataCD { objectID = id, variation = variation });
+		}
+		
+		public static HashSet<ConditionID> GetAssociatedConditions(ObjectDataCD objectData) {
+			return AssociatedConditions.GetValueOrDefault(objectData);
+		}
+		
+		public static HashSet<ConditionID> GetAssociatedConditions(ObjectID id, int variation) {
+			return GetAssociatedConditions(new ObjectDataCD { objectID = id, variation = variation });
 		}
 
 		public static HashSet<string> GetAssociatedConditionCategories(ObjectDataCD objectData) {

@@ -170,7 +170,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		private void SetDiscoveredTemporarily() {
-			_icon.SetTemporarilyDiscovered(this, 10f);
+			_icon.SetTemporarilyDiscovered(this, 15f);
 		}
 
 		public override TextAndFormatFields GetHoverTitle() {

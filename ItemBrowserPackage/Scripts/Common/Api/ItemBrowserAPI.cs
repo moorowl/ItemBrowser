@@ -5,6 +5,7 @@ using System.Linq;
 using HarmonyLib;
 using I2.Loc;
 using ItemBrowser.Common.Api.Entries;
+using ItemBrowser.Common.Options;
 using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using PugMod;
@@ -27,6 +28,7 @@ namespace ItemBrowser.Common.Api {
 
 		private static bool _hasRegisteredPluginContent;
 		private static string _lastLanguage;
+		private static bool _shouldDiscoverTilesAndObjects;
 
 		public static void AddPlugin(ItemBrowserPlugin instance, IMod sourceMod) {
 			var modInfo = API.ModLoader.LoadedMods.First(modInfo => modInfo.Handlers.Contains(sourceMod));
@@ -53,6 +55,7 @@ namespace ItemBrowser.Common.Api {
 			if (reloadWorldSpecificContent)
 				ReloadWorldSpecificContent();
 
+			_shouldDiscoverTilesAndObjects = false;
 			CurrentCharacterGuid = Manager.saves.GetCharacterGuid().ToString();
 			
 			if (Manager.load.IsScreenBlack())
@@ -211,27 +214,27 @@ namespace ItemBrowser.Common.Api {
 		}
 
 		private static void DiscoverNearbyTiles() {
-			return;
+			if (!_shouldDiscoverTilesAndObjects || Time.frameCount % 60 != 0)
+				return;
 			
-			if (Time.frameCount % 60 == 0) {
-				Manager.audio.ambientSoundsHandler.GetNearbyTileData(out var tileCounts).Complete();
+			Manager.audio.ambientSoundsHandler.GetNearbyTileData(out var tileCounts).Complete();
 
-				foreach (var entry in tileCounts) {
-					if (entry.Value == 0)
-						continue;
+			foreach (var entry in tileCounts) {
+				if (entry.Value == 0)
+					continue;
 
-					if (TileUtility.TryGetAssociatedObject(entry.Key.TileType, entry.Key.Tileset, out var associatedObjectData) && associatedObjectData.objectID != ObjectID.None) {
-						associatedObjectData.variation = ObjectUtility.GetPrimaryVariation(associatedObjectData);
+				if (TileUtility.TryGetAssociatedObject(entry.Key.TileType, entry.Key.Tileset, out var associatedObjectData) && associatedObjectData.objectID != ObjectID.None) {
+					associatedObjectData.variation = ObjectUtility.GetPrimaryVariation(associatedObjectData);
 							
-						if (Manager.saves.SetObjectAsDiscovered(associatedObjectData))
-							Main.Log(nameof(ItemBrowserAPI), $"Discovered tile {associatedObjectData.objectID}:{associatedObjectData.variation}");
-					}
+					if (Manager.saves.SetObjectAsDiscovered(associatedObjectData))
+						Main.Log(nameof(ItemBrowserAPI), $"Discovered tile {associatedObjectData.objectID}:{associatedObjectData.variation}");
 				}
 			}
 		}
 
 		private static void DiscoverNearbyObjects(Entity entity, EntityManager entityManager, GameObject graphicalObject) {
-			return;
+			if (!_shouldDiscoverTilesAndObjects)
+				return;
 			
 			// Discover placed objects and creatures
 			var objectData = entityManager.GetComponentData<ObjectDataCD>(entity);
@@ -259,6 +262,8 @@ namespace ItemBrowser.Common.Api {
 
 				ReloadIfLanguageChanged();
 				DiscoverNearbyTiles();
+
+				_shouldDiscoverTilesAndObjects = OptionsManager.Instance.DiscoveryMode;
 			}
 
 			[HarmonyPatch(typeof(PlayerController), "OnOccupied")]

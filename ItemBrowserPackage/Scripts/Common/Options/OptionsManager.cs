@@ -19,17 +19,17 @@ namespace ItemBrowser.Common.Options {
 		private const float AutosaveInterval = 10f;
 
 		public bool CheatMode {
-			get => _data.CheatMode;
+			get => GetActiveCharacterSpecificData().CheatMode;
 			set {
-				_data.CheatMode = value;
+				GetActiveCharacterSpecificData().CheatMode = value;
 				_isDirty = true;
 			}
 		}
 		
 		public bool DiscoveryMode {
-			get => _data.DiscoveryMode;
+			get => GetActiveCharacterSpecificData().DiscoveryMode;
 			set {
-				_data.DiscoveryMode = value;
+				GetActiveCharacterSpecificData().DiscoveryMode = value;
 				_isDirty = true;
 			}
 		}
@@ -113,6 +113,20 @@ namespace ItemBrowser.Common.Options {
 		private bool _isDirty;
 		private float _lastSavedTime;
 
+		
+		private CharacterSpecificOptionsData GetCharacterSpecificData(string guid) {
+			if (_data.Characters.TryGetValue(guid, out var characterData))
+				return characterData;
+
+			characterData = new CharacterSpecificOptionsData();
+			_data.Characters[ItemBrowserAPI.CurrentCharacterGuid] = characterData;
+
+			return characterData;
+		}
+		private CharacterSpecificOptionsData GetActiveCharacterSpecificData() {
+			return GetCharacterSpecificData(ItemBrowserAPI.CurrentCharacterGuid);
+		}
+
 		public bool HasTag(ObjectDataCD objectData, ObjectTagType tag) {
 			if (!_tags.TryGetValue(ItemBrowserAPI.CurrentCharacterGuid, out var objectToTags))
 				return false;
@@ -173,19 +187,15 @@ namespace ItemBrowser.Common.Options {
 		}
 
 		private void OnPreSerialize() {
-			_data.Characters.Clear();
-			
 			foreach (var (guid, taggedObjects) in _tags) {
-				_data.Characters[guid] = _data.Characters.GetValueOrDefault(guid, new CharacterSpecificOptionsData()) with {
-					TaggedObjects = taggedObjects
-						.Where(objectAndTags => objectAndTags.Value.Count > 0)
-						.Select(objectAndTags => new TagObjectData {
-							InternalName = ObjectUtility.GetInternalName(objectAndTags.Key.objectID),
-							Variation = objectAndTags.Key.variation,
-							Tags = objectAndTags.Value.ToList()
-						})
-						.ToList()
-				};
+				GetCharacterSpecificData(guid).TaggedObjects = taggedObjects
+					.Where(objectAndTags => objectAndTags.Value.Count > 0)
+					.Select(objectAndTags => new TagObjectData {
+						InternalName = ObjectUtility.GetInternalName(objectAndTags.Key.objectID),
+						Variation = objectAndTags.Key.variation,
+						Tags = objectAndTags.Value.ToList()
+					})
+					.ToList();
 			}
 		}
 		
@@ -250,8 +260,6 @@ namespace ItemBrowser.Common.Options {
 
 		private record OptionsData {
 			public int Version { get; set; } = CurrentVersion;
-			public bool CheatMode { get; set; }
-			public bool DiscoveryMode { get; set; }
 			public bool ShowSourceMod { get; set; } = true;
 			public bool ShowButtonHints { get; set; } = true;
 			public bool AlwaysShowTechnicalInfo { get; set; }
@@ -265,6 +273,8 @@ namespace ItemBrowser.Common.Options {
 		}
 
 		private record CharacterSpecificOptionsData {
+			public bool CheatMode { get; set; }
+			public bool DiscoveryMode { get; set; }
 			public List<TagObjectData> TaggedObjects { get; set; } = new();
 		}
 		

@@ -67,7 +67,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Effects
-      description: Allows you to search for items/creatures using their effects
+      description: Allows you to search for items/creatures by their effects
     - m_language:
         m_address:
           m_low: 6040640903323332866

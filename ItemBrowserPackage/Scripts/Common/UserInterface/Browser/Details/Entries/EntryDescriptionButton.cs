@@ -83,7 +83,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		private void ShowDescriptionTemporarily() {
-			_showDescriptionUntil = Time.time + 10f;
+			_showDescriptionUntil = Time.time + 15f;
 		}
 
 		private bool CanShowDescription(out float temporaryTimeRemaining) {

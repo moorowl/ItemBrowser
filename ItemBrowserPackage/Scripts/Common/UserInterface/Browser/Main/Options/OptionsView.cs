@@ -173,7 +173,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			// Appearance
 			AddSection("ItemBrowser-Options/Appearance");
 			AddEntry("ItemBrowser-Options/Theme", _theme);
-			// AddEntry("ItemBrowser-Options/HideUndiscovered", _hideUndiscovered);
+			AddEntry("ItemBrowser-Options/HideUndiscovered", _hideUndiscovered);
 			AddEntry("ItemBrowser-Options/ShowSourceMod", _showSourceMod);
 			AddEntry("ItemBrowser-Options/ShowButtonHints", _showButtonHints);
 			AddEntry("ItemBrowser-Options/ShowTechnicalInfo", _showTechnicalInfo);
