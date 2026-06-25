@@ -88,6 +88,30 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.PanelsShiftLayout ? "Enabled" : "Disabled")}");
 			}
 		};
+		private readonly OptionsEntryType _searchByDescription = new() {
+			OnLeftClick = () => {
+				OptionsManager.Instance.SearchByDescription = !OptionsManager.Instance.SearchByDescription;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.SearchByDescription ? "Enabled" : "Disabled")}");
+			}
+		};
+		private readonly OptionsEntryType _searchByEffect = new() {
+			OnLeftClick = () => {
+				OptionsManager.Instance.SearchByEffect = !OptionsManager.Instance.SearchByEffect;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.SearchByEffect ? "Enabled" : "Disabled")}");
+			}
+		};
+		private readonly OptionsEntryType _searchById = new() {
+			OnLeftClick = () => {
+				OptionsManager.Instance.SearchById = !OptionsManager.Instance.SearchById;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.SearchById ? "Enabled" : "Disabled")}");
+			}
+		};
 		private readonly OptionsEntryType _showSourceMod = new() {
 			OnLeftClick = () => {
 				OptionsManager.Instance.ShowSourceMod = !OptionsManager.Instance.ShowSourceMod;
@@ -155,6 +179,11 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			AddEntry("ItemBrowser-Options/ShowTechnicalInfo", _showTechnicalInfo);
 			AddEntry("ItemBrowser-Options/PanelsShiftLayout", _panelsShiftLayout);
 			
+			// Search
+			AddSection("ItemBrowser-Options/Search");
+			AddEntry("ItemBrowser-Options/SearchByDescription", _searchByDescription);
+			AddEntry("ItemBrowser-Options/SearchByEffect", _searchByEffect);
+			AddEntry("ItemBrowser-Options/SearchById", _searchById);
 			
 			foreach (var scrollItem in scrollContainer.GetComponentsInChildren<IScrollItem>())
 				scrollItem.OnScrollWindowChanged(scrollWindow);

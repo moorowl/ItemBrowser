@@ -231,7 +231,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					_filteredObjects = _listRefreshTask.Result.Objects;
 					objectList.SetObjects(_filteredObjects, _listRefreshTask.Result.PreserveScroll);
 				} else {
-					Main.Log($"{nameof(ObjectListView)}+{name}", $"List refresh task didn't complete successfully, retrying");
+					Main.Log($"{nameof(ObjectListView)}+{name}", $"List refresh task didn't complete successfully?");
 					Main.Log(_listRefreshTask.Exception);
 					_requestedListRefresh = true;
 				}
@@ -239,7 +239,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				_listRefreshTask = null;
 			}
 
-			if (_requestedListRefresh && _listRefreshTask == null) {
+			if (_requestedListRefresh && _listRefreshTask == null && _currentSorterIndex < _sorterResults.Count) {
 				_listRefreshTask = RunListRefreshTask(_requestedListRefreshPreservesScroll);
 				_requestedListRefreshPreservesScroll = true;
 				_requestedListRefresh = false;

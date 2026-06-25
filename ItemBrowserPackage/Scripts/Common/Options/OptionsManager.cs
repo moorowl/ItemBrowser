@@ -66,6 +66,30 @@ namespace ItemBrowser.Common.Options {
 			}
 		}
 		
+		public bool SearchByEffect {
+			get => _data.SearchByEffect;
+			set {
+				_data.SearchByEffect = value;
+				_isDirty = true;
+			}
+		}
+		
+		public bool SearchByDescription {
+			get => _data.SearchByDescription;
+			set {
+				_data.SearchByDescription = value;
+				_isDirty = true;
+			}
+		}
+		
+		public bool SearchById {
+			get => _data.SearchById;
+			set {
+				_data.SearchById = value;
+				_isDirty = true;
+			}
+		}
+		
 		public VirtualObjectListLayout ListLayout {
 			get => _data.ListLayout;
 			set {
@@ -139,7 +163,6 @@ namespace ItemBrowser.Common.Options {
 			_tags.Clear();
 			
 			foreach (var (guid, characterSpecificOptions) in _data.Characters) {
-				Main.Log(nameof(OptionsManager), $"Loaded tags from character {guid}");
 				_tags[guid] = characterSpecificOptions.TaggedObjects
 					.Where(objectData => API.Authoring.GetObjectID(objectData.InternalName) != ObjectID.None)
 					.ToDictionary(
@@ -153,7 +176,6 @@ namespace ItemBrowser.Common.Options {
 			_data.Characters.Clear();
 			
 			foreach (var (guid, taggedObjects) in _tags) {
-				Main.Log(nameof(OptionsManager), $"Saved tags from character {guid}");
 				_data.Characters[guid] = _data.Characters.GetValueOrDefault(guid, new CharacterSpecificOptionsData()) with {
 					TaggedObjects = taggedObjects
 						.Where(objectAndTags => objectAndTags.Value.Count > 0)
@@ -234,6 +256,9 @@ namespace ItemBrowser.Common.Options {
 			public bool ShowButtonHints { get; set; } = true;
 			public bool AlwaysShowTechnicalInfo { get; set; }
 			public bool PanelsShiftLayout { get; set; }
+			public bool SearchByEffect { get; set; } = true;
+			public bool SearchByDescription { get; set; } = true;
+			public bool SearchById { get; set; } = true;
 			public VirtualObjectListLayout ListLayout { get; set; } = VirtualObjectListLayout.Grid;
 			public Guid Theme { get; set; }
 			public Dictionary<string, CharacterSpecificOptionsData> Characters { get; set; } = new();
