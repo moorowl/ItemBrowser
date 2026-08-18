@@ -705,7 +705,7 @@ MonoBehaviour:
   sourceSlot: {fileID: 9122015134071768588}
   chanceForOneText: {fileID: 1849748499764583067}
   poolTypeText: {fileID: 2072649948985531966}
-  textOffsetWhenShowingBoth: 0.1875
+  textOffsetWhenShowingBoth: 0.3125
   structureInfo: {fileID: 7331994614548961340}
 --- !u!114 &4391243871013959909
 MonoBehaviour:
@@ -830,6 +830,8 @@ MonoBehaviour:
   clickSoundEffect: 0
   clickSoundPitch: 0
   optionalToggledMarker: {fileID: 0}
+  markersToDisableWhenDisabled: []
+  markersToEnableWhenDisabled: []
 --- !u!65 &2818223455368773414
 BoxCollider:
   m_ObjectHideFlags: 0
