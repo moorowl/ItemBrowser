@@ -4,15 +4,13 @@ using System.Text;
 using I2.Loc;
 using ItemBrowser.Common.Options;
 using ItemBrowser.Utilities;
+using PinyinNet;
 using PugMod;
 
 namespace ItemBrowser.Common.Api.SortingAndFiltering {
 	public class SearchResults {
-		private static readonly List<char> CharactersToStrip = new() {
-			'\'', ' ', '-', '.', ',', '\n'
-		};
 		private static readonly Dictionary<string, string> StrippedCharactersCache = new();
-		private static readonly Dictionary<ObjectDataCD, List<string>> ObjectTermsCache = new();
+		private static readonly Dictionary<ObjectDataCD, string> ObjectTermsBlobCache = new();
 		private static string _lastLanguage;
 		private static bool _lastSearchByDescription;
 		private static bool _lastSearchByEffect;
@@ -36,8 +34,15 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 			var normalized = term.ToLowerInvariant().Normalize(NormalizationForm.FormD);
 
 			foreach (var character in normalized) {
-				if (CharactersToStrip.Contains(character))
-					continue;
+				switch (character) {
+					case '\'':
+					case ' ':
+					case '-':
+					case '.':
+					case ',':
+					case '\n':
+						continue;
+				}
 				
 				var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(character);
 				if (unicodeCategory != UnicodeCategory.NonSpacingMark)
@@ -50,40 +55,52 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 			return result;
 		}
 
-		private static void CheckInvalidateObjectTermsCache() {
+		private static void CheckInvalidateObjectTermsBlobCache() {
 			if (LocalizationManager.CurrentLanguage == _lastLanguage && OptionsManager.Instance.SearchByDescription == _lastSearchByDescription && OptionsManager.Instance.SearchByEffect == _lastSearchByEffect && OptionsManager.Instance.SearchById == _lastSearchById)
 				return;
 
-			ObjectTermsCache.Clear();
+			ObjectTermsBlobCache.Clear();
 			_lastLanguage = LocalizationManager.CurrentLanguage;
 			_lastSearchByEffect = OptionsManager.Instance.SearchByEffect;
+			_lastSearchByDescription = OptionsManager.Instance.SearchByDescription;
+			_lastSearchById = OptionsManager.Instance.SearchById;
 		}
 
-		private static List<string> GetObjectTerms(ObjectDataCD objectData) {
-			if (ObjectTermsCache.TryGetValue(objectData, out var cachedTerms))
-				return cachedTerms;
+		private static bool ShouldAddPinyinTerms() {
+			var currentLanguage = LocalizationManager.CurrentLanguageCode;
+			return currentLanguage == "zh-CN" || currentLanguage == "zh-TW";
+		}
+
+		private static string GetObjectTermsBlob(ObjectDataCD objectData) {
+			if (ObjectTermsBlobCache.TryGetValue(objectData, out var cachedBlob))
+				return cachedBlob;
 			
 			var terms = new List<string>();
+			var shouldAddPinyinTerms = ShouldAddPinyinTerms();
 
-			var displayName = ObjectUtility.GetLocalizedDisplayName(objectData);
-			if (displayName != null)
-				terms.Add(StripUnimportantCharacters(displayName));
+			void TryAddTerm(string text, bool convertToPinyin = true) {
+				if (text == null)
+					return;
+				
+				terms.Add(StripUnimportantCharacters(text));
+
+				if (convertToPinyin && shouldAddPinyinTerms)
+					terms.Add(PinyinConvert.GetPinyinForAutoComplete(text));
+			}
+
+			TryAddTerm(ObjectUtility.GetLocalizedDisplayName(objectData));
 			
 			var displayNameNote = ObjectUtility.GetUnlocalizedDisplayNameNote(objectData);
 			if (displayNameNote != null)
 				displayNameNote = API.Localization.GetLocalizedTerm(displayNameNote);
-			if (displayNameNote != null)
-				terms.Add(StripUnimportantCharacters(displayNameNote));
+			TryAddTerm(displayNameNote);
 
-			if (OptionsManager.Instance.SearchByDescription) {
-				var description = ObjectUtility.GetLocalizedDescription(objectData);
-				if (description != null)
-					terms.Add(StripUnimportantCharacters(description));
-			}
+			if (OptionsManager.Instance.SearchByDescription)
+				TryAddTerm(ObjectUtility.GetLocalizedDescription(objectData), false);
 			
 			if (OptionsManager.Instance.SearchById) {
-				terms.Add(StripUnimportantCharacters(ObjectUtility.GetInternalName(objectData)));
-				terms.Add(((int) objectData.objectID).ToString());
+				TryAddTerm(ObjectUtility.GetInternalName(objectData));
+				TryAddTerm(((int) objectData.objectID).ToString());
 			}
 
 			if (OptionsManager.Instance.SearchByEffect) {
@@ -93,27 +110,26 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 
 					var effectDescription = API.Localization.GetLocalizedTerm($"Conditions/{conditionForEffectDescription}");
 					if (effectDescription != null)
-						terms.Add(StripUnimportantCharacters(effectDescription.Replace("{0}", "")));
-				}	
+						TryAddTerm(effectDescription.Replace("{0}", ""));
+				}
 			}
-			
-			ObjectTermsCache[objectData] = terms;
-			return terms;
+
+			ObjectTermsBlobCache[objectData] = string.Join('\0', terms);
+			return ObjectTermsBlobCache[objectData];
 		}
 
-		public static SearchResults Create(string term) {
+		public static SearchResults Create(string term, List<ObjectDataCD> objectsToFilter) {
 			term = StripUnimportantCharacters(term);
+			var isTermEmpty = string.IsNullOrEmpty(term);
 
-			CheckInvalidateObjectTermsCache();
+			CheckInvalidateObjectTermsBlobCache();
 
 			var matches = new HashSet<ObjectDataCD>();
-			foreach (var objectData in ObjectUtility.GetAllObjects()) {
-				foreach (var termToMatch in GetObjectTerms(objectData)) {
-					if (termToMatch.Contains(term)) {
-						matches.Add(objectData);
-						break;
-					}
-				}
+			foreach (var objectData in objectsToFilter) {
+				if (!isTermEmpty && !GetObjectTermsBlob(objectData).Contains(term))
+					continue;
+
+				matches.Add(objectData);
 			}
 
 			return new SearchResults(matches);
