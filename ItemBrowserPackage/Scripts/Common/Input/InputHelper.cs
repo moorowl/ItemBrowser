@@ -22,7 +22,8 @@ namespace ItemBrowser.Common.Input {
 		public static bool IsPickUpTenHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_10);
 		public static bool IsPickUpStackHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_HALF);
 		public static bool IsToggleFavoritePressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.LOCKING_TOGGLE);
-
+		public static bool IsCopyPressed => UnityEngine.Input.GetKey(KeyCode.LeftControl) && UnityEngine.Input.GetKeyDown(KeyCode.C);
+		
 		[HarmonyPatch(typeof(InputManager), "LateUpdate")]
 		[HarmonyPostfix]
 		public static void InputManager_LateUpdate(InputManager __instance) {

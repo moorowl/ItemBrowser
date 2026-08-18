@@ -138,6 +138,18 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 		private void UpdateFavoriting() {
 			if (IsSelected && CanBeFavorited && InputHelper.IsToggleFavoritePressed) {
+				/*ItemBrowserAPI.ItemBrowserUI.contextView.ShowWithOptions(new List<ContextOption> {
+					new("Add to: Favorites", () => {
+						if (IsFavorited) {
+							ItemBrowserSounds.PlayUnfavorited(this);
+							OptionsManager.Instance.RemoveTag(FavoritedKey, ObjectTagType.Favorited);
+						} else {
+							ItemBrowserSounds.PlayFavorited(this);
+							OptionsManager.Instance.AddTag(FavoritedKey, ObjectTagType.Favorited);
+						}
+					}),
+					new("Add to: Collected", () => { })
+				});*/
 				if (IsFavorited) {
 					ItemBrowserSounds.PlayUnfavorited(this);
 					OptionsManager.Instance.RemoveTag(FavoritedKey, ObjectTagType.Favorited);
