@@ -5,14 +5,13 @@ using ItemBrowser.Common.UserInterface.Browser;
 namespace ItemBrowser.Common.Api.Entries {
 	public abstract record ObjectEntry {
 		public abstract ObjectEntryCategory Category { get; }
-		
-		public virtual Type Renderer => typeof(BasicEntriesListRenderer);
 
-		private readonly List<ObjectEntryRequirement> _requirements = new();
-		public IEnumerable<ObjectEntryRequirement> Requirements => _requirements;
+		protected virtual Type Renderer => typeof(BasicEntriesListRenderer);
+
+		public List<ObjectEntryRequirement> Requirements = new();
 
 		public void AddRequirement(ObjectEntryRequirement requirement) {
-			_requirements.Add(requirement);
+			Requirements.Add(requirement);
 		}
 
 		public EntriesListRenderer CreateRenderer() {

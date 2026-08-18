@@ -10,7 +10,7 @@ using PugMod;
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public record PrimaryLootTable : ObjectEntry {
 		public override ObjectEntryCategory Category => new("ItemBrowser-ObjectEntryNames/PrimaryLootTable", ObjectID.LegendarySwordParchment, VanillaPriorities.PrimaryLootTable);
-		public override Type Renderer => typeof(LootTableEntriesListRenderer);
+		protected override Type Renderer => typeof(LootTableEntriesListRenderer);
 
 		public List<Pool> Pools { get; set; } = new();
 		

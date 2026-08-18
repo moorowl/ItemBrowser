@@ -29,7 +29,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		
 		public override IEnumerable<Drops> OnSort(IEnumerable<Drops> entries) {
 			return entries
-				.OrderByDescending(entry => entry.FoundInScenes.Count > 0 ? 0 : 1)
+				.OrderByDescending(entry => entry is DropsStructure ? 0 : 1)
 				.ThenBy(entry => ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.Entity.Id, entry.Entity.Variation))
 				.ThenByDescending(entry => entry.IsFromGuaranteedPool ? 1 : 0);
 		}
@@ -130,7 +130,9 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		}
 		
 		private void OnRenderStructureInfo(Drops entry) {
-			structureInfo.gameObject.SetActive(entry.FoundInScenes.Count > 0);
+			var isStructureExclusive = entry is DropsStructure;
+			
+			structureInfo.gameObject.SetActive(isStructureExclusive && ((DropsStructure) entry).FoundInScenes.Count > 0);
 			if (!structureInfo.gameObject.activeSelf)
 				return;
 			
@@ -143,16 +145,18 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				color = UserInterfaceUtility.DescriptionColor
 			});
 
-			foreach (var scene in entry.FoundInScenes) {
-				structureInfo.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser-ObjectEntryDescriptions/Drops_6",
-					formatFields = new[] {
-						StructureUtility.GetPersistentSceneName(scene.Name),
-						scene.Amount.ToString()
-					},
-					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtility.DescriptionColor
-				});	
+			if (isStructureExclusive) {
+				foreach (var scene in ((DropsStructure) entry).FoundInScenes) {
+					structureInfo.AddLine(new TextAndFormatFields {
+						text = "ItemBrowser-ObjectEntryDescriptions/Drops_6",
+						formatFields = new[] {
+							StructureUtility.GetPersistentSceneName(scene.Name),
+							scene.Amount.ToString()
+						},
+						dontLocalizeFormatFields = true,
+						color = UserInterfaceUtility.DescriptionColor
+					});	
+				}	
 			}
 		}
 	}

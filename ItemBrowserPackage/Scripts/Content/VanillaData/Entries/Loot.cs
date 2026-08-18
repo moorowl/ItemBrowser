@@ -475,8 +475,27 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				foreach (var entry in entriesToAdd) {
 					if (entry.Id == ObjectID.None)
 						continue;
-					
-					registry.Register(ObjectEntryType.Source, entry.Id, entry.Variation, entry.Entry);
+
+					if (entry.Entry.FoundInScenes.Count > 0 || entry.Entry.FoundInDungeons.Count > 0) {
+						registry.Register(ObjectEntryType.Source, entry.Id, entry.Variation, new LootStructure {
+							Result = entry.Entry.Result,
+							Entity = entry.Entry.Entity,
+							Chance = entry.Entry.Chance,
+							ChanceForOne = entry.Entry.ChanceForOne,
+							Amount = entry.Entry.Amount,
+							Rolls = entry.Entry.Rolls,
+							OnlyDropsInBiome = entry.Entry.OnlyDropsInBiome,
+							FoundInScenes = entry.Entry.FoundInScenes,
+							FoundInDungeons = entry.Entry.FoundInDungeons,
+							IsFromGuaranteedPool = entry.Entry.IsFromGuaranteedPool,
+							IsFromLootTableWithGuaranteedPool = entry.Entry.IsFromLootTableWithGuaranteedPool,
+							IsAffectedByPlayerCount = entry.Entry.IsAffectedByPlayerCount,
+							IsAffectedByWorldMode = entry.Entry.IsAffectedByWorldMode,
+							Requirements = entry.Entry.Requirements
+						});
+					} else {
+						registry.Register(ObjectEntryType.Source, entry.Id, entry.Variation, entry.Entry);
+					}
 				}
 			}
 		}

@@ -64,7 +64,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public class Provider : ObjectEntryProvider {
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
 				var entriesToAdd = new List<(ObjectID Id, int Variation, Drops Entry)>();
-				var pugDatabaseBankBlob = API.Client.GetEntityQuery(typeof(PugDatabase.DatabaseBankCD)).GetSingleton<PugDatabase.DatabaseBankCD>().databaseBankBlob;
+				var pugDatabaseBankBlob = ClientWorldStateSystem.PugDatabaseBank.databaseBankBlob;
 
 				void AddNormalEntry(ObjectID id, int variation, Drops entry) {
 					entriesToAdd.Add((id, variation, entry));
@@ -332,7 +332,10 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					AddEntriesFromPrefab(API.Client.World, objectData, entity, primaryLootTable, genericPool);
 					
 					// Seasonal drops
-					// Have to use DropLootAuthoring because drops from a season that isn't active aren't converted
+					var currentSeason = Manager.prefs.season;
+					var dropsInSeasonalAuthoring = new HashSet<ObjectID>();
+					
+					// Use DropLootAuthoring for inactive seasons because drops from a season that isn't active aren't converted
 					if (authoring.TryGetComponent<DropLootAuthoring>(out var dropLootAuthoring) && dropLootAuthoring.hasSeasonalLoot && IsSeasonalDropRequirementFulfilled(objectData)) {
 						var seasonalLoot = dropLootAuthoring.seasonalLootDrops;
 						
@@ -358,7 +361,49 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 								AddNormalEntry(entry.Result.Id, entry.Result.Variation, entry);
 								
 								seasonalLootPool.AddEntry(entry);
+								dropsInSeasonalAuthoring.Add(drop.lootDropID);
 							}
+						}
+					}
+
+					if (PugDatabase.TryGetComponent<SeasonalLootCD>(objectData, out var seasonalLootCD) && IsSeasonalDropRequirementFulfilled(objectData)) {
+						ref var lootInfos = ref seasonalLootCD.lootBlob.Value;
+						var count = 0;
+						
+						for (var i = 0; i < lootInfos.Length; i++) {
+							if (dropsInSeasonalAuthoring.Contains(lootInfos[i].lootDropID))
+								continue;
+
+							count++;
+						}	
+
+						if (count > 0) {
+							for (var i = 0; i < lootInfos.Length; i++) {
+								if (dropsInSeasonalAuthoring.Contains(lootInfos[i].lootDropID))
+									continue;
+
+								var lootDropId = lootInfos[i].lootDropID;
+								var chance = lootInfos[i].chance;
+								var amount = lootInfos[i].amount;
+								var multiplayerAmountAdditionScaling = lootInfos[i].multiplayerAmountAdditionScaling;
+								
+								var entry = new Drops {
+									Result = (lootDropId, 0),
+									Entity = (objectData.objectID, ObjectUtility.GetPrimaryVariation(objectData)),
+									Chance = chance,
+									ChanceForOne = new ValueBasedOnWorldState<float>(() => chance),
+									Amount = new ValueBasedOnWorldState<(int, int)>(() => {
+										var scaledAmount = LootUtility.GetMultiplayerScaledAmount(amount, multiplayerAmountAdditionScaling);
+										return (scaledAmount, scaledAmount);
+									}),
+									Rolls = new ValueBasedOnWorldState<(int, int)>(() => (1, 1)),
+									IsAffectedByPlayerCount = lootInfos[i].multiplayerAmountAdditionScaling > 0
+								};
+
+								AddNormalEntry(entry.Result.Id, entry.Result.Variation, entry);
+								
+								genericPool.AddEntry(entry);
+							}	
 						}
 					}
 					
@@ -387,8 +432,28 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				foreach (var entry in entriesToAdd) {
 					if (entry.Id == ObjectID.None)
 						continue;
-					
-					registry.Register(ObjectEntryType.Source, entry.Id, entry.Variation, entry.Entry);
+
+					if (entry.Entry.FoundInScenes.Count > 0) {
+						registry.Register(ObjectEntryType.Source, entry.Id, entry.Variation, new DropsStructure {
+							Result = entry.Entry.Result,
+							Entity = entry.Entry.Entity,
+							Chance = entry.Entry.Chance,
+							ChanceForOne = entry.Entry.ChanceForOne,
+							Amount = entry.Entry.Amount,
+							Rolls = entry.Entry.Rolls,
+							FoundInScenes = entry.Entry.FoundInScenes,
+							MaxAmountCheckRadius = entry.Entry.MaxAmountCheckRadius,
+							MaxAmountAllowedWithinRadius = entry.Entry.MaxAmountAllowedWithinRadius,
+							OnlyDropsInBiome = entry.Entry.OnlyDropsInBiome,
+							IsFromGuaranteedPool = entry.Entry.IsFromGuaranteedPool,
+							IsFromLootTableWithGuaranteedPool = entry.Entry.IsFromLootTableWithGuaranteedPool,
+							IsAffectedByPlayerCount = entry.Entry.IsAffectedByPlayerCount,
+							IsAffectedByWorldMode = entry.Entry.IsAffectedByWorldMode,
+							Requirements = entry.Entry.Requirements
+						});
+					} else {
+						registry.Register(ObjectEntryType.Source, entry.Id, entry.Variation, entry.Entry);
+					}
 				}
 			}
 
