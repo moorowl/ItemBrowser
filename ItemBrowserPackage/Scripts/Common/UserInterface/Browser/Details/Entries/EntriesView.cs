@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class EntriesView : DetailsSubView {
-		private const int MaxCategoryButtons = 8;
+		public const int MaxCategoryButtonsPerRow = 8;
 
 		public ObjectEntryType entryType;
 		public DetailsView detailsView;
@@ -20,6 +20,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public SwapCategoryButton categoryButtonPrefab;
 		public Transform categoryButtonContainer;
 		public float categoryButtonGap;
+		public float categoryButtonAscend = 1f;
 		
 		private List<List<ObjectEntry>> _entries = new();
 		private readonly List<SwapCategoryButton> _categoryButtons = new();
@@ -44,17 +45,29 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				CycleToPreviousCategory();
 		}
 
-		private void TryInstantiateCategoryButtons() {
-			if (_categoryButtons.Count > 0)
-				return;
-			
-			for (var i = 0; i < MaxCategoryButtons; i++) {
-				var button = Instantiate(categoryButtonPrefab, categoryButtonContainer);
-				button.gameObject.SetActive(false);
-				button.transform.localPosition = new Vector3(categoryButtonGap * i, 0f, 0f);
-				
-				_categoryButtons.Add(button);
+		private void HideAllCategoryButtons() {
+			foreach (var categoryButton in _categoryButtons)
+				categoryButton.gameObject.SetActive(false);
+		}
+
+		private SwapCategoryButton GetFreeCategoryButton() {
+			foreach (var categoryButton in _categoryButtons) {
+				if (!categoryButton.gameObject.activeSelf) {
+					categoryButton.gameObject.SetActive(true);
+					return categoryButton;
+				}
 			}
+			
+			var instance = Instantiate(categoryButtonPrefab, categoryButtonContainer);
+			instance.gameObject.SetActive(true);
+			instance.transform.localPosition = new Vector3(
+				categoryButtonGap * (_categoryButtons.Count % MaxCategoryButtonsPerRow),
+				categoryButtonAscend * Mathf.Floor(_categoryButtons.Count / (float) MaxCategoryButtonsPerRow),
+				0f
+			);
+				
+			_categoryButtons.Add(instance);
+			return instance;
 		}
 		
 		public override void OnApplyState(DetailsState currentState, DetailsState previousState) {
@@ -91,15 +104,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			selectedCategoryCountLabel.gameObject.SetActive(false);
 			nextCategoryButton.canBeClicked = false;
 			previousCategoryButton.canBeClicked = false;
-
-			TryInstantiateCategoryButtons();
-			foreach (var button in _categoryButtons)
-				button.gameObject.SetActive(false);
-			for (var i = 0; i < Math.Min(_entries.Count, MaxCategoryButtons); i++) {
-				var button = _categoryButtons[i];
-				button.SetCategory(i, _entries[i].Count, _entries[i].First().Category);
-				button.gameObject.SetActive(true);
-			}
+			
+			HideAllCategoryButtons();
 
 			if (_entries.Count == 0)
 				return;
@@ -107,6 +113,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			var entriesInCategory = _entries[SelectedCategory];
 			if (entriesInCategory.Count == 0)
 				return;
+			
+			for (var i = 0; i < _entries.Count; i++)
+				GetFreeCategoryButton().SetCategory(i, _entries[i].Count, _entries[i][0].Category);
 			
 			selectedCategoryLabel.gameObject.SetActive(true);
 			selectedCategoryLabel.Render(entriesInCategory[0].Category.GetTitle(detailsView.IsSelectedObjectNonObtainable));
