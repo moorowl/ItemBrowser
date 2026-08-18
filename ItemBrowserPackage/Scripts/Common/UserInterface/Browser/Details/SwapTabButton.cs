@@ -1,6 +1,4 @@
-﻿using ItemBrowser.Utilities;
-
-namespace ItemBrowser.Common.UserInterface.Browser {
+﻿namespace ItemBrowser.Common.UserInterface.Browser {
 	public class SwapTabButton : ItemBrowserButton {
 		public DetailsView detailsView;
 
@@ -14,7 +12,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (!canBeClicked)
 				return;
 			
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.ChangeTabOrCategory, this);
+			ItemBrowserSounds.PlayChangeTabOrCategory(this);
 			detailsView.SwapSelectedTab(_tab);
 		}
 		

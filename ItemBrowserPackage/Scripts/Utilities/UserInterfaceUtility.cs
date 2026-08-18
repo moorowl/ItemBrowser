@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using I2.Loc;
-using ItemBrowser.Common.Options;
-using Unity.Mathematics;
+using System.Linq;
+using PugMod;
 using UnityEngine;
 
 namespace ItemBrowser.Utilities {
@@ -14,33 +13,10 @@ namespace ItemBrowser.Utilities {
 		public const float DescriptionPadding = 0.125f;
 		public static Color DescriptionColor => Manager.text.GetRarityColor(Rarity.Poor);
 		public static Color AlmostWhiteColor = Color.white * 0.99f;
+
+		private static readonly MemberInfo RuntimeGradientCacheMember = typeof(UIManager).GetMembersChecked().FirstOrDefault(x => x.GetNameChecked() == "s_runtimeGradientCache");
+		private static readonly int GradientMap = Shader.PropertyToID("_GradientMap");
 		
-		public static string GetInputGlyph(string binding) {
-			var prefersJoystick = Manager.input.IsAnyGamepadConnected() && !IsUsingMouseOrKeyboard;
-			return prefersJoystick ? Manager.ui.GetShortCutString(binding, true, true) : Manager.ui.GetShortCutString(binding, false);
-		}
-
-		public static void AppendButtonHint(List<TextAndFormatFields> lines, string term, string binding) {
-			if (!OptionsManager.Instance.ShowButtonHints)
-				return;
-			
-			var glyph = GetInputGlyph(binding);
-			if (glyph == null)
-				return;
-			
-			if (lines.Count > 0)
-				lines[^1].paddingBeneath = DescriptionPadding;
-			
-			lines.Add(new TextAndFormatFields {
-				text = term,
-				formatFields = new[] {
-					glyph
-				},
-				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtility.AlmostWhiteColor
-			});
-		}
-
 		public static string FormatChance(float chance) {
 			return chance switch {
 				< 0.0001f => (chance * 100f).ToString("0.####"),
@@ -70,7 +46,7 @@ namespace ItemBrowser.Utilities {
 				height = Mathf.Max(height, Mathf.Abs(boxCollider.transform.localPosition.y) + Mathf.Abs(boxCollider.size.y));
 			
 			foreach (var pugText in gameObject.GetComponentsInChildren<PugText>())
-				height = Mathf.Max(height, pugText.dimensions.height - Mathf.Abs((pugText.dimensions.y + pugText.transform.localPosition.y) / 8f));
+				height = Mathf.Max(height, pugText.GetUIComponentRenderHeight());
 
 			return RoundToPixelPerfectPosition.RoundFloat(height);
 		}
@@ -101,46 +77,37 @@ namespace ItemBrowser.Utilities {
 			return text[..(maxCharacters - 3)].TrimEnd() + "...";
 		}
 
-		public enum MenuSound {
-			GenericOpen,
-			GenericClose,
-			ChangeTabOrCategory,
-			AddObjectToInventory,
-			Favorite,
-			Unfavorite,
-			ToggleBrowser,
-			NoSourcesOrUsages
-		}
-
-		public static void PlaySound(MenuSound sound, MonoBehaviour source) {
-			if (Manager.load.IsScreenBlack())
+		public static void ApplyPetGradientMapBasedOnVariation(ContainedObjectsBuffer containedObject, SpriteRenderer sr) {
+			if (!PugDatabase.HasComponent<PetCD>(containedObject.objectID))
 				return;
 			
-			switch (sound) {
-				case MenuSound.GenericOpen:
-					AudioManager.SfxUI(SfxID.FIXME_menu_select, 0.6f, false, 1f, 0f);
-					break;
-				case MenuSound.GenericClose:
-					AudioManager.SfxUI(SfxID.FIXME_menu_select, 0.4f, false, 1f, 0f);
-					break;
-				case MenuSound.ChangeTabOrCategory:
-					AudioManager.Sfx(SfxTableID.inventorySFXCreativeModeCategory, source.transform.position);
-					break;
-				case MenuSound.AddObjectToInventory:
-					AudioManager.Sfx(SfxID.twitch, source.transform.position, 0.1f, 0.55f, 0.1f, true);
-					break;
-				case MenuSound.Favorite:
-					AudioManager.Sfx(SfxTableID.inventorySFXSlotUnlock, source.transform.position);
-					break;
-				case MenuSound.Unfavorite:
-					AudioManager.Sfx(SfxTableID.inventorySFXSlotLock, source.transform.position);
-					break;
-				case MenuSound.ToggleBrowser:
-					AudioManager.Sfx(SfxTableID.inventorySFXInfoTab, Manager.main.player.transform.position);
-					break;
-				case MenuSound.NoSourcesOrUsages:
-					AudioManager.SfxUI(SfxID.menu_denied, 1.15f, false, 0.4f, 0.05f);
-					break;
+			var petSkinInfo = Manager.ui.petInfosTable.GetPetSkinInfo(containedObject.objectID);
+			var skinToUse = containedObject.variation;
+
+			if (petSkinInfo == null || skinToUse < 0 || skinToUse >= petSkinInfo.skins.Count)
+				return;
+
+			var primaryGradientMap = petSkinInfo.skins[skinToUse].primaryGradientMap;
+			var runtimeGradientCache = (Dictionary<GradientMapDataBlock, Texture2D>) API.Reflection.GetValue(RuntimeGradientCacheMember, Manager.ui);
+
+			if (primaryGradientMap == null || !primaryGradientMap.hasData)
+				return;
+
+			if (!runtimeGradientCache.TryGetValue(primaryGradientMap, out var gradientMapTexture) || gradientMapTexture == null) {
+				gradientMapTexture = new Texture2D(primaryGradientMap.textureWidth, 1, TextureFormat.ARGB32, mipChain: false);
+				var array = new Color32[gradientMapTexture.width];
+				for (var i = 0; i < gradientMapTexture.width; i++)
+					array[i] = primaryGradientMap.GetPixel(i);
+	
+				gradientMapTexture.SetPixels32(array);
+				gradientMapTexture.Apply();
+							
+				runtimeGradientCache[primaryGradientMap] = gradientMapTexture;
+			}
+						
+			if (gradientMapTexture != null) {
+				sr.material.EnableKeyword("USE_GRADIENT_MAP");
+				sr.material.SetTexture(GradientMap, gradientMapTexture);
 			}
 		}
 	}

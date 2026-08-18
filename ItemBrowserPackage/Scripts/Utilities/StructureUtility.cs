@@ -100,7 +100,7 @@ namespace ItemBrowser.Utilities {
 				var name = GetPersistentSceneName(customScene.sceneName.ToString());
 
 				if (!AllCustomScenesLookup.ContainsKey(name))
-					Main.Log(nameof(StructureUtility), $"Scene {name} doesn't spawn in any world");
+					Logger.LogInfo($"Scene {name} doesn't spawn in any world");
 			}
 		}
 		

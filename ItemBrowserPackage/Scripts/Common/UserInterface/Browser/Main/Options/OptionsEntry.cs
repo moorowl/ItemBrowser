@@ -22,7 +22,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			base.OnLeftClicked(mod1, mod2);
 
 			_type.OnLeftClick.Invoke();
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.GenericOpen, this);
+			ItemBrowserSounds.PlayGenericOpen();
 			UpdateVisuals();
 		}
 		
@@ -33,7 +33,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			base.OnRightClicked(mod1, mod2);
 
 			_type.OnRightClick.Invoke();
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.GenericOpen, this);
+			ItemBrowserSounds.PlayGenericOpen();
 			UpdateVisuals();
 		}
 		

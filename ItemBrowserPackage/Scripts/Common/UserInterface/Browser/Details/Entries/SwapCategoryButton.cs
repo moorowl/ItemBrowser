@@ -47,7 +47,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (IsToggled || !canBeClicked)
 				return;
 			
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.ChangeTabOrCategory, this);
+			ItemBrowserSounds.PlayChangeTabOrCategory(this);
 			entriesView.SetCategory(_categoryIndex);
 		}
 

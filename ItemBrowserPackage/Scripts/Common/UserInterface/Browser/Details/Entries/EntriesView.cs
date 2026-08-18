@@ -43,6 +43,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				CycleToNextCategory();
 			if (previousCategoryButton.canBeClicked && inputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.ZOOM_OUT_MAP))
 				CycleToPreviousCategory();
+			
+			ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(ButtonHint.CycleCategoryLeft);
+			ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(ButtonHint.CycleCategoryRight);
 		}
 
 		private void HideAllCategoryButtons() {
@@ -152,7 +155,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				nextCategory = 0;
 			
 			SetCategory(nextCategory);
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.ChangeTabOrCategory, this);
+			ItemBrowserSounds.PlayChangeTabOrCategory(this);
 		}
 		
 		private void CycleToPreviousCategory() {
@@ -161,7 +164,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				nextCategory = _entries.Count - 1;
 			
 			SetCategory(nextCategory);
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.ChangeTabOrCategory, this);
+			ItemBrowserSounds.PlayChangeTabOrCategory(this);
 		}
 	}
 }

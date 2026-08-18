@@ -139,14 +139,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private void UpdateFavoriting() {
 			if (IsSelected && CanBeFavorited && InputHelper.IsToggleFavoritePressed) {
 				if (IsFavorited) {
-					UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.Unfavorite, this);
+					ItemBrowserSounds.PlayUnfavorited(this);
 					OptionsManager.Instance.RemoveTag(FavoritedKey, ObjectTagType.Favorited);
 				} else {
-					UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.Favorite, this);
+					ItemBrowserSounds.PlayFavorited(this);
 					OptionsManager.Instance.AddTag(FavoritedKey, ObjectTagType.Favorited);
 				}
-
-				OnFavoritedStateChanged();
 			}
 		}
 

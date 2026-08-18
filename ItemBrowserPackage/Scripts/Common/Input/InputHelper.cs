@@ -2,7 +2,6 @@
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Options;
 using ItemBrowser.Common.UserInterface.Browser;
-using ItemBrowser.Utilities;
 using PlayerState;
 using Rewired;
 using UnityEngine;
@@ -40,10 +39,10 @@ namespace ItemBrowser.Common.Input {
 				var containedObjectData = slot.GetContainedObject().objectData;
 				if (containedObjectData.objectID != ObjectID.None) {
 					if (input.WasButtonPressedDownThisFrame(ShowSourcesInput) && !ItemBrowserAPI.ItemBrowserUI.ShowDetails(containedObjectData, DetailsTab.Sources))
-						UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.NoSourcesOrUsages, slot);
+						ItemBrowserSounds.PlayError();
 
 					if (input.WasButtonPressedDownThisFrame(ShowUsagesInput) && !ItemBrowserAPI.ItemBrowserUI.ShowDetails(containedObjectData, DetailsTab.Usages))
-						UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.NoSourcesOrUsages, slot);
+						ItemBrowserSounds.PlayError();
 				}
 			}
 		}

@@ -35,7 +35,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			var lines = new List<TextAndFormatFields>();
 			
 			if (!CanShowDescription(out var temporaryTimeRemaining)) {
-				UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/DiscoverTemporarily", "UIInteract");
+				TryShowButtonHint(ButtonHint.DiscoverTemporarily);
 				return lines;
 			}
 			

@@ -5,7 +5,6 @@ using HarmonyLib;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Themes;
 using ItemBrowser.Common.Options;
-using ItemBrowser.Utilities;
 using PugMod;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -130,7 +129,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			mainView.IsShowing = false;
 			detailsView.IsShowing = true;
 			
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.GenericOpen, this);
+			ItemBrowserSounds.PlayGenericOpen();
 
 			return true;
 		}
@@ -146,7 +145,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			mainView.IsShowing = false;
 			detailsView.IsShowing = true;
 			
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.GenericOpen, this);
+			ItemBrowserSounds.PlayGenericOpen();
 
 			return true;
 		}
@@ -162,10 +161,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (Manager.input.textInputIsActive) {
 				Manager.input.activeInputField.Deactivate(true);
 			} else if (detailsView.PopState()) {
-				UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.GenericClose, this);
+				ItemBrowserSounds.PlayGenericClose();
 			} else if (detailsView.IsShowing) {
 				ShowGrid();
-				UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.GenericClose, this);
+				ItemBrowserSounds.PlayGenericClose();
 			} else {
 				IsShowing = false;
 			}
@@ -230,6 +229,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 			AddObjectsFromGrid(mainView.itemsListView);
 			AddObjectsFromGrid(mainView.creaturesListView);
+			AddObjectsFromGrid(mainView.checklistListView);
 
 			return;
 
@@ -255,10 +255,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		private void PlayToggleSound() {
-			if (Manager.main.player == null)
+			if (Manager.load.IsScreenBlack())
 				return;
 			
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.ToggleBrowser, this);
+			ItemBrowserSounds.PlayToggleBrowser();
 		}
 
 		public Color GetTemporarilyDiscoveredColor() {

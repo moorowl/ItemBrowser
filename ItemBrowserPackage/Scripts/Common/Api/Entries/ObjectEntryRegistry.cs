@@ -72,7 +72,7 @@ namespace ItemBrowser.Common.Api.Entries {
 				try {
 					provider.Register(this, allObjects);
 				} catch (Exception ex) {
-					Main.Log(nameof(ObjectEntryRegistry), $"Error while registering entries from provider {provider.GetType().GetNameChecked()}");
+					Logger.LogError($"Error while registering entries from provider {provider.GetType().GetNameChecked()}");
 					Debug.LogException(ex);
 				}
 			}
