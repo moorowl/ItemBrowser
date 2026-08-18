@@ -29,7 +29,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					foreach (var critter in allCritters) {
 						var entry = new CritterCatching {
 							Critter = (critter.Id, 0),
-							TimeToCatch = (critterCatchingCD.minMaxRandomDefaultCraftingTime.x, critterCatchingCD.minMaxRandomDefaultCraftingTime.y),
+							TimeToCatch = (critterCatchingCD.minMaxRandomDefaultCraftingTime.x + 1f, critterCatchingCD.minMaxRandomDefaultCraftingTime.y + 1f),
 							CritterCatcher = (objectData.objectID, objectData.variation)
 						};
 
