@@ -24,12 +24,24 @@ namespace ItemBrowser.Common.Input {
 		public static bool IsToggleFavoritePressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.LOCKING_TOGGLE);
 		public static bool IsCopyPressed => UnityEngine.Input.GetKey(KeyCode.LeftControl) && UnityEngine.Input.GetKeyDown(KeyCode.C);
 		
+		private static bool IsBrowserRelatedInputsDisabled {
+			get {
+				var player = Manager.main.player;
+				return player == null 
+				      || ItemBrowserAPI.ItemBrowserUI == null
+                      || Time.timeScale == 0f
+                      || player.guestMode
+                      || player.instrumentHandler.IsPlayingInstrument
+                      || EntityUtility.GetComponentData<PlayerStateCD>(player.entity, player.world).isStateLocked
+                      || !Manager.main.currentSceneHandler.isSceneHandlerReady
+				      || Manager.menu.quantumConsole != null && Manager.menu.quantumConsole.IsActive;
+			}
+		}
+		
 		[HarmonyPatch(typeof(InputManager), "LateUpdate")]
 		[HarmonyPostfix]
-		public static void InputManager_LateUpdate(InputManager __instance) {
-			var player = Manager.main.player;
-			
-			if (player == null || ItemBrowserAPI.ItemBrowserUI == null || Time.timeScale == 0f || player.guestMode || player.instrumentHandler.IsPlayingInstrument || EntityUtility.GetComponentData<PlayerStateCD>(player.entity, player.world).isStateLocked || !Manager.main.currentSceneHandler.isSceneHandlerReady)
+		public static void HandleBrowserRelatedInputs(InputManager __instance) {
+			if (IsBrowserRelatedInputsDisabled)
 				return;
 			
 			var input = Manager.input.singleplayerInputModule;
@@ -50,7 +62,7 @@ namespace ItemBrowser.Common.Input {
 		
 		[HarmonyPatch(typeof(InputManager), "Init")]
 		[HarmonyPrefix]
-		public static void InputManager_Init(InputManager __instance) {
+		public static void InjectCustomKeybinds(InputManager __instance) {
 			var inputManagerBase = Resources.Load<InputManager_Base>("Rewired Input Manager");
 			var userData = inputManagerBase.userData;
 			
