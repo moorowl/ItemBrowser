@@ -55,7 +55,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public override bool isVisibleOnScreen => ShowHoverWindow && base.isVisibleOnScreen;
 		public override UIScrollWindow uiScrollWindow => _scrollWindow;
 		
-		public static bool CanCheatInObjects => OptionsManager.Instance.CheatMode && ClientWorldStateSystem.IsAdminOrInCreative;
+		public static bool CanCheatInObjects => ClientWorldStateSystem.IsCreativeMode || (OptionsManager.Instance.CheatMode && ClientWorldStateSystem.IsAdmin);
 		
 		protected override void Awake() {
 			base.Awake();

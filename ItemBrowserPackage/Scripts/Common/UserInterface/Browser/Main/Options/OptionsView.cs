@@ -9,18 +9,20 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public UIScrollWindow scrollWindow;
 		
 		private readonly OptionsEntryType _cheatMode = new() {
-			CanBeClicked = () => ClientWorldStateSystem.IsAdminOrInCreative,
+			CanBeClicked = () => ClientWorldStateSystem.IsAdmin && !ClientWorldStateSystem.IsCreativeMode,
 			OnLeftClick = () => {
 				OptionsManager.Instance.CheatMode = !OptionsManager.Instance.CheatMode;
 			},
-			UpdateValueText = (valueText, canBeClicked) => {
-				if (!canBeClicked)
-					valueText.Render("ItemBrowser-Options/Unavailable");
-				else
+			UpdateValueText = (valueText, _) => {
+				if (ClientWorldStateSystem.IsCreativeMode)
+					valueText.Render($"ItemBrowser-Options/Enabled");
+				else if (ClientWorldStateSystem.IsAdmin)
 					valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.CheatMode ? "Enabled" : "Disabled")}");
+				else
+					valueText.Render("ItemBrowser-Options/Unavailable");
 			},
-			GetDescription = (lines, canBeClicked) => {
-				if (!canBeClicked) {
+			GetDescription = (lines, _) => {
+				if (!ClientWorldStateSystem.IsAdmin && !ClientWorldStateSystem.IsCreativeMode) {
 					lines[^1].paddingBeneath = UserInterfaceUtility.DescriptionPadding;
 					lines.Add(new TextAndFormatFields {
 						text = "ItemBrowser-Options/CheatModeUnavailable",
@@ -47,9 +49,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 							return;
 
 						OptionsManager.Instance.RemoveTagFromAll(ObjectTagType.Favorited);
-			
-						foreach (var itemSlot in API.Rendering.UICamera.transform.GetComponentsInChildren<ItemBrowserSlot>(true))
-							itemSlot.OnFavoritedStateChanged();
 					},
 					options: new List<string> { "cancelDialogue", "yes" },
 					minWidth: 10f,
@@ -77,14 +76,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			},
 			UpdateValueText = (valueText, _) => {
 				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.ShowButtonHints ? "Enabled" : "Disabled")}");
-			}
-		};
-		private readonly OptionsEntryType _panelsShiftLayout = new() {
-			OnLeftClick = () => {
-				OptionsManager.Instance.PanelsShiftLayout = !OptionsManager.Instance.PanelsShiftLayout;
-			},
-			UpdateValueText = (valueText, _) => {
-				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.PanelsShiftLayout ? "Enabled" : "Disabled")}");
 			}
 		};
 		private readonly OptionsEntryType _searchByDescription = new() {
@@ -183,12 +174,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			// General
 			AddSection("ItemBrowser-Options/General");
 			AddEntry("ItemBrowser-Options/CheatMode", _cheatMode);
+			AddEntry("ItemBrowser-Options/HideUndiscovered", _hideUndiscovered);
 			AddEntry("ItemBrowser-Options/ClearFavorites", _clearFavorites);
 
 			// Appearance
 			AddSection("ItemBrowser-Options/Appearance");
 			AddEntry("ItemBrowser-Options/Theme", _theme);
-			AddEntry("ItemBrowser-Options/HideUndiscovered", _hideUndiscovered);
 			AddEntry("ItemBrowser-Options/ShowSourceMod", _showSourceMod);
 			AddEntry("ItemBrowser-Options/ShowButtonHints", _showButtonHints);
 			AddEntry("ItemBrowser-Options/ShowTechnicalInfo", _showTechnicalInfo);

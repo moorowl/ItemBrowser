@@ -18,7 +18,8 @@ namespace ItemBrowser.Common.Api {
 		public static int PlayerCount;
 		public static bool HasRunAtLeastOnce;
 
-		public static bool IsAdminOrInCreative => Manager.saves.IsCreativeModeCharacter() || Manager.main.player.adminPrivileges >= 1;
+		public static bool IsAdmin => Manager.main.player.adminPrivileges >= 1;
+		public static bool IsCreativeMode => Manager.saves.IsCreativeModeCharacter();
 		
 		private EntityQuery _playerCountQuery;
 		
