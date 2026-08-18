@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using HarmonyLib;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
-using Newtonsoft.Json;
 using PugMod;
-using Unity.Collections;
 using UnityEngine;
+// ReSharper disable InconsistentNaming
 
 namespace ItemBrowser.Common.Options {
+	[HarmonyPatch]
 	public class OptionsManager {
-		public static OptionsManager Instance { get; private set; } = new();
-		
-		private const string FilePath = Main.InternalName + "/Options.json";
 		private const int CurrentVersion = 2;
 		private const float AutosaveInterval = 10f;
+		
+		public static OptionsManager Instance { get; private set; } = new();
+		private static string _currentCharacterGuid;
+
+		public delegate void OnTagChangedDelegate(ObjectDataCD objectData, ObjectTagType tag, bool wasAdded);
+		public event OnTagChangedDelegate OnTagChanged;
 
 		public bool CheatMode {
 			get => GetActiveCharacterSpecificData().CheatMode;
@@ -30,6 +33,22 @@ namespace ItemBrowser.Common.Options {
 			get => GetActiveCharacterSpecificData().DiscoveryMode;
 			set {
 				GetActiveCharacterSpecificData().DiscoveryMode = value;
+				_isDirty = true;
+			}
+		}
+
+		public bool ShowChecklist {
+			get => GetActiveCharacterSpecificData().ShowChecklist;
+			set {
+				GetActiveCharacterSpecificData().ShowChecklist = value;
+				_isDirty = true;
+			}
+		}
+		
+		public bool AutoMarkDiscoveredAsCollected {
+			get => GetActiveCharacterSpecificData().AutoMarkDiscoveredAsCollected;
+			set {
+				GetActiveCharacterSpecificData().AutoMarkDiscoveredAsCollected = value;
 				_isDirty = true;
 			}
 		}
@@ -54,14 +73,6 @@ namespace ItemBrowser.Common.Options {
 			get => _data.AlwaysShowTechnicalInfo;
 			set {
 				_data.AlwaysShowTechnicalInfo = value;
-				_isDirty = true;
-			}
-		}
-
-		public bool PanelsShiftLayout {
-			get => _data.PanelsShiftLayout;
-			set {
-				_data.PanelsShiftLayout = value;
 				_isDirty = true;
 			}
 		}
@@ -119,56 +130,68 @@ namespace ItemBrowser.Common.Options {
 				return characterData;
 
 			characterData = new CharacterSpecificOptionsData();
-			_data.Characters[ItemBrowserAPI.CurrentCharacterGuid] = characterData;
+			_data.Characters[guid] = characterData;
 
 			return characterData;
 		}
 		private CharacterSpecificOptionsData GetActiveCharacterSpecificData() {
-			return GetCharacterSpecificData(ItemBrowserAPI.CurrentCharacterGuid);
+			return GetCharacterSpecificData(_currentCharacterGuid);
 		}
 
 		public bool HasTag(ObjectDataCD objectData, ObjectTagType tag) {
-			if (!_tags.TryGetValue(ItemBrowserAPI.CurrentCharacterGuid, out var objectToTags))
+			if (!_tags.TryGetValue(_currentCharacterGuid, out var objectToTags))
 				return false;
 			
 			return objectToTags.TryGetValue(objectData, out var tags) && tags.Contains(tag);
 		}
 		
 		public bool AddTag(ObjectDataCD objectData, ObjectTagType tag) {
-			if (!_tags.TryGetValue(ItemBrowserAPI.CurrentCharacterGuid, out var objectToTags)) {
+			if (objectData.objectID == ObjectID.None)
+				return false;
+			
+			if (!_tags.TryGetValue(_currentCharacterGuid, out var objectToTags)) {
 				objectToTags = new Dictionary<ObjectDataCD, HashSet<ObjectTagType>>();
-				_tags[ItemBrowserAPI.CurrentCharacterGuid] = objectToTags;
+				_tags[_currentCharacterGuid] = objectToTags;
 			}
 			
 			if (!objectToTags.TryGetValue(objectData, out var tags)) {
 				tags = new HashSet<ObjectTagType>();
 				objectToTags[objectData] = tags;
 			}
+			
+			var isAdded = tags.Add(tag);
+			if (isAdded) {
+				OnTagChanged?.Invoke(objectData, tag, true);
+				_isDirty = true;
+			}
 
-			if (!tags.Add(tag))
-				return false;
-
-			_isDirty = true;
-			return true;
+			return isAdded;
 		}
 		
 		public bool RemoveTag(ObjectDataCD objectData, ObjectTagType tag) {
-			if (!_tags.TryGetValue(ItemBrowserAPI.CurrentCharacterGuid, out var objectToTags))
+			if (!_tags.TryGetValue(_currentCharacterGuid, out var objectToTags))
 				return false;
 
-			if (!objectToTags.TryGetValue(objectData, out var tags) || !tags.Remove(tag))
+			if (!objectToTags.TryGetValue(objectData, out var tags))
 				return false;
 
-			_isDirty = true;
-			return true;
+			var isRemoved = tags.Remove(tag);
+			if (isRemoved) {
+				OnTagChanged?.Invoke(objectData, tag, false);
+				_isDirty = true;
+			}
+
+			return isRemoved;
 		}
 
 		public void RemoveTagFromAll(ObjectTagType tag) {
-			if (!_tags.TryGetValue(ItemBrowserAPI.CurrentCharacterGuid, out var objectToTags))
+			if (!_tags.TryGetValue(_currentCharacterGuid, out var objectToTags))
             	return;
-			
-			foreach (var tags in objectToTags.Values)
-				tags.Remove(tag);
+
+			foreach (var (objectData, tags) in objectToTags) {
+				if (tags.Remove(tag))
+					OnTagChanged?.Invoke(objectData, tag, false);
+			}
 
 			_isDirty = true;
 		}
@@ -227,15 +250,11 @@ namespace ItemBrowser.Common.Options {
 		public void Save() {
 			OnPreSerialize();
 			
-			if (!API.ConfigFilesystem.DirectoryExists(Main.InternalName))
-				API.ConfigFilesystem.CreateDirectory(Main.InternalName);
-			
 			try {
-				var serializedData = JsonConvert.SerializeObject(_data);
-				API.ConfigFilesystem.Write(FilePath, Encoding.UTF8.GetBytes(serializedData));
+				FileUtility.WriteData("Options", _data);
 			} catch (Exception ex) {
-				Main.Log(nameof(OptionsManager), "Error while saving file");
-				Main.Log(ex);
+				Logger.LogWarning("Error while saving options file");
+				Logger.LogException(ex);
 			}
 			
 			_isDirty = false;
@@ -243,19 +262,20 @@ namespace ItemBrowser.Common.Options {
 		}
 		
 		private void Load() {
-			if (!API.ConfigFilesystem.FileExists(FilePath)) {
-				SetDefaults();
-				return;
-			}
-			
 			try {
-				var deserializedData = JsonConvert.DeserializeObject<OptionsData>(Encoding.UTF8.GetString(API.ConfigFilesystem.Read(FilePath)));
-				SetData(deserializedData);
+				SetData(FileUtility.ReadData<OptionsData>("Options"));
 			} catch (Exception ex) {
-				Main.Log(nameof(OptionsManager), "Error while loading file, using defaults");
-				Main.Log(ex);
+				Logger.LogWarning("Error while loading options file, using defaults");
+				Logger.LogException(ex);
 				SetDefaults();
 			}
+		}
+		
+		[HarmonyPatch]
+		[HarmonyPatch(typeof(SaveManager), "SetCharacterId")]
+		[HarmonyPostfix]
+		private static void SetCharacterGuid(SaveManager __instance, int id) {
+			_currentCharacterGuid = id == -1 ? null : Manager.saves.GetCharacterGuid().ToString();
 		}
 
 		private record OptionsData {
@@ -275,6 +295,8 @@ namespace ItemBrowser.Common.Options {
 		private record CharacterSpecificOptionsData {
 			public bool CheatMode { get; set; }
 			public bool DiscoveryMode { get; set; }
+			public bool ShowChecklist { get; set; }
+			public bool AutoMarkDiscoveredAsCollected { get; set; } = true;
 			public List<TagObjectData> TaggedObjects { get; set; } = new();
 		}
 		

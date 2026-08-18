@@ -2,7 +2,6 @@
 using System.Linq;
 using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Utilities;
-using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public abstract class EntriesListRenderer {

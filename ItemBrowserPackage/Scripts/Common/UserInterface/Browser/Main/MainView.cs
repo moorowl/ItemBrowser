@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Options;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class MainView : ItemBrowserView {
@@ -12,11 +13,13 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public CreaturesListView creaturesListView;
 		public HistoryView historyView;
 		public OptionsView optionsView;
+		public ChecklistListView checklistListView;
 		public Transform tabButtonsRoot;
 		public ItemBrowserButton itemsTabButton;
 		public ItemBrowserButton creaturesTabButton;
 		public ItemBrowserButton historyTabButton;
 		public ItemBrowserButton optionsTabButton;
+		public ItemBrowserButton checklistTabButton;
 
 		private MainTab _selectedTab;
 		private UIelement _lastSelectedElement;
@@ -24,19 +27,28 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private readonly List<MainTab> _allTabs = new() {
 			MainTab.Items,
 			MainTab.Creatures,
+			MainTab.Checklist,
 			MainTab.History,
 			MainTab.Options
 		};
+		private readonly List<MainTab> _allAvailableTabs = new();
 
 		protected override void OnShow(bool isFirstTimeShowing) {
+			UpdateAvailableTabs();
 			TrySelectLastSelectedElement();
 		}
 
 		protected override void LateUpdate() {
 			base.LateUpdate();
 
+			UpdateAvailableTabs();
 			UpdateControllerInput();
 			UpdateLastSelectedElement();
+
+			// update is done from here to allow search result changes to happen immediately on other lists
+			itemsListView.UpdateSearchAndListRefresh();
+			creaturesListView.UpdateSearchAndListRefresh();
+			checklistListView.UpdateSearchAndListRefresh();
 		}
 
 		private void UpdateControllerInput() {
@@ -68,7 +80,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public void SwapSelectedTab(MainTab tabToSelect) {
 			if (tabToSelect == _selectedTab)
 				return;
-			
+
+			var previousTab = _selectedTab;
 			_selectedTab = tabToSelect;
 
 			foreach (var tab in _allTabs) {
@@ -78,14 +91,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 			var selectedTabView = GetTabView(_selectedTab);
 			tabButtonsRoot.SetParent(selectedTabView.tabButtonsAnchor, false);
-			
-			// if the filters panel is open, changing tab would shift the layout and cause tooltips to stay active
-			if (UserInterfaceUtility.IsUsingMouse && OptionsManager.Instance.PanelsShiftLayout) {
-				Manager.ui.DeselectAnySelectedUIElement();
-				Manager.ui.mouse.UpdateMouseUIInput(out _, out _);				
-			}
 
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.ChangeTabOrCategory, this);
+			if (previousTab != MainTab.None)
+				ItemBrowserSounds.PlayChangeMainTab(this, _selectedTab);
 		}
 
 		public void SwapToItemsTab() {
@@ -103,21 +111,25 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public void SwapToOptionsTab() {
 			SwapSelectedTab(MainTab.Options);
 		}
+		
+		public void SwapToChecklistTab() {
+			SwapSelectedTab(MainTab.Checklist);
+		}
 
 		private void SwapToNextTab() {
-			SwapSelectedTab(_allTabs[GetNextTabIndex(1)]);
+			SwapSelectedTab(_allAvailableTabs[GetNextTabIndex(1)]);
 		}
 
 		private void SwapToPreviousTab() {
-			SwapSelectedTab(_allTabs[GetNextTabIndex(-1)]);
+			SwapSelectedTab(_allAvailableTabs[GetNextTabIndex(-1)]);
 		}
 		
 		private int GetNextTabIndex(int offset) {
-			var index = _allTabs.IndexOf(_selectedTab) + offset;
-			if (index >= _allTabs.Count)
+			var index = _allAvailableTabs.IndexOf(_selectedTab) + offset;
+			if (index >= _allAvailableTabs.Count)
 				index = 0;
 			if (index < 0)
-				index = _allTabs.Count - 1;
+				index = _allAvailableTabs.Count - 1;
 
 			return index;
 		}
@@ -128,6 +140,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				MainTab.Creatures => creaturesListView,
 				MainTab.History => historyView,
 				MainTab.Options => optionsView,
+				MainTab.Checklist => checklistListView,
 				_ => throw new ArgumentOutOfRangeException()
 			};
 		}
@@ -138,8 +151,28 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				MainTab.Creatures => creaturesTabButton,
 				MainTab.History => historyTabButton,
 				MainTab.Options => optionsTabButton,
+				MainTab.Checklist => checklistTabButton,
 				_ => throw new ArgumentOutOfRangeException()
 			};
+		}
+		
+		private bool IsTabAvailable(MainTab tab) {
+			return tab switch {
+				MainTab.Checklist => OptionsManager.Instance.ShowChecklist,
+				_ => true
+			};
+		}
+		
+		private void UpdateAvailableTabs() {
+			_allAvailableTabs.Clear();
+
+			foreach (var tab in _allTabs) {
+				var isAvailable = IsTabAvailable(tab);
+				if (isAvailable)
+					_allAvailableTabs.Add(tab);
+				
+				GetTabButton(tab).gameObject.SetActive(isAvailable);
+			}
 		}
 	}
 }

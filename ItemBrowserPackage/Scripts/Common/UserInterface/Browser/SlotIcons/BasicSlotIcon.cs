@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Input;
 using ItemBrowser.Common.Options;
+using ItemBrowser.Common.Options.DiscoveredObjects;
 using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using PugTilemap;
-using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.SlotIcons {
 	public class BasicSlotIcon : SlotIcon {
@@ -43,11 +43,11 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 		}
 		
 		public override bool HasBeenDiscovered(SlotUIBase slot, out float temporaryTimeRemaining) {
-			return DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_objectsToDisplay.CurrentObjectData, out temporaryTimeRemaining);
+			return DiscoveredTracker.HasBeenDiscoveredInDiscoveryMode(_objectsToDisplay.CurrentObjectData, out temporaryTimeRemaining);
 		}
 
 		public override void SetTemporarilyDiscovered(SlotUIBase slot, float? duration = null) {
-			DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(_objectsToDisplay.CurrentObjectData, duration);
+			DiscoveredTracker.SetTemporarilyDiscovered(_objectsToDisplay.CurrentObjectData, duration);
 		}
 
 		public override bool ShowDetails(SlotUIBase slot, DetailsTab initialTab) {
@@ -60,7 +60,7 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 				dontLocalize = true
 			};
 			
-			if (!DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_objectsToDisplay.CurrentObjectData, out _)) {
+			if (!DiscoveredTracker.HasBeenDiscoveredInDiscoveryMode(_objectsToDisplay.CurrentObjectData, out _)) {
 				objectName = new TextAndFormatFields {
 					text = "ItemBrowser-General/Undiscovered"
 				};
@@ -74,7 +74,7 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 		}
 
 		public override List<TextAndFormatFields> GetHoverDescription(SlotUIBase slot) {
-			if (!DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_objectsToDisplay.CurrentObjectData, out _))
+			if (!DiscoveredTracker.HasBeenDiscoveredInDiscoveryMode(_objectsToDisplay.CurrentObjectData, out _))
 				return new List<TextAndFormatFields>();
 			
 			var objectData = _objectsToDisplay.CurrentObjectData;

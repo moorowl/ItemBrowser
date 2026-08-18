@@ -67,7 +67,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Non obtainable
-      description: Items that can't be picked up directly
+      description: '{0} that can''t be picked up directly'
     - m_language:
         m_address:
           m_low: 6040640903323332866
@@ -103,7 +103,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: "N\xE3o dispon\xEDvel"
-      description: "Itens que n\xE3o podem ser coletados diretamente."
+      description: "{0} que n\xE3o podem ser coletados diretamente."
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 681352171529052915
         m_high: 2314507893210082619
     title: Non obtainable
-    description: Items that can't be picked up directly
+    description: '{0} that can''t be picked up directly'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

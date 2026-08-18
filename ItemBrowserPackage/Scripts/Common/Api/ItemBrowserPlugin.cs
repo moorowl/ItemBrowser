@@ -13,6 +13,8 @@ namespace ItemBrowser.Common.Api {
 		
 		public virtual void OnRegister(ItemBrowserRegistry registry) { }
 		
+		public virtual void OnLateRegister(ItemBrowserRegistry registry) { }
+		
 		public virtual void OnAutomaticallyRegisterFromAssets(ItemBrowserRegistry registry) {
 			foreach (var asset in AssociatedLoadedMod.Assets) {
 				if (asset is not GameObject gameObject)

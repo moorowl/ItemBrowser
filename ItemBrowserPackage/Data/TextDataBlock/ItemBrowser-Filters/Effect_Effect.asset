@@ -67,7 +67,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: '{0}'
-      description: Items with an effect in the {0} category
+      description: '{0} with an effect in the {0} category'
     - m_language:
         m_address:
           m_low: 6040640903323332866
@@ -103,7 +103,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: '{0}'
-      description: Itens da categoria {0} que possuem efeitos.
+      description: '{0} da categoria {0} que possuem efeitos.'
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 681352171529052915
         m_high: 2314507893210082619
     title: '{0}'
-    description: Items with an effect in the {0} category
+    description: '{0} with an effect in the {0} category'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

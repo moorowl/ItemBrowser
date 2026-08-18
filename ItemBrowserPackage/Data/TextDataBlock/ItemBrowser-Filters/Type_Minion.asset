@@ -55,7 +55,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Minion
-      description: Creatures that are minions
+      description: '{0} that are minions'
     - m_language:
         m_address:
           m_low: 5554070574462901973
@@ -73,7 +73,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: Lacaios
-      description: "Serem invocados atrav\xE9s de tomos."
+      description: "{0} que s\xE3o lacaios."
     - m_language:
         m_address:
           m_low: 4644340974835219079
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 5072271549517713136
         m_high: -6896136573278429030
     title: Minion
-    description: Creatures that are minions
+    description: '{0} that are minions'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

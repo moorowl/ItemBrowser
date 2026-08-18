@@ -189,7 +189,8 @@
         "ScriptableData.dll",
         "Pug.Automation.Authoring.dll",
         "PugText.Editor.dll",
-        "Pug.Automation.Components.dll"
+        "Pug.Automation.Components.dll",
+        "PugSprite.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [],

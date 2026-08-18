@@ -1,14 +1,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Interaction;
-using Inventory;
 using ItemBrowser.Common.Api;
-using Outlines.Components;
-using Outlines.Systems;
-using Pug.ECS.Hybrid;
 using Pug.UnityExtensions;
-using Unity.Entities;
-using UnityEngine;
 
 // ReSharper disable once InconsistentNaming
 

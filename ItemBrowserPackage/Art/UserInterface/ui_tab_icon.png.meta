@@ -206,7 +206,7 @@ TextureImporter:
         width: 14
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -215,6 +215,28 @@ TextureImporter:
       bones: []
       spriteID: 2971fb287cd5b4b49b13b7ad7cc0dc63
       internalID: 1042067959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ui_tab_icon_checklist
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 0
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89ceb8d9250f0f64a97c573db69b30f3
+      internalID: -406397581
       vertices: []
       indices: 
       edges: []
@@ -233,6 +255,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      ui_tab_icon_checklist: -406397581
       ui_tab_icon_cooking: -163495316
       ui_tab_icon_creatures: -1078718053
       ui_tab_icon_history: 293590735

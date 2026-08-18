@@ -55,7 +55,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Critter
-      description: Creatures that are critters
+      description: '{0} that are critters'
     - m_language:
         m_address:
           m_low: 5554070574462901973
@@ -136,7 +136,7 @@ MonoBehaviour:
         m_low: 5072271549517713136
         m_high: -6896136573278429030
     title: Critter
-    description: Creatures that are critters
+    description: '{0} that are critters'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

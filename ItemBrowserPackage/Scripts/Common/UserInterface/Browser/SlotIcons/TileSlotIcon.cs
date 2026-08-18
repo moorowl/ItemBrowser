@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ItemBrowser.Common.Options.DiscoveredObjects;
 using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
@@ -42,9 +43,9 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 			
 			public override bool HasBeenDiscovered(SlotUIBase slot, out float temporaryTimeRemaining) {
 				if (_staticObject != null)
-					return DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_staticObject.ContainedObject.objectData, out temporaryTimeRemaining);
+					return DiscoveredTracker.HasBeenDiscoveredInDiscoveryMode(_staticObject.ContainedObject.objectData, out temporaryTimeRemaining);
 				if (_visualObjects != null)
-					return DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_visualObjects.CurrentObjectData, out temporaryTimeRemaining);
+					return DiscoveredTracker.HasBeenDiscoveredInDiscoveryMode(_visualObjects.CurrentObjectData, out temporaryTimeRemaining);
 
 				temporaryTimeRemaining = 0f;
 				return true;
@@ -52,9 +53,9 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 
 			public override void SetTemporarilyDiscovered(SlotUIBase slot, float? duration = null) {
 				if (_staticObject != null)
-					DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(_staticObject.ContainedObject.objectData, duration);
+					DiscoveredTracker.SetTemporarilyDiscovered(_staticObject.ContainedObject.objectData, duration);
 				if (_visualObjects != null)
-					DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(_visualObjects.CurrentObjectData, duration);
+					DiscoveredTracker.SetTemporarilyDiscovered(_visualObjects.CurrentObjectData, duration);
 			}
 
 			public override bool ShowDetails(SlotUIBase slot, DetailsTab initialTab) {

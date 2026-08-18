@@ -10,6 +10,9 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 		}
 
 		public int GetScore(ObjectDataCD objectData) {
+			if (objectData.variation > 0 && !ObjectUtility.IsPrimaryVariation(objectData))
+				return _scores.GetValueOrDefault(objectData, _scores.GetValueOrDefault(new ObjectDataCD { objectID = objectData.objectID }, -1));
+			
 			return _scores.GetValueOrDefault(objectData, -1);
 		}
 

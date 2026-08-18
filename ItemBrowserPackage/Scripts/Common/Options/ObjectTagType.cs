@@ -1,7 +1,10 @@
 namespace ItemBrowser.Common.Options {
-	public enum ObjectTagType {
+	public enum ObjectTagType : byte {
 		Favorited,
 		Collected,
-		Uncollected
+		Uncollected,
+		Discovered,
+		New,
+		ExcludeFromChecklist
 	}
 }

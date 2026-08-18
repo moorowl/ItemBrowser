@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using ItemBrowser.Common.Api.SortingAndFiltering;
 using ItemBrowser.Common.Options;
+using ItemBrowser.Common.Options.DiscoveredObjects;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using PugMod;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public abstract class ObjectListView : MainSubView {
@@ -16,8 +16,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public VirtualObjectList objectList;
 		public SearchBar searchInput;
 		public ObjectListView[] otherListsToSyncSearchWith;
-		public SpriteMask searchInputMask;
 		public FiltersPanel[] filtersPanels;
+		public bool canHideUndiscoveredObjects;
 		
 		private bool _requestedListRefresh;
 		private bool _requestedListRefreshPreservesScroll;
@@ -31,20 +31,23 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		
 		private FiltersPanel PrimaryFiltersPanel => filtersPanels[0];
 		private readonly Dictionary<Filter, FilterResults> _filterResults = new();
-		private FilterResults _discoveryModeFilterResults;
+		private FilterResults _discoveredFilterResults;
 		
 		private string _lastSearchTerm = string.Empty;
 		private bool _isSearchTermEmpty;
 		private SearchResults _searchResults;
+		private Task<SearchResults> _updateSearchResultsTask;
 		public bool HighlightSearchResults { get; set; }
 
-		private List<Sorter> _sorters;
+		private readonly List<Sorter> _sorters = new();
 		private readonly List<SorterResults> _sorterResults = new();
 		private int _currentSorterIndex;
 		public bool UseReverseSorting { get; set; }
-		public Sorter CurrentSorter => _sorters[_currentSorterIndex];
+		public Sorter CurrentSorter => _currentSorterIndex < 0 || _currentSorterIndex >= _sorters.Count ? null : _sorters[_currentSorterIndex];
 		
 		protected override void OnShow(bool isFirstTimeShowing) {
+			base.OnShow(isFirstTimeShowing);
+			
 			if (isFirstTimeShowing) {
 				SetupFiltersAndSorting();
 				RequestListRefresh(false);
@@ -52,17 +55,27 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				RequestListRefresh(true);
 			}
 
-			UpdateDynamicFilterResults();
+			if (UpdateDiscoveredFilterResults())
+				RequestListRefresh(true);
+			
 			UpdateListRefresh();
-			AdjustWindowPosition();
+
+			OptionsManager.Instance.OnTagChanged += OnTagsChanged;
+		}
+
+		protected override void OnHide() {
+			base.OnHide();
+
+			OptionsManager.Instance.OnTagChanged -= OnTagsChanged;
 		}
 
 		private void SetupFiltersAndSorting() {
-			_searchResults = SearchResults.Create("");
+			_searchResults = SearchResults.Create("", GetIncludedObjects());
 
 			// Setup sorters
 			_currentSorterIndex = 0;
-			_sorters = GetSorters();
+			_sorters.Clear();
+			_sorters.AddRange(GetSorters());
 			_sorterResults.Clear();
 			UseReverseSorting = true;
 			
@@ -86,44 +99,83 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		protected override void LateUpdate() {
 			base.LateUpdate();
 
-			UpdateDynamicFilterResults();
-			UpdateSearch(false);
-			UpdateListRefresh();
+			UpdateSearchAndListRefresh();
 			TryAutoSelectFirstSlot();
 		}
 
-		private void UpdateDynamicFilterResults() {
-			var hasDynamicFiltersActive = PrimaryFiltersPanel.ActiveDynamicFilters.Any() || OptionsManager.Instance.DiscoveryMode;
+		public void UpdateSearchAndListRefresh() {
+			UpdateSearch(false);
+			UpdateListRefresh();
+		}
+		
+		private void OnTagsChanged(ObjectDataCD objectData, ObjectTagType tag, bool isAdded) {
+			if (tag == ObjectTagType.Favorited || (tag == ObjectTagType.Discovered && UpdateDiscoveredFilterResults()))
+				RequestListRefresh(true);
+		}
+		
+		private bool UpdateDiscoveredFilterResults() {
+			var updatedDiscoveryModeFilterResults = FilterResults.Create(new Filter(string.Empty) {
+				Function = DiscoveredTracker.HasBeenDiscovered
+			}, GetIncludedObjects());
 
-			if (hasDynamicFiltersActive && Time.time >= _lastListRefreshFromDynamicFiltersTime + DynamicFiltersRefreshInterval) {
-				var shouldRefresh = false;
-
-				foreach (var filter in PrimaryFiltersPanel.ActiveDynamicFilters) {
-					var updatedFilterResults = FilterResults.Create(filter);
-					_filterResults[filter] = updatedFilterResults;
-					shouldRefresh = true;
-
-					/*if (!_filterResults.ContainsKey(filter) || !FilterResults.Equals(updatedFilterResults, _filterResults[filter])) {
-						_filterResults[filter] = updatedFilterResults;
-						shouldRefresh = true;
-					}*/
-				}
-
-				var updatedDiscoveryModeFilterResults = FilterResults.Create(new Filter(string.Empty) {
-					Function = objectData => DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(objectData, out var temporaryTimeRemaining) && temporaryTimeRemaining <= 0f
-				});
-				if (_discoveryModeFilterResults == null || !FilterResults.Equals(updatedDiscoveryModeFilterResults, _discoveryModeFilterResults)) {
-					_discoveryModeFilterResults = updatedDiscoveryModeFilterResults;
-					shouldRefresh = true;
-				}
-
-				if (shouldRefresh)
-					RequestListRefresh(true);
-				
-				_lastListRefreshFromDynamicFiltersTime = Time.time;
+			if (_discoveredFilterResults == null || !FilterResults.Equals(updatedDiscoveryModeFilterResults, _discoveredFilterResults)) {
+				_discoveredFilterResults = updatedDiscoveryModeFilterResults;
+				return true;
 			}
+
+			return false;
 		}
 
+		private bool UpdateDynamicFilterResults() {
+			if (PrimaryFiltersPanel.ActiveDynamicFilters.Any() && Time.time >= _lastListRefreshFromDynamicFiltersTime + DynamicFiltersRefreshInterval) {
+				var shouldRefresh = false;
+				var includedObjects = GetIncludedObjects();
+
+				foreach (var filter in PrimaryFiltersPanel.ActiveDynamicFilters) {
+					var updatedFilterResults = FilterResults.Create(filter, includedObjects);
+
+					if (!_filterResults.ContainsKey(filter) || !FilterResults.Equals(updatedFilterResults, _filterResults[filter])) {
+						_filterResults[filter] = updatedFilterResults;
+						shouldRefresh = true;
+						Debug.Log($"updating dynamic filter results for {filter.Name}");
+					}
+				}
+				
+				_lastListRefreshFromDynamicFiltersTime = Time.time;
+
+				return shouldRefresh;
+			}
+
+			return false;
+		}
+
+		/*private void UpdateSearch(bool doNotSyncWithOtherLists) {
+			var currentSearchTerm = searchInput.GetInputText();
+			_isSearchTermEmpty = string.IsNullOrWhiteSpace(currentSearchTerm);
+
+			AdjustSearchFieldPosition();
+
+			if (_updateSearchResultsTask is { IsCompleted: true } && _listRefreshTask == null) {
+				if (_updateSearchResultsTask.IsCompletedSuccessfully) {
+					_searchResults = _updateSearchResultsTask.Result;
+					RequestListRefresh(false);
+				}
+
+				_updateSearchResultsTask = null;
+			}
+
+			if (currentSearchTerm != _lastSearchTerm && _updateSearchResultsTask == null) {
+				_updateSearchResultsTask = Task.Run(() => SearchResults.Create(currentSearchTerm, GetIncludedObjects()));
+				
+				if (!doNotSyncWithOtherLists) {
+					foreach (var otherList in otherListsToSyncSearchWith)
+						otherList.SetSearchTermFromOtherList(currentSearchTerm);	
+				}
+				
+				_lastSearchTerm = currentSearchTerm;
+			}
+		}*/
+		
 		private void UpdateSearch(bool doNotSyncWithOtherLists) {
 			var currentSearchTerm = searchInput.GetInputText();
 			_isSearchTermEmpty = string.IsNullOrWhiteSpace(currentSearchTerm);
@@ -135,18 +187,16 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					otherList.SetSearchTermFromOtherList(currentSearchTerm);	
 			}
 
-			AdjustSearchFieldPosition();
 			RequestListRefresh(false);
 
-			_searchResults = SearchResults.Create(currentSearchTerm);
+			_searchResults = SearchResults.Create(currentSearchTerm, GetIncludedObjects());
 			_lastSearchTerm = currentSearchTerm;
 		}
 
 		public void SetSearchTermFromOtherList(string term) {
 			searchInput.SetInputText(term);
-			
+
 			UpdateSearch(true);
-			UpdateListRefresh();
 		}
 
 		private void TryAutoSelectFirstSlot() {
@@ -158,7 +208,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (filter == null)
 				return;
 			
-			_filterResults[filter] = FilterResults.Create(filter);
+			_filterResults[filter] = FilterResults.Create(filter, GetIncludedObjects());
 			
 			RequestListRefresh(false);
 		}
@@ -167,13 +217,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			var shouldShow = !PrimaryFiltersPanel.IsShowing;
 			foreach (var panel in filtersPanels)
 				panel.IsShowing = shouldShow;
-
-			if (UserInterfaceUtility.IsUsingMouse && OptionsManager.Instance.PanelsShiftLayout) {
-				Manager.ui.DeselectAnySelectedUIElement();
-				Manager.ui.mouse.UpdateMouseUIInput(out _, out _);				
-			}
-
-			AdjustWindowPosition();
 		}
 
 		public void NextSort() {
@@ -203,21 +246,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			UpdateSearch(false);
 			UpdateListRefresh();
 		}
-		
-		private void AdjustWindowPosition() {
-			var shiftLayout = PrimaryFiltersPanel.IsShowing && OptionsManager.Instance.PanelsShiftLayout;
-			transform.localPosition = new Vector3(Mathf.Round(shiftLayout ? -((PrimaryFiltersPanel.WindowWidth / 2f) + (1f / 16f)) : 0f), transform.localPosition.y, transform.localPosition.z);
-		}
-		
-		private void AdjustSearchFieldPosition() {
-			var maskUnitWidth = searchInputMask.transform.localScale.x / 16f;
-			var searchInputPosition = searchInput.pugText.transform.localPosition;
-			searchInputPosition.x = -1f * Mathf.Max(0f, searchInput.pugText.dimensions.width - maskUnitWidth);
-			searchInput.pugText.transform.localPosition = searchInputPosition;
-
-			var member = typeof(TextInputField).GetMembersChecked().FirstOrDefault(x => x.GetNameChecked() == "Update");
-			API.Reflection.Invoke(member, searchInput);
-		}
 
 		public void RequestListRefresh(bool preserveScrollPosition) {
 			_requestedListRefresh = true;
@@ -231,21 +259,23 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					_filteredObjects = _listRefreshTask.Result.Objects;
 					objectList.SetObjects(_filteredObjects, _listRefreshTask.Result.PreserveScroll);
 				} else {
-					Main.Log($"{nameof(ObjectListView)}+{name}", $"List refresh task didn't complete successfully?");
-					Main.Log(_listRefreshTask.Exception);
+					Logger.LogException(_listRefreshTask.Exception);
 					_requestedListRefresh = true;
 				}
 				
 				_listRefreshTask = null;
 			}
 
+			if (IsShowing && _listRefreshTask == null && UpdateDynamicFilterResults())
+				RequestListRefresh(true);
+			
 			if (_requestedListRefresh && _listRefreshTask == null && _currentSorterIndex < _sorterResults.Count) {
 				_listRefreshTask = RunListRefreshTask(_requestedListRefreshPreservesScroll);
 				_requestedListRefreshPreservesScroll = true;
 				_requestedListRefresh = false;
 			}
 		}
-
+		
 		private Task<(bool, List<ObjectDataCD>)> RunListRefreshTask(bool preserveScrollPosition) {
 			// Filtering
 			return Task.Run(() => {
@@ -273,15 +303,15 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 		private bool MatchesFilters(ObjectDataCD objectData) {
 			return _searchResults.Matches(objectData)
-			       && (!OptionsManager.Instance.DiscoveryMode || !_isSearchTermEmpty || _discoveryModeFilterResults.Matches(objectData))
+			       && !(canHideUndiscoveredObjects && OptionsManager.Instance.DiscoveryMode && _isSearchTermEmpty && !_discoveredFilterResults.Matches(objectData))
 			       && PrimaryFiltersPanel.FiltersToInclude.All(group => group.Any(filter => _filterResults[filter].Matches(objectData)))
 			       && !PrimaryFiltersPanel.FiltersToExclude.Any(group => group.Any(filter => _filterResults[filter].Matches(objectData)));
 		}
 		
-		protected abstract List<Sorter> GetSorters();
+		public abstract List<Sorter> GetSorters();
 		
-		protected abstract List<(string Group, Filter Filter)> GetFilters();
+		public abstract List<(string Group, Filter Filter)> GetFilters();
 		
-		protected abstract List<ObjectDataCD> GetIncludedObjects();
+		public abstract List<ObjectDataCD> GetIncludedObjects();
 	}
 }

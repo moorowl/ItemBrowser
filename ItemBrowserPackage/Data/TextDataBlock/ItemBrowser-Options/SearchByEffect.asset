@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 0
         m_high: 0
     title: Effects
-    description: 
+    description: Allows you to search for items/creatures by their effects
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Options
   references:

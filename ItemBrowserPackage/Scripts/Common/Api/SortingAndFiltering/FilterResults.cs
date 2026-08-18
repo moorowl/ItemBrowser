@@ -4,19 +4,22 @@ using ItemBrowser.Utilities;
 
 namespace ItemBrowser.Common.Api.SortingAndFiltering {
 	public class FilterResults {
-		private readonly HashSet<ObjectDataCD> _matches;
+		public HashSet<ObjectDataCD> Results;
 
 		private FilterResults(HashSet<ObjectDataCD> matches) {
-			_matches = matches;
+			Results = matches;
 		}
 
 		public bool Matches(ObjectDataCD objectData) {
-			return _matches.Contains(objectData);
+			if (objectData.variation > 0 && !ObjectUtility.IsPrimaryVariation(objectData))
+				return Results.Contains(objectData) || Results.Contains(new ObjectDataCD { objectID = objectData.objectID });
+			
+			return Results.Contains(objectData);
 		}
 		
-		public static FilterResults Create(Filter filter) {
-			var matches = new HashSet<ObjectDataCD>(128);
-			foreach (var objectData in ObjectUtility.GetAllObjects()) {
+		public static FilterResults Create(Filter filter, List<ObjectDataCD> objectsToFilter) {
+			var matches = new HashSet<ObjectDataCD>(objectsToFilter.Count);
+			foreach (var objectData in objectsToFilter) {
 				if (filter.Function(objectData))
 					matches.Add(objectData);
 			}
@@ -25,10 +28,10 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 		}
 
 		public static bool Equals(FilterResults a, FilterResults b) {
-			if (a == null || b == null || a._matches.Count != b._matches.Count)
+			if (a == null || b == null || a.Results.Count != b.Results.Count)
 				return false;
 
-			return a._matches.SequenceEqual(b._matches);
+			return a.Results.SequenceEqual(b.Results);
 		}
 	}
 }

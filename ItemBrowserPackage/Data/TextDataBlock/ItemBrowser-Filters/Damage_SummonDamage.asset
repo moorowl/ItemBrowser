@@ -55,7 +55,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Summon damage
-      description: Items dealing summon damage
+      description: '{0} dealing summon damage'
     - m_language:
         m_address:
           m_low: 5554070574462901973
@@ -73,7 +73,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: Dano de lacaios
-      description: Itens que melhoram o dano dos lacaios.
+      description: '{0} que melhoram o dano dos lacaios.'
     - m_language:
         m_address:
           m_low: 4644340974835219079
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 5072271549517713136
         m_high: -6896136573278429030
     title: Summon damage
-    description: Items dealing summon damage
+    description: '{0} dealing summon damage'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

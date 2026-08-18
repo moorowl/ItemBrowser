@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using I2.Loc;
-using Inventory;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.Api.Overrides;
@@ -46,6 +45,7 @@ namespace ItemBrowser.Utilities {
 			ObjectType.DrillTool
 		};
 		
+		private static readonly Dictionary<ObjectID, string> InternalNames = new();
 		private static readonly Dictionary<ObjectDataCD, string> DisplayNames = new();
 		private static readonly Dictionary<ObjectDataCD, string> DisplayNameNotes = new();
 		private static readonly Dictionary<ObjectDataCD, string> Descriptions = new();
@@ -53,7 +53,7 @@ namespace ItemBrowser.Utilities {
 		private static readonly Dictionary<ObjectDataCD, int> PrimaryVariations = new();
 		private static readonly Dictionary<ObjectDataCD, HashSet<ConditionID>> AssociatedConditions = new();
 		private static readonly Dictionary<ObjectDataCD, HashSet<string>> AssociatedConditionCategories = new();
-		private static readonly Dictionary<ObjectDataCD, int> ArmorValues = new();
+		private static readonly Dictionary<ObjectDataCD, float> ArmorValues = new();
 		private static readonly Dictionary<ObjectDataCD, Sprite> IconOverrides = new();
 		private static readonly Dictionary<ObjectCategoryTag, HashSet<ObjectDataCD>> TagLookup = new();
 
@@ -66,6 +66,7 @@ namespace ItemBrowser.Utilities {
 		}
 
 		private static void BakeDisplayNamesAndNotes() {
+			InternalNames.Clear();
 			DisplayNames.Clear();
 			DisplayNameNotes.Clear();
 			Descriptions.Clear();
@@ -88,6 +89,8 @@ namespace ItemBrowser.Utilities {
 			}
 			
 			foreach (var objectData in GetAllObjects()) {
+				InternalNames.TryAdd(objectData.objectID, API.Authoring.ObjectProperties.TryGetPropertyString(objectData.objectID, "name", out var internalName) ? internalName : objectData.objectID.ToString());
+				
 				// Setup display names
 				string localizedName;
 				string unlocalizedName;
@@ -245,8 +248,11 @@ namespace ItemBrowser.Utilities {
 						var conditionEffect = Manager.ui.conditionsIconsTable.GetConditionInfo(associatedCondition.Id).effect;
 						return conditionEffect is ConditionEffect.Armor or ConditionEffect.ArmorPercentage;
 					})
-					.Select(associatedCondition => associatedCondition.Value)
-					.DefaultIfEmpty(0)
+					.Select(associatedCondition => {
+						var value = associatedCondition.Value;
+						return Manager.ui.conditionsIconsTable.GetConditionInfo(associatedCondition.Id).showDecimal ? value / 10f : value;
+					})
+					.DefaultIfEmpty(0f)
 					.Max();
 
 				ArmorValues.TryAdd(objectData, highestArmorValue);
@@ -276,7 +282,9 @@ namespace ItemBrowser.Utilities {
 		}
 		
 		public static string GetLocalizedDisplayName(ObjectDataCD objectData) {
-			return DisplayNames.GetValueOrDefault(objectData);
+			return DisplayNames.GetValueOrDefault(objectData) ?? DisplayNames.GetValueOrDefault(new ObjectDataCD {
+				objectID = objectData.objectID
+			});
 		}
 		
 		public static string GetLocalizedDisplayName(ObjectID id, int variation = 0) {
@@ -312,7 +320,7 @@ namespace ItemBrowser.Utilities {
 		}
 		
 		public static string GetInternalName(ObjectDataCD objectData) {
-			return API.Authoring.ObjectProperties.TryGetPropertyString(objectData.objectID, "name", out var internalName) ? internalName : objectData.objectID.ToString();
+			return InternalNames.TryGetValue(objectData.objectID, out var internalName) ? internalName : objectData.objectID.ToString();
 		}
 		
 		public static string GetInternalName(ObjectID id) {
@@ -344,7 +352,9 @@ namespace ItemBrowser.Utilities {
 		}
 		
 		public static HashSet<ConditionID> GetAssociatedConditions(ObjectDataCD objectData) {
-			return AssociatedConditions.GetValueOrDefault(objectData);
+			return AssociatedConditions.GetValueOrDefault(objectData) ?? AssociatedConditions.GetValueOrDefault(new ObjectDataCD {
+				objectID = objectData.objectID
+			});
 		}
 		
 		public static HashSet<ConditionID> GetAssociatedConditions(ObjectID id, int variation) {
@@ -352,7 +362,9 @@ namespace ItemBrowser.Utilities {
 		}
 
 		public static HashSet<string> GetAssociatedConditionCategories(ObjectDataCD objectData) {
-			return AssociatedConditionCategories.GetValueOrDefault(objectData);
+			return AssociatedConditionCategories.GetValueOrDefault(objectData) ?? AssociatedConditionCategories.GetValueOrDefault(new ObjectDataCD {
+				objectID = objectData.objectID
+			});
 		}
 		
 		public static HashSet<string> GetAssociatedConditionCategories(ObjectID id, int variation) {
@@ -390,19 +402,16 @@ namespace ItemBrowser.Utilities {
 			if (objectInfo.objectType is ObjectType.NonObtainable or ObjectType.Creature or ObjectType.Critter or ObjectType.PlayerType && !(PugDatabase.HasComponent<CraftingCD>(objectData) && !PugDatabase.HasComponent<CattleCD>(objectData)))
 				return true;
 
-			if (PugDatabase.HasComponent<DontSerializeCD>(objectData) && !PugDatabase.HasComponent<TileCD>(objectData) && !PugDatabase.HasComponent<TileCD>(objectData) && objectInfo.objectType is not ObjectType.Creature or ObjectType.Critter)
+			if (PugDatabase.HasComponent<DontSerializeCD>(objectData) && !PugDatabase.HasComponent<TileCD>(objectData) && objectInfo.objectType is not ObjectType.Creature or ObjectType.Critter)
 				return true;
 			
-			var primaryPrefabEntity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, ClientWorldStateSystem.PugDatabaseBank, objectData.variation);
+			var primaryPrefabEntity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, ClientWorldStateSystem.PugDatabaseBank.databaseBankBlob, objectData.variation);
 			if (primaryPrefabEntity != Entity.Null) {
-				if (EntityUtility.IsComponentEnabled<IndestructibleCD>(primaryPrefabEntity, API.Client.World))
-					return true;
-				
-				if (EntityUtility.IsComponentEnabled<DontDropSelfCD>(primaryPrefabEntity, API.Client.World) && objectInfo.objectType != ObjectType.PlaceablePrefab && !PugDatabase.HasComponent<IndirectProjectileCD>(objectData) && !PugDatabase.HasComponent<WayPointCD>(objectData) && !PugDatabase.HasComponent<PortalCD>(objectData))
+				if ((EntityUtility.IsComponentEnabled<DontDropSelfCD>(primaryPrefabEntity, API.Client.World) && !PugDatabase.HasComponent<DiggableCD>(objectData)) && !PugDatabase.HasComponent<IsExplosiveCD>(objectData) && !PugDatabase.HasComponent<WayPointCD>(objectData) && !PugDatabase.HasComponent<PortalCD>(objectData))
 					return true;
 			}
 			
-			if (PugDatabase.HasComponent<AllowHealthRegenerationInCombatCD>(objectData) && PugDatabase.GetComponent<HealthCD>(objectData).maxHealth >= 9999999 && PugDatabase.GetComponent<HealthRegenerationCD>(objectData).NormalizedHealthIncreasePerFiveSeconds >= 1f)
+			if (IsIndestructible(objectData))
 				return true;
 
 			if (!ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, objectData).Any())
@@ -419,7 +428,7 @@ namespace ItemBrowser.Utilities {
 			if (PugDatabase.HasComponent<AllowHealthRegenerationInCombatCD>(objectData) && PugDatabase.GetComponent<HealthCD>(objectData).maxHealth >= 9999999 && PugDatabase.GetComponent<HealthRegenerationCD>(objectData).NormalizedHealthIncreasePerFiveSeconds >= 1f)
 				return true;
 			
-			if (PugDatabase.TryGetComponent<DamageReductionCD>(objectData, out var damageReductionCD) && damageReductionCD.reduction >= 9999999)
+			if (PugDatabase.TryGetComponent<DamageReductionCD>(objectData, out var damageReductionCD) && damageReductionCD.reduction >= 999999)
 				return true;
 			
 			if (PugDatabase.HasComponent<ProjectileCD>(objectData) || PugDatabase.HasComponent<MortarProjectileCD>(objectData))
@@ -428,7 +437,7 @@ namespace ItemBrowser.Utilities {
 			if (PugDatabase.TryGetComponent<SnakeMovementStateCD>(objectData, out var snakeMovementStateCD) && snakeMovementStateCD.tailObjectId == objectData.objectID)
 				return true;
 			
-			var primaryPrefabEntity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, ClientWorldStateSystem.PugDatabaseBank, objectData.variation);
+			var primaryPrefabEntity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, ClientWorldStateSystem.PugDatabaseBank.databaseBankBlob, objectData.variation);
 			if (primaryPrefabEntity != Entity.Null && EntityUtility.IsComponentEnabled<IndestructibleCD>(primaryPrefabEntity, API.Client.World))
 				return true;
 
@@ -553,11 +562,11 @@ namespace ItemBrowser.Utilities {
 			return GetBaseLevel(new ObjectData { objectID = id, variation = variation });
 		}
 
-		public static int GetArmor(ObjectDataCD objectData) {
+		public static float GetArmor(ObjectDataCD objectData) {
 			return ArmorValues.GetValueOrDefault(objectData);
 		}
 
-		public static int GetArmor(ObjectID id, int variation = 0) {
+		public static float GetArmor(ObjectID id, int variation = 0) {
 			return GetArmor(new ObjectData { objectID = id, variation = variation });
 		}
 
@@ -710,9 +719,9 @@ namespace ItemBrowser.Utilities {
 			var inventoryBufferLookup = querySystem.GetBufferLookup<InventoryBuffer>();
 			var containedObjectsBufferLookup = querySystem.GetBufferLookup<ContainedObjectsBuffer>();
 			
-			AddObjectsInEntity(player.entity, objects, ClientWorldStateSystem.PugDatabaseBank, inventoryBufferLookup, containedObjectsBufferLookup);
+			AddObjectsInEntity(player.entity, objects, ClientWorldStateSystem.PugDatabaseBank.databaseBankBlob, inventoryBufferLookup, containedObjectsBufferLookup);
 			foreach (var chest in ClientWorldStateSystem.NearbyChests)
-				AddObjectsInEntity(chest, objects, ClientWorldStateSystem.PugDatabaseBank, inventoryBufferLookup, containedObjectsBufferLookup);
+				AddObjectsInEntity(chest, objects, ClientWorldStateSystem.PugDatabaseBank.databaseBankBlob, inventoryBufferLookup, containedObjectsBufferLookup);
 
 			return objects;
 		}

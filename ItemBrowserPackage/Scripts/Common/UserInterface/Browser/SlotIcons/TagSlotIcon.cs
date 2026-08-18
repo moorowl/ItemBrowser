@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Common.Input;
+using ItemBrowser.Common.Options.DiscoveredObjects;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
-using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.SlotIcons {
 	public class TagSlotIcon : SlotIcon {
@@ -29,11 +29,11 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 		}
 		
 		public override bool HasBeenDiscovered(SlotUIBase slot, out float temporaryTimeRemaining) {
-			return DiscoveredTracker<ObjectDataCD>.HasBeenDiscovered(_objectsToDisplay.CurrentObjectData, out temporaryTimeRemaining);
+			return DiscoveredTracker.HasBeenDiscoveredInDiscoveryMode(_objectsToDisplay.CurrentObjectData, out temporaryTimeRemaining);
 		}
 
 		public override void SetTemporarilyDiscovered(SlotUIBase slot, float? duration = null) {
-			DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(_objectsToDisplay.CurrentObjectData, duration);
+			DiscoveredTracker.SetTemporarilyDiscovered(_objectsToDisplay.CurrentObjectData, duration);
 		}
 
 		public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {

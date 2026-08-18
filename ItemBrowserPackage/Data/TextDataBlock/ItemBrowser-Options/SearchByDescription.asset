@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 0
         m_high: 0
     title: Descriptions
-    description: 
+    description: Allows you to search for items/creatures by their descriptions
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Options
   references:

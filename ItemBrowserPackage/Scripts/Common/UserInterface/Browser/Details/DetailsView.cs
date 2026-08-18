@@ -4,10 +4,9 @@ using System.Linq;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.Options;
+using ItemBrowser.Common.Options.DiscoveredObjects;
 using ItemBrowser.Utilities;
-using ItemBrowser.Utilities.DataStructures;
 using ItemBrowser.Utilities.Extensions;
-using PugMod;
 using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
@@ -43,14 +42,13 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		protected override void OnHide() {
-			DiscoveredTracker<ObjectDataCD>.ClearTemporarilyDiscovered(SelectedObject);
+			DiscoveredTracker.ClearTemporarilyDiscovered(SelectedObject);
 		}
 
 		protected override void LateUpdate() {
 			base.LateUpdate();
 			
 			UpdateControllerInput();
-			AdjustWindowPosition();
 		}
 
 		private void UpdateControllerInput() {
@@ -62,14 +60,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				SwapToNextTab();
 			if (previousTabButton.canBeClicked && inputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.SELECT_PREVIOUS_MAP_MARKER))
 				SwapToPreviousTab();
+			
+			ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(ButtonHint.CycleSourceLeft);
+			ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(ButtonHint.CycleSourceRight);
 
 			if (Manager.ui.currentSelectedUIElement == null || Manager.ui.currentSelectedUIElement is BlockingUIElement)
 				TrySelectSelectedObjectSlot();
-		}
-		
-		private void AdjustWindowPosition() {
-			var shiftLayout = infoboxPanel.IsShowing && OptionsManager.Instance.PanelsShiftLayout;
-			transform.localPosition = new Vector3(Mathf.Round(shiftLayout ? -((infoboxPanel.WindowWidth / 2f) + (1f / 16f)) : 0f), transform.localPosition.y, transform.localPosition.z);
 		}
 		
 		public void TrySelectSelectedObjectSlot() {
@@ -78,6 +74,11 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 		
 		public bool PushState(DetailsState state, bool clearPreviousStates = false, bool force = false) {
+			state.ObjectData = new ObjectDataCD {
+				objectID = state.ObjectData.objectID,
+				variation = ObjectUtility.GetPrimaryVariation(state.ObjectData)
+			};
+			
 			if (!force && state.ObjectData.Equals(SelectedObject) && state.Tab == SelectedTab)
 				return false;
 
@@ -159,8 +160,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					GetTabView(tab).IsShowing = SelectedTab == tab;
 			}
 			
-			DiscoveredTracker<ObjectDataCD>.ClearTemporarilyDiscovered(previousState.ObjectData);
-			DiscoveredTracker<ObjectDataCD>.SetTemporarilyDiscovered(SelectedObject);
+			DiscoveredTracker.ClearTemporarilyDiscovered(previousState.ObjectData);
+			DiscoveredTracker.SetTemporarilyDiscovered(SelectedObject);
 			
 			GetTabView(SelectedTab).OnApplyState(_currentState, previousState);
 			infoboxPanel.OnApplyState(_currentState, previousState);
@@ -169,7 +170,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 		
 		public void ClearState() {
-			DiscoveredTracker<ObjectDataCD>.ClearTemporarilyDiscovered(_currentState.ObjectData);
+			DiscoveredTracker.ClearTemporarilyDiscovered(_currentState.ObjectData);
 			
 			_currentState = new DetailsState();
 			_previousStateStack.Clear();

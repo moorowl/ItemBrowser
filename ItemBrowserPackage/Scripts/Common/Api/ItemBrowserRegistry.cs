@@ -12,12 +12,15 @@ namespace ItemBrowser.Common.Api {
 		internal readonly HashSet<ObjectDataCD> Creatures = new();
 		internal readonly HashSet<ObjectDataCD> TechnicalObjects = new();
 		internal readonly HashSet<ObjectDataCD> DeprecatedObjects = new();
+		internal readonly HashSet<ObjectDataCD> ChecklistObjects = new();
 		
 		internal readonly List<(string Group, Filter Filter)> ItemFilters = new();
 		internal readonly List<(string Group, Filter Filter)> CreatureFilters = new();
+		internal readonly List<(string Group, Filter Filter)> ChecklistFilters = new();
 
 		internal readonly List<Sorter> ItemSorters = new();
 		internal readonly List<Sorter> CreatureSorters = new();
+		internal readonly List<Sorter> ChecklistSorters = new();
 
 		internal readonly List<ObjectEntryProvider> EntryProviders = new();
 		internal readonly Dictionary<Type, ObjectEntryDisplayBase> EntryToDisplayComponent = new();
@@ -38,6 +41,14 @@ namespace ItemBrowser.Common.Api {
 		
 		public void RemoveCreature(ObjectDataCD creature) {
 			Creatures.Remove(creature);
+		}
+		
+		public void AddToChecklist(ObjectDataCD objectData) {
+			ChecklistObjects.Add(objectData);
+		}
+		
+		public void RemoveFromChecklist(ObjectDataCD objectData) {
+			ChecklistObjects.Remove(objectData);
 		}
 		
 		public void AddTechnicalObject(ObjectDataCD objectData) {
@@ -70,23 +81,34 @@ namespace ItemBrowser.Common.Api {
 			foreach (var pugText in gameObject.GetComponentsInChildren<PugText>())
 				pugText.style.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
 
-			EntryToDisplayComponent.TryAdd(component.AssociatedEntry, component);
+			foreach (var type in API.Reflection.GetTypes(0)) {
+				if (component.AssociatedEntry.IsAssignableFrom(type)) {
+					EntryToDisplayComponent.TryAdd(type, component);
+					Logger.LogInfo($"{type.GetNameChecked()} -> {component.gameObject.name} display");
+				}
+			}
 		}
 		
-		public void AddItemFilter(string group, Filter filter) {
-			ItemFilters.Add((group, filter));
-		}
-
-		public void AddCreatureFilter(string group, Filter filter) {
-			CreatureFilters.Add((group, filter));
+		public void AddFilter(string group, Filter filter) {
+			if (filter.Scope.HasFlag(FilterAndSorterScope.Items))
+				ItemFilters.Add((group, filter));
+			
+			if (filter.Scope.HasFlag(FilterAndSorterScope.Creatures))
+				CreatureFilters.Add((group, filter));
+			
+			if (filter.Scope.HasFlag(FilterAndSorterScope.Checklist))
+				ChecklistFilters.Add((group, filter));
 		}
 		
-		public void AddItemSorter(Sorter sorter) {
-			ItemSorters.Add(sorter);
-		}
-
-		public void AddCreatureSorter(Sorter sorter) {
-			CreatureSorters.Add(sorter);
+		public void AddSorter(Sorter sorter) {
+			if (sorter.Scope.HasFlag(FilterAndSorterScope.Items))
+				ItemSorters.Add(sorter);
+			
+			if (sorter.Scope.HasFlag(FilterAndSorterScope.Creatures))
+				CreatureSorters.Add(sorter);
+			
+			if (sorter.Scope.HasFlag(FilterAndSorterScope.Checklist))
+				ChecklistSorters.Add(sorter);
 		}
 		
 		public void AddPooledElement(PooledElement element) {

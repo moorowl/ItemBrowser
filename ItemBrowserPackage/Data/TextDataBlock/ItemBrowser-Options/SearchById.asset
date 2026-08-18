@@ -137,7 +137,8 @@ MonoBehaviour:
         m_low: 0
         m_high: 0
     title: Internal name/index
-    description: 
+    description: Allows you to search for items/creatures by their internal name
+      or index
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Options
   references:

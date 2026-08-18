@@ -73,7 +73,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: Bolsa
-      description: "Itens equip\xE1veis no espa\xE7o de bolsa."
+      description: "{0} equip\xE1veis no espa\xE7o de bolsa."
     - m_language:
         m_address:
           m_low: 4644340974835219079
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 5072271549517713136
         m_high: -6896136573278429030
     title: Pouch
-    description: Items equipped in the pouch slots
+    description: '{0} equipped in the pouch slots'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

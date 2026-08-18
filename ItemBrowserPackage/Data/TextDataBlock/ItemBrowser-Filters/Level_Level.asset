@@ -55,7 +55,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Level {0}
-      description: Items with a base level of {0}
+      description: '{0} with a base level of {1}'
     - m_language:
         m_address:
           m_low: 8319415704751845611
@@ -103,7 +103,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: "N\xEDvel {0}"
-      description: "Itens com o n\xEDvel inicial {0}."
+      description: "{0} com o n\xEDvel inicial {1}."
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 5072271549517713136
         m_high: -6896136573278429030
     title: Level {0}
-    description: Items with a base level of {0}
+    description: '{0} with a base level of {1}'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

@@ -29,6 +29,9 @@ namespace ItemBrowser.Utilities.DataStructures {
 		}
 			
 		public void Update(SlotUIBase slot) {
+			if (_objectsToDisplay.Count < 1)
+				return;
+				
 			if (_lastCycledTime == 0f)
 				_lastCycledTime = Time.time;
 				

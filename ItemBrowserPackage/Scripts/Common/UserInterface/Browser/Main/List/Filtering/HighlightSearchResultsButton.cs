@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using ItemBrowser.Utilities;
-using Unity.Mathematics;
-using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class HighlightSearchResultsButton : ItemBrowserButton {
@@ -17,6 +15,23 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			base.OnLeftClicked(mod1, mod2);
 			
 			objectListView.HighlightSearchResults = !objectListView.HighlightSearchResults;
+		}
+		
+		public override TextAndFormatFields GetHoverTitle() {
+			return new TextAndFormatFields {
+				text = optionalTitle.mTerm
+			};
+		}
+
+		public override List<TextAndFormatFields> GetHoverDescription() {
+			var lines = new List<TextAndFormatFields> {
+				new() {
+					text = optionalHoverDesc.mTerm,
+					color = UserInterfaceUtility.DescriptionColor
+				}
+			};
+
+			return lines;
 		}
 	}
 }

@@ -5,36 +5,39 @@ using System.Linq;
 using HarmonyLib;
 using I2.Loc;
 using ItemBrowser.Common.Api.Entries;
-using ItemBrowser.Common.Options;
+using ItemBrowser.Common.Options.Discovery;
 using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
 using PugMod;
-using Unity.Entities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 // ReSharper disable InconsistentNaming
 
 namespace ItemBrowser.Common.Api {
+	[HarmonyPatch]
 	public static class ItemBrowserAPI {
 		private const string BrowserPrefabPath = "Assets/ItemBrowser/ItemBrowserPackage/Prefabs/Browser/ItemBrowserUI.prefab";
 		
 		public static ItemBrowserUI ItemBrowserUI { get; private set; }
-		public static string CurrentCharacterGuid { get; private set; }
 
 		internal static readonly ItemBrowserRegistry Registry = new();
 		internal static readonly ObjectEntryRegistry ObjectEntryRegistry = new();
 		private static readonly List<ItemBrowserPlugin> Plugins = new();
 
+		public static event Action OnBrowserInit;
+		public static event Action OnBrowserUpdate;
+		public static event Action OnBrowserUninit;
+		
 		private static bool _hasRegisteredPluginContent;
+		private static bool _hasRegisteredPluginContentLate;
 		private static string _lastLanguage;
-		private static bool _shouldDiscoverTilesAndObjects;
-
+	
 		public static void AddPlugin(ItemBrowserPlugin instance, IMod sourceMod) {
 			var modInfo = API.ModLoader.LoadedMods.First(modInfo => modInfo.Handlers.Contains(sourceMod));
 			instance.AssociatedLoadedMod = modInfo;
-			
-			Main.Log(nameof(ItemBrowserAPI), $"Added plugin {instance.GetType().GetNameChecked()} from {modInfo.Metadata.name}");
+
+			Logger.LogInfo($"Added plugin {instance.GetType().GetNameChecked()} from {modInfo.Metadata.name}");
 			Plugins.Add(instance);
 		}
 		
@@ -42,7 +45,7 @@ namespace ItemBrowser.Common.Api {
 			var prefab = Main.AssetBundle.LoadAsset<GameObject>(BrowserPrefabPath);
 			if (prefab == null)
 				throw new NullReferenceException($"Failed to load BrowserUI prefab at {BrowserPrefabPath}");
-			
+
 			ItemBrowserUI = Object.Instantiate(prefab, API.Rendering.UICamera.transform).GetComponent<ItemBrowserUI>();
 
 			if (!_hasRegisteredPluginContent) {
@@ -55,24 +58,25 @@ namespace ItemBrowser.Common.Api {
 			if (reloadWorldSpecificContent)
 				ReloadWorldSpecificContent();
 
-			_shouldDiscoverTilesAndObjects = false;
-			CurrentCharacterGuid = Manager.saves.GetCharacterGuid().ToString();
+			// to avoid lag spikes when opening for first time
+			ItemBrowserUI.IsShowing = true;
+			ItemBrowserUI.IsShowing = false;
+
+			if (reloadWorldSpecificContent)
+				SaveDebugData();
 			
-			if (Manager.load.IsScreenBlack())
-				Manager.main.StartCoroutine(TemporarilyShowBrowserToAvoidLagSpikes());
-			
-			API.Client.OnObjectSpawnedOnClient += DiscoverNearbyObjects;
+			OnBrowserInit?.Invoke();
 		}
 
 		private static void UninitBrowserUI() {
+			OnBrowserUninit?.Invoke();
+			
 			if (ItemBrowserUI != null)
 				Object.Destroy(ItemBrowserUI.gameObject);
-			
-			API.Client.OnObjectSpawnedOnClient -= DiscoverNearbyObjects;
 		}
 
 		private static void RegisterPluginContent() {
-			Main.Log(nameof(ItemBrowserAPI), "RegisterPluginContent");
+			Logger.LogInfo("Registered early/mid plugin content");
 			
 			foreach (var plugin in Plugins) {
 				if (plugin.AutomaticallyRegisterFromAssets)
@@ -86,8 +90,10 @@ namespace ItemBrowser.Common.Api {
 
 			foreach (var plugin in Plugins)
 				plugin.OnRegister(Registry);
+		}
 
-			DebugUtility.ExportData("NonPrimaryVariations", ObjectUtility.GetAllObjects()
+		private static void SaveDebugData() {
+			FileUtility.WriteData("Debug/NonPrimaryVariations", ObjectUtility.GetAllObjects()
 				.Where(objectData => !ObjectUtility.IsPrimaryVariation(objectData))
 				.OrderBy(objectData => (int) objectData.objectID * 10000 + objectData.variation)
 				.Select(objectData => new {
@@ -97,7 +103,7 @@ namespace ItemBrowser.Common.Api {
 				})
 				.ToList()
 			);
-			DebugUtility.ExportData("Indestructibles", ObjectUtility.GetAllObjects()
+			FileUtility.WriteData("Debug/Indestructibles", ObjectUtility.GetAllObjects()
 				.Where(ObjectUtility.IsIndestructible)
 				.OrderBy(objectData => (int) objectData.objectID * 10000 + objectData.variation)
 				.Select(objectData => new {
@@ -109,27 +115,28 @@ namespace ItemBrowser.Common.Api {
 		}
 		
 		private static void ReloadLanguageSpecificContent() {
-			Main.Log(nameof(ItemBrowserAPI), "ReloadLanguageSpecificContent");
+			Logger.LogInfo("Reloaded language-specific content");
 			
 			ObjectUtility.Bake();
 		}
 		
 		private static void ReloadWorldSpecificContent() {
-			Main.Log(nameof(ItemBrowserAPI), "ReloadWorldSpecificContent");
+			Logger.LogInfo("Reloaded world-specific content");
 			
 			StructureUtility.Bake();
 			
 			var startTime = DateTime.UtcNow;
 			ObjectEntryRegistry.RegisterFromProviders(Registry.EntryProviders);
-			Main.Log(nameof(ItemBrowserAPI), $"Registered entries from {Registry.EntryProviders.Count} providers in {(DateTime.UtcNow - startTime).TotalMilliseconds}ms");	
-		}
-		
-		private static IEnumerator TemporarilyShowBrowserToAvoidLagSpikes() {
-			ItemBrowserUI.IsShowing = true;
+			Logger.LogInfo($"Registered entries from {Registry.EntryProviders.Count} providers in {(DateTime.UtcNow - startTime).TotalMilliseconds}ms");
 
-			yield return new WaitForSeconds(0.1f);
+			if (!_hasRegisteredPluginContentLate) {
+				foreach (var plugin in Plugins)
+					plugin.OnLateRegister(Registry);
 
-			ItemBrowserUI.IsShowing = false;
+				_hasRegisteredPluginContentLate = true;
+				
+				Logger.LogInfo("Registered late plugin content");
+			}
 		}
 		
 		public static bool IsItemIndexed(ObjectDataCD objectData) {
@@ -149,6 +156,17 @@ namespace ItemBrowser.Common.Api {
 		
 		public static bool IsCreatureIndexed(ObjectID id, int variation = 0) {
 			return IsCreatureIndexed(new ObjectDataCD {
+				objectID = id,
+				variation = variation
+			});
+		}
+		
+		public static bool IsChecklistIndexed(ObjectDataCD objectData) {
+			return Registry.ChecklistObjects.Contains(objectData);
+		}
+		
+		public static bool IsChecklistIndexed(ObjectID id, int variation = 0) {
+			return IsChecklistIndexed(new ObjectDataCD {
 				objectID = id,
 				variation = variation
 			});
@@ -212,38 +230,6 @@ namespace ItemBrowser.Common.Api {
 				_lastLanguage = LocalizationManager.CurrentLanguage;	
 			}
 		}
-
-		private static void DiscoverNearbyTiles() {
-			if (!_shouldDiscoverTilesAndObjects || Time.frameCount % 60 != 0)
-				return;
-			
-			Manager.audio.ambientSoundsHandler.GetNearbyTileData(out var tileCounts).Complete();
-
-			foreach (var entry in tileCounts) {
-				if (entry.Value == 0)
-					continue;
-
-				if (TileUtility.TryGetAssociatedObject(entry.Key.TileType, entry.Key.Tileset, out var associatedObjectData) && associatedObjectData.objectID != ObjectID.None) {
-					associatedObjectData.variation = ObjectUtility.GetPrimaryVariation(associatedObjectData);
-							
-					if (Manager.saves.SetObjectAsDiscovered(associatedObjectData))
-						Main.Log(nameof(ItemBrowserAPI), $"Discovered tile {associatedObjectData.objectID}:{associatedObjectData.variation}");
-				}
-			}
-		}
-
-		private static void DiscoverNearbyObjects(Entity entity, EntityManager entityManager, GameObject graphicalObject) {
-			if (!_shouldDiscoverTilesAndObjects)
-				return;
-			
-			// Discover placed objects and creatures
-			var objectData = entityManager.GetComponentData<ObjectDataCD>(entity);
-			objectData.variation = 0;
-			objectData.amount = 0;
-
-			if (objectData.objectID != ObjectID.None)
-				Manager.saves.SetObjectAsDiscovered(objectData);
-		}
 		
 		private static IEnumerator InitBrowserOnWorldEnteredRoutine() {
 			// Have to wait for active content bundles to be synced
@@ -253,37 +239,34 @@ namespace ItemBrowser.Common.Api {
 		}
 		
 		[HarmonyPatch]
-		public static class Patches {
-			[HarmonyPatch(typeof(PlayerController), "ManagedUpdate")]
-			[HarmonyPostfix]
-			private static void PlayerController_ManagedUpdate(PlayerController __instance) {
-				if (!__instance.isLocal)
-					return;
+		[HarmonyPatch(typeof(PlayerController), "ManagedUpdate")]
+		[HarmonyPostfix]
+		private static void UpdateBrowserFromPlayer(PlayerController __instance) {
+			if (!__instance.isLocal || ItemBrowserUI == null)
+				return;
 
-				ReloadIfLanguageChanged();
-				DiscoverNearbyTiles();
+			ReloadIfLanguageChanged();
+				
+			OnBrowserUpdate?.Invoke();
+		}
 
-				_shouldDiscoverTilesAndObjects = OptionsManager.Instance.DiscoveryMode;
-			}
+		[HarmonyPatch(typeof(PlayerController), "OnOccupied")]
+		[HarmonyPostfix]
+		private static void InitBrowserFromPlayer(PlayerController __instance) {
+			if (!__instance.isLocal)
+				return;
 
-			[HarmonyPatch(typeof(PlayerController), "OnOccupied")]
-			[HarmonyPostfix]
-			private static void PlayerController_OnOccupied(PlayerController __instance) {
-				if (!__instance.isLocal)
-					return;
+			_lastLanguage = LocalizationManager.CurrentLanguage;
+			__instance.StartCoroutine(InitBrowserOnWorldEnteredRoutine());
+		}
 
-				_lastLanguage = LocalizationManager.CurrentLanguage;
-				__instance.StartCoroutine(InitBrowserOnWorldEnteredRoutine());
-			}
+		[HarmonyPatch(typeof(PlayerController), "OnFree")]
+		[HarmonyPostfix]
+		private static void UninitBrowserFromPlayer(PlayerController __instance) {
+			if (!__instance.isLocal)
+				return;
 
-			[HarmonyPatch(typeof(PlayerController), "OnFree")]
-			[HarmonyPostfix]
-			private static void PlayerController_OnFree(PlayerController __instance) {
-				if (!__instance.isLocal)
-					return;
-
-				UninitBrowserUI();
-			}
+			UninitBrowserUI();
 		}
 	}
 }

@@ -67,7 +67,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: In inventory
-      description: Items that are in your inventory or nearby chests
+      description: '{0} that are in your inventory or nearby chests'
     - m_language:
         m_address:
           m_low: 6040640903323332866
@@ -103,7 +103,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: Em posse
-      description: "Itens que est\xE3o no invent\xE1rio ou em ba\xFAs pr\xF3ximos."
+      description: "{0} que est\xE3o no invent\xE1rio ou em ba\xFAs pr\xF3ximos."
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 681352171529052915
         m_high: 2314507893210082619
     title: In inventory
-    description: Items that are in your inventory or nearby chests
+    description: '{0} that are in your inventory or nearby chests'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

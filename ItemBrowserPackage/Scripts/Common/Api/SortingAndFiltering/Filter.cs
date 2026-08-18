@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace ItemBrowser.Common.Api.SortingAndFiltering {
-	public class Filter {
+	public record Filter {
 		public delegate bool FilterDelegate(ObjectDataCD item);
 
 		public readonly string Name;
@@ -19,6 +19,7 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 		// Causes the item list to constantly refresh. Should be used if the function checks something that can change during gameplay
 		public bool FunctionIsDynamic { get; set; }
 		public bool CausesItemCraftingRequirementsToDisplay { get; set; }
+		public FilterAndSorterScope Scope { get; set; } = FilterAndSorterScope.All;
 		
 		public Filter(string name, string description = null) {
 			Name = name;

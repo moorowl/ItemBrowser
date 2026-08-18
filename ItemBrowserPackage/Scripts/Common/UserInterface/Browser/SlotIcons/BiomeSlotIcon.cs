@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ItemBrowser.Common.Options.DiscoveredObjects;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 
@@ -24,11 +25,11 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 		}
 
 		public override bool HasBeenDiscovered(SlotUIBase slot, out float temporaryTimeRemaining) {
-			return DiscoveredTracker<Biome>.HasBeenDiscovered(_biomes[_objectsToDisplay.CurrentObjectDataIndex], out temporaryTimeRemaining);
+			return DiscoveredTracker.HasBeenDiscoveredInDiscoveryMode(_biomes[_objectsToDisplay.CurrentObjectDataIndex], out temporaryTimeRemaining);
 		}
 
 		public override void SetTemporarilyDiscovered(SlotUIBase slot, float? duration = null) {
-			DiscoveredTracker<Biome>.SetTemporarilyDiscovered(_biomes[_objectsToDisplay.CurrentObjectDataIndex], duration);
+			DiscoveredTracker.SetTemporarilyDiscovered(_biomes[_objectsToDisplay.CurrentObjectDataIndex], duration);
 		}
 
 		public override TextAndFormatFields GetHoverTitle(SlotUIBase slot) {
@@ -39,7 +40,7 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 			}
 
 			return new TextAndFormatFields {
-				text = DiscoveredTracker<Biome>.HasBeenDiscovered(_biomes[0], out _) ? $"BiomeNames/{_biomes[0]}" : "ItemBrowser-General/Undiscovered"
+				text = DiscoveredTracker.HasBeenDiscoveredInDiscoveryMode(_biomes[0], out _) ? $"BiomeNames/{_biomes[0]}" : "ItemBrowser-General/Undiscovered"
 			};
 		}
 
@@ -52,7 +53,7 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 				lines.Add(new TextAndFormatFields {
 					text = "- {0}",
 					formatFields = new[] {
-						DiscoveredTracker<Biome>.HasBeenDiscovered(biome, out _) ? $"BiomeNames/{biome}" : "ItemBrowser-General/Undiscovered"
+						DiscoveredTracker.HasBeenDiscoveredInDiscoveryMode(biome, out _) ? $"BiomeNames/{biome}" : "ItemBrowser-General/Undiscovered"
 					},
 					dontLocalize = true,
 					color = GetBiomeIcon(biome) == _objectsToDisplay.CurrentObjectData.objectID ? UserInterfaceUtility.AlmostWhiteColor : UserInterfaceUtility.DescriptionColor

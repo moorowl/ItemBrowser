@@ -14,6 +14,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public SpriteRenderer[] icons;
 		public PugText[] symbols;
 		public ColorReplacer[] colorReplacers;
+		public string appliesToTerm;
+		public bool showCollectionProgress;
 		
 		public Filter Filter { get; set; }
 
@@ -28,6 +30,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				objectListView.OnFilterStateChanged(Filter);
 			}
 		}
+
+		private int _filteredCount;
+		private int _filteredCollectedCount;
+		private float _lastUpdatedCount;
 
 		public void SetFilter(Filter filter) {
 			Filter = filter;
@@ -113,11 +119,20 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		public override List<TextAndFormatFields> GetHoverDescription() {
+			// TODO this sucks but whatever
+			var descriptionFormatFields = new List<string> {
+				API.Localization.GetLocalizedTerm(appliesToTerm ?? "ItemBrowser-General/AppliesToItems")
+			};
+			if (Filter.DescriptionFormatFields != null) {
+				foreach (var term in Filter.DescriptionFormatFields)
+					descriptionFormatFields.Add(Filter.LocalizeDescriptionFormatFields ? API.Localization.GetLocalizedTerm(term) ?? term : term);
+			}
+
 			var lines = new List<TextAndFormatFields> {
 				new() {
 					text = Filter.Description,
-					formatFields = Filter.DescriptionFormatFields,
-					dontLocalizeFormatFields = !Filter.LocalizeDescriptionFormatFields,
+					formatFields = descriptionFormatFields.ToArray(),
+					dontLocalizeFormatFields = true,
 					color = UserInterfaceUtility.DescriptionColor
 				},
 				new() {
@@ -125,6 +140,28 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					color = GetStateColor(CurrentState)
 				}
 			};
+
+			if (showCollectionProgress) {
+				if (Time.time >= _lastUpdatedCount + 1f) {
+					var objectsInFilter = FilterResults.Create(Filter, objectListView.GetIncludedObjects()).Results;
+					_filteredCount = objectsInFilter.Count;
+					_filteredCollectedCount = objectsInFilter.Count(objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.Collected));
+
+					_lastUpdatedCount = Time.time;
+				}
+				
+				lines[^1].paddingBeneath = UserInterfaceUtility.DescriptionPadding;
+				lines.Add(new TextAndFormatFields {
+					text = $"ItemBrowser-General/CollectedCount",
+					formatFields = new[] {
+						_filteredCollectedCount.ToString(),
+						_filteredCount.ToString(),
+						((_filteredCount == 0 ? 0f : _filteredCollectedCount / (float) _filteredCount) * 100f).ToString("0.##")
+					},
+					dontLocalizeFormatFields = true,
+					color = UserInterfaceUtility.AlmostWhiteColor
+				});
+			}
 
 			return lines;
 		}

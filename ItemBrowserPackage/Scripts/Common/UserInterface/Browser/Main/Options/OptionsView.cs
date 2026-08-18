@@ -2,7 +2,6 @@
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Options;
 using ItemBrowser.Utilities;
-using PugMod;
 using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
@@ -136,6 +135,22 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.DiscoveryMode ? "Enabled" : "Disabled")}");
 			}
 		};
+		private readonly OptionsEntryType _showChecklist = new() {
+			OnLeftClick = () => {
+				OptionsManager.Instance.ShowChecklist = !OptionsManager.Instance.ShowChecklist;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.ShowChecklist ? "Enabled" : "Disabled")}");
+			}
+		};
+		private readonly OptionsEntryType _autoMarkDiscoveredAsCollected = new() {
+			OnLeftClick = () => {
+				OptionsManager.Instance.AutoMarkDiscoveredAsCollected = !OptionsManager.Instance.AutoMarkDiscoveredAsCollected;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.AutoMarkDiscoveredAsCollected ? "Enabled" : "Disabled")}");
+			}
+		};
 
 		public Transform scrollContainer;
 		public OptionsEntry entryTemplate;
@@ -177,8 +192,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			AddEntry("ItemBrowser-Options/ShowSourceMod", _showSourceMod);
 			AddEntry("ItemBrowser-Options/ShowButtonHints", _showButtonHints);
 			AddEntry("ItemBrowser-Options/ShowTechnicalInfo", _showTechnicalInfo);
-			AddEntry("ItemBrowser-Options/PanelsShiftLayout", _panelsShiftLayout);
-			
+
+			// Checklist
+			// AddSection("ItemBrowser-Options/Checklist");
+			// AddEntry("ItemBrowser-Options/ShowChecklist", _showChecklist);
+			// AddEntry("ItemBrowser-Options/AutoMarkDiscoveredAsCollected", _autoMarkDiscoveredAsCollected);
+
 			// Search
 			AddSection("ItemBrowser-Options/Search");
 			AddEntry("ItemBrowser-Options/SearchByDescription", _searchByDescription);

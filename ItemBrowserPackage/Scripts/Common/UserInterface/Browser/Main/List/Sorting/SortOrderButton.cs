@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ItemBrowser.Utilities;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class SortOrderButton : ItemBrowserButton {

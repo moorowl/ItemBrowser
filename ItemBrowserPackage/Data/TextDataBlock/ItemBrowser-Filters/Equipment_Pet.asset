@@ -73,7 +73,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: Mascote
-      description: "Itens equip\xE1veis no espa\xE7o de mascote."
+      description: "{0} equip\xE1veis no espa\xE7o de mascote."
     - m_language:
         m_address:
           m_low: 4644340974835219079
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 681352171529052915
         m_high: 2314507893210082619
     title: Pet
-    description: Items equipped in the pet slot
+    description: '{0} equipped in the pet slot'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:

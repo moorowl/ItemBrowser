@@ -13,7 +13,7 @@ namespace ItemBrowser.Common.Api {
 		public static BlobAssetReference<CustomSceneTableBlob> CustomSceneTable;
 		public static NativeHashSet<DataBlockAddress> ActivatedContentBundles;
 		public static BlobAssetReference<LootTableBankBlob> LootTableBank;
-		public static BlobAssetReference<PugDatabase.PugDatabaseBank> PugDatabaseBank;
+		public static PugDatabase.DatabaseBankCD PugDatabaseBank;
 		public static List<Entity> NearbyChests;
 		public static int PlayerCount;
 		public static bool HasRunAtLeastOnce;
@@ -47,7 +47,7 @@ namespace ItemBrowser.Common.Api {
 				WorldGenerationType = SystemAPI.GetSingleton<WorldGenerationTypeCD>().Value;
 				CustomSceneTable = SystemAPI.GetSingleton<CustomSceneTableCD>().Value;
 				LootTableBank = SystemAPI.GetSingleton<LootTableBankCD>().Value;
-				PugDatabaseBank = SystemAPI.GetSingleton<PugDatabase.DatabaseBankCD>().databaseBankBlob;
+				PugDatabaseBank = SystemAPI.GetSingleton<PugDatabase.DatabaseBankCD>();
 				PlayerCount = _playerCountQuery.CalculateEntityCount();
 				NearbyChests = Manager.main.player?.playerCraftingHandler?.GetNearbyChests() ?? new List<Entity>();
 
