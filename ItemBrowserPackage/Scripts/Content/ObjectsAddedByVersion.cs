@@ -476,7 +476,7 @@ namespace ItemBrowser.Content {
 			ObjectID.WhiteCherryTree
 		});
 		
-		public static readonly ObjectsAddedByVersion Ck055 = new("0.5.5", ObjectID.WhiteCherryFlower, new[] {
+		public static readonly ObjectsAddedByVersion Ck055 = new("0.5.5", ObjectID.EasterPillar, new[] {
 			ObjectID.EasterPillar,
 			ObjectID.EasterChickenHat,
 			ObjectID.EasterEggcellentHat,
@@ -838,17 +838,6 @@ namespace ItemBrowser.Content {
 		});
 		
 		public static readonly ObjectsAddedByVersion Ck073 = new("0.7.3", ObjectID.ChineseCoin, new[] {
-			ObjectID.ChineseKnot,
-			ObjectID.RedEnvelope,
-			ObjectID.ChineseWallLantern,
-			ObjectID.ChineseLantern,
-			ObjectID.WallDarkStoneBlock,
-			ObjectID.DragonMaskHelm,
-			ObjectID.ChineseGuardianLion,
-			ObjectID.ChineseCoin
-		});
-		
-		public static readonly ObjectsAddedByVersion Ck074 = new("0.7.4", ObjectID.ChineseCoin, new[] {
 			ObjectID.ChineseKnot,
 			ObjectID.RedEnvelope,
 			ObjectID.ChineseWallLantern,
@@ -1493,6 +1482,20 @@ namespace ItemBrowser.Content {
 		});
 		
 		public static readonly ObjectsAddedByVersion[] AllVersions = {
+			Ck044,
+			Ck046,
+			Ck047,
+			Ck05,
+			Ck051,
+			Ck052,
+			Ck053,
+			Ck054,
+			Ck055,
+			Ck06,
+			Ck07,
+			Ck071,
+			Ck072,
+			Ck073,
 			Ck10,
 			Ck101,
 			Ck102,
