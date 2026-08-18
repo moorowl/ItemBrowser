@@ -51,22 +51,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
-			// Materials header
-			description.AddLine(new TextAndFormatFields {
-				text = "ItemBrowser-ObjectEntryDescriptions/Trading_1",
-				color = UserInterfaceUtility.DescriptionColor
-			});
-			foreach (var craftingObject in GetRequiredObjectsToCraft(entry.Result)) {
-				description.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser-ObjectEntryDescriptions/Trading_2",
-					formatFields = new[] {
-						ObjectUtility.GetLocalizedDisplayNameOrDefault(craftingObject.objectID),
-						craftingObject.amount.ToString()
-					},
-					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtility.DescriptionColor
-				});
-			}
+			description.AddMaterialsFor(entry.Result.Id);
 		}
 		
 		private static List<CraftingObject> GetRequiredObjectsToCraft((ObjectID Id, int Variation) item) {

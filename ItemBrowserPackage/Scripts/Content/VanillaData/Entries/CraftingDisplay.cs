@@ -5,7 +5,6 @@ using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Common.UserInterface.Browser;
 using ItemBrowser.Utilities;
-using PugMod;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
 	public class CraftingDisplay : ObjectEntryDisplay<Crafting> {
@@ -69,38 +68,8 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				color = UserInterfaceUtility.DescriptionColor
 			});
 			
-			// "Materials" header
-			description.AddPadding();
-			description.AddLine(new TextAndFormatFields {
-				text = "ItemBrowser-ObjectEntryDescriptions/Crafting_1",
-				color = UserInterfaceUtility.DescriptionColor
-			});
-			
-			// Materials list
-			if (usesMaterialsWithTag != ObjectCategoryTag.None) {
-				description.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser-ObjectEntryDescriptions/Crafting_2",
-					formatFields = new[] {
-						API.Localization.GetLocalizedTerm($"ItemBrowser-ObjectCategoryNames/{usesMaterialsWithTag}"),
-						"1"
-					},
-					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtility.DescriptionColor
-				});
-			} else {
-				foreach (var craftingObject in materials) {
-					description.AddLine(new TextAndFormatFields {
-						text = "ItemBrowser-ObjectEntryDescriptions/Crafting_2",
-						formatFields = new[] {
-							ObjectUtility.GetLocalizedDisplayNameOrDefault(craftingObject.objectID),
-							craftingObject.amount.ToString()
-						},
-						dontLocalizeFormatFields = true,
-						color = UserInterfaceUtility.DescriptionColor
-					});
-				}	
-			}
-			
+			description.AddMaterialsFor(entry.Result.Id);
+
 			// Crafting time
 			if (entry.CraftingTime > 0) {
 				description.AddPadding();

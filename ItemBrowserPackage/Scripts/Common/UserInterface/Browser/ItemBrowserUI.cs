@@ -24,6 +24,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public DetailsView detailsView;
 		public Gradient temporarilyDiscoveredGradient;
 		public PugText[] buttonHintLines;
+		public ContextView contextView;
 
 		public ItemBrowserTheme CurrentTheme { get; private set; }
 		private List<ItemBrowserTheme> _allThemes;
@@ -36,6 +37,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private void Awake() {
 			gameObject.SetActive(false);
 			OnInit?.Invoke(this);
+			
+			contextView.IsShowing = false;
 
 			_allThemes = ItemBrowserTheme.GetAllThemesFromDataBlocks()
 				.OrderBy(theme => theme.DisplayOrder)

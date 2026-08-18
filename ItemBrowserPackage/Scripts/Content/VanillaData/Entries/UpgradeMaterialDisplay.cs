@@ -46,36 +46,24 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				dontLocalizeFormatFields = true,
 				color = UserInterfaceUtility.DescriptionColor
 			});
-			
-			// "Materials" header
-			description.AddPadding();
-			description.AddLine(new TextAndFormatFields {
-				text = "ItemBrowser-ObjectEntryDescriptions/UpgradeMaterial_1",
-				color = UserInterfaceUtility.DescriptionColor
-			});
-			
-			// Materials list
-			description.AddLine(new TextAndFormatFields {
-				text = "ItemBrowser-ObjectEntryDescriptions/UpgradeMaterial_2",
-				formatFields = new[] {
-					ObjectUtility.GetLocalizedDisplayNameOrDefault(entry.PrimaryMaterial.Id),
-					entry.PrimaryMaterial.Amount.ToString()
-				},
-				dontLocalizeFormatFields = true,
-				color = UserInterfaceUtility.DescriptionColor
-			});
-			
-			foreach (var material in entry.OtherMaterials) {
-				description.AddLine(new TextAndFormatFields {
-					text = "ItemBrowser-ObjectEntryDescriptions/UpgradeMaterial_2",
-					formatFields = new[] {
-						ObjectUtility.GetLocalizedDisplayNameOrDefault(material.Id),
-						material.Amount.ToString()
-					},
-					dontLocalizeFormatFields = true,
-					color = UserInterfaceUtility.DescriptionColor
-				});
+
+			description.AddMaterials(GetMaterialsAsObjectWithAmountArray(entry));
+		}
+
+		private static ObjectWithAmount[] GetMaterialsAsObjectWithAmountArray(UpgradeMaterial entry) {
+			var materials = new ObjectWithAmount[entry.OtherMaterials.Count + 1];
+			materials[0] = new ObjectWithAmount {
+				objectID = entry.PrimaryMaterial.Id,
+				amount = entry.PrimaryMaterial.Amount
+			};
+			for (var i = 0; i < entry.OtherMaterials.Count; i++) {
+				materials[i + 1] = new ObjectWithAmount {
+					objectID = entry.OtherMaterials[i].Id,
+					amount = entry.OtherMaterials[i].Amount
+				};
 			}
+
+			return materials;
 		}
 	}
 }

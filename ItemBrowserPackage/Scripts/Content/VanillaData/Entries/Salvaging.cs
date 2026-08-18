@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ItemBrowser.Common.Api.Entries;
-using ItemBrowser.Utilities;
 using Unity.Mathematics;
 using UnityEngine;
 

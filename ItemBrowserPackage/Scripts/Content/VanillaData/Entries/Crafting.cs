@@ -7,7 +7,6 @@ using ItemBrowser.Utilities.Extensions;
 using Pug.Properties;
 using Unity.Collections;
 using Unity.Mathematics;
-using Unity.Physics;
 using UnityEngine;
 
 namespace ItemBrowser.Content.VanillaData.Entries {
