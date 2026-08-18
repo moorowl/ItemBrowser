@@ -1,56 +1,23 @@
-﻿using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class ItemBrowserView : UIelement {
 		private bool _hasBeenShownBefore;
-		private bool _isShowing;
+
 		public bool IsShowing {
 			get => gameObject.activeSelf;
-			set {
-				gameObject.SetActive(value);
-				if (_isShowing == value)
-					return;
-				
-				if (value)
-					Show();
-				else
-					Hide();
-			}
+			set => gameObject.SetActive(value);
 		}
 
-		private ItemBrowserView[] _subViews;
-		private ItemBrowserView[] SubViews {
-			get {
-				return _subViews ??= GetComponentsInChildren<ItemBrowserView>(true).Where(subView => subView != this).ToArray();
-			}
-		}
-
-		private void Awake() {
-			_subViews = GetComponentsInChildren<ItemBrowserView>(true).Where(subView => subView != this).ToArray();
-		}
-
-		private void Show() {
+		protected virtual void OnEnable() {
 			OnShow(!_hasBeenShownBefore);
-			
-			foreach (var subView in SubViews) {
-				if (subView.gameObject.activeSelf && subView.IsShowing)
-					subView.Show();
-			}
-
-			_isShowing = true;
 			_hasBeenShownBefore = true;
 		}
 
-		private void Hide() {
-			OnHide();
-			
-			foreach (var subView in SubViews) {
-				if (subView.gameObject.activeSelf && !subView.IsShowing)
-					subView.Hide();
-			}
+		protected override void OnDisable() {
+			base.OnDisable();
 
-			_isShowing = false;
+			OnHide();
 		}
 		
 		protected virtual void OnShow(bool isFirstTimeShowing) { }
