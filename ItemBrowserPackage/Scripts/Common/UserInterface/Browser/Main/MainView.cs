@@ -48,6 +48,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				SwapToNextTab();
 			if (inputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.ZOOM_OUT_MAP) || inputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.SELECT_PREVIOUS_MAP_MARKER))
 				SwapToPreviousTab();
+			
+			ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(ButtonHint.CycleTabLeft);
+			ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(ButtonHint.CycleTabRight);
 		}
 		
 		private void TrySelectLastSelectedElement() {

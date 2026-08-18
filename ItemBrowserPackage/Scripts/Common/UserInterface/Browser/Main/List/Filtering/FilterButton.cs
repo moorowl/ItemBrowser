@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ItemBrowser.Common.Api.SortingAndFiltering;
+using ItemBrowser.Common.Options;
 using ItemBrowser.Utilities;
 using Pug.UnityExtensions;
+using PugMod;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class FilterButton : ItemBrowserButton {
@@ -97,6 +99,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			toggledBackground.color = GetStateColor(CurrentState).ColorWithNewAlpha(toggledBackground.color.a);
 			
 			base.LateUpdate();
+			
+			TryShowButtonHint(CurrentState == FilterState.Include ? ButtonHint.RemoveFilterPrimary : ButtonHint.IncludeFilter);
+			TryShowButtonHint(CurrentState == FilterState.Exclude ? ButtonHint.RemoveFilterSecondary : ButtonHint.ExcludeFilter);	
 		}
 		
 		public override TextAndFormatFields GetHoverTitle() {
@@ -121,9 +126,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				}
 			};
 
-			UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/" + (CurrentState == FilterState.Include ? "RemoveFilter" : "IncludeFilter"), "UIInteract");
-			UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/" + (CurrentState == FilterState.Exclude ? "RemoveFilter" : "ExcludeFilter"), "UISecondInteract");
-			
 			return lines;
 		}
 

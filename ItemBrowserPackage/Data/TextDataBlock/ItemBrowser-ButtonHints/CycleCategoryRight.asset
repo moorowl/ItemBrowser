@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: GiveOne
+  m_Name: CycleCategoryRight
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: 1595664885918467178
-    m_high: -9121936357058551512
+    m_low: -4759081704682665611
+    m_high: -7747343922279286629
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
     keys:
-    - m_low: 681352171529052915
-      m_high: 2314507893210082619
     - m_low: 8319415704751845611
       m_high: -6023042414290333943
     - m_low: -2957573344710624914
       m_high: 6297677370195620808
+    - m_low: 681352171529052915
+      m_high: 2314507893210082619
     - m_low: 6040640903323332866
       m_high: 4472318406855671320
     - m_low: 5554070574462901973
@@ -52,12 +52,6 @@ MonoBehaviour:
     values:
     - m_language:
         m_address:
-          m_low: 681352171529052915
-          m_high: 2314507893210082619
-      title: 'Give 1x: {0}'
-      description: 
-    - m_language:
-        m_address:
           m_low: 8319415704751845611
           m_high: -6023042414290333943
       title: 
@@ -67,6 +61,12 @@ MonoBehaviour:
           m_low: -2957573344710624914
           m_high: 6297677370195620808
       title: 
+      description: 
+    - m_language:
+        m_address:
+          m_low: 681352171529052915
+          m_high: 2314507893210082619
+      title: Next category
       description: 
     - m_language:
         m_address:
@@ -102,7 +102,7 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: 'Dar 1: {0}'
+      title: "Pr\xF3xima categoria"
       description: 
     - m_language:
         m_address:
@@ -132,9 +132,9 @@ MonoBehaviour:
   m_prevImportPrimaryEntry:
     m_language:
       m_address:
-        m_low: 681352171529052915
-        m_high: 2314507893210082619
-    title: 'Give 1x: {0}'
+        m_low: 0
+        m_high: 0
+    title: Next category
     description: 
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-ButtonHints

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ItemBrowser.Common.Api;
@@ -9,7 +8,6 @@ using ItemBrowser.Common.Options;
 using ItemBrowser.Common.UserInterface.SlotIcons;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
-using PlayerEquipment;
 using Pug.UnityExtensions;
 using PugMod;
 using UnityEngine;
@@ -96,8 +94,46 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				_wasDiscovered = isDiscovered;
 			}
 
-			if (IsSelected)
+			if (IsSelected) {
 				UpdateCheatObjectIn();
+
+				/*if (InputHelper.IsCopyPressed) {
+					ItemBrowserAPI.ItemBrowserUI.contextView.ShowWithOptions(new List<ContextOption> {
+						new("Name", () => { }),
+						new("Description", () => { }),
+						new("Internal index", () => { }),
+						new("Internal name", () => { }),
+						new("Authoring prefab", () => { }),
+						new("Graphical prefab", () => { }),
+					});
+				}*/
+				
+				var containedObjectData = Icon.ContainedObject.objectData;
+				if (isDiscovered) {
+					if (containedObjectData.objectID != ObjectID.None) {
+						var hasSources = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, containedObjectData).Any();
+						var hasUsages = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Usage, containedObjectData).Any();
+				
+						if (linksSource && hasSources)
+							TryShowButtonHint(ButtonHint.ViewSource);
+
+						if (linksUsage && hasUsages) {
+							if (!hasSources && !UserInterfaceUtility.IsUsingMouseAndKeyboard)
+								TryShowButtonHint(ButtonHint.ViewUsagePrimary);
+
+							TryShowButtonHint(ButtonHint.ViewUsageSecondary);
+						}
+
+						if (CanCheatInObjects)
+							TryShowButtonHint(ButtonHint.Give, GetAmountToPickUp(containedObjectData));
+
+						if (CanBeFavorited)
+							TryShowButtonHint(IsFavorited ? ButtonHint.RemoveFavorite : ButtonHint.AddFavorite);	
+					}
+				} else {
+					TryShowButtonHint(ButtonHint.DiscoverTemporarily);
+				}
+			}
 		}
 
 		private void UpdateFavoriting() {
@@ -120,12 +156,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				return;
 			
 			var player = Manager.main.player;
-			player.playerCommandSystem.CreateAndDropEntity(containedObjectData.objectID, player.WorldPosition, GetAmountToPickUp(containedObjectData).Amount, player.entity, containedObjectData.variation);
-			UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.AddObjectToInventory, this);
+			player.playerCommandSystem.CreateAndDropEntity(containedObjectData.objectID, player.WorldPosition, GetAmountToPickUp(containedObjectData), player.entity, containedObjectData.variation);
+			ItemBrowserSounds.PlayAddObjectToInventory(this);
 			PlayBumpAnimation();
 		}
 
-		public void PlayBumpAnimation() {
+		protected void PlayBumpAnimation() {
 			Manager.main.StartCoroutine(PlayBumpAnimationWhenShowing());
 		}
 
@@ -133,9 +169,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			yield return new WaitUntil(() => gameObject.activeInHierarchy);
 			SetAnimationTrigger(AnimID.scaleUp);
 		}
-
-		public virtual void OnFavoritedStateChanged() { }
-
+		
+		protected void TryShowButtonHint(ButtonHint hint, params object[] formatFields) {
+			if (IsSelected)
+				ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(hint, formatFields);
+		}
+		
 		public override void OnSelected() {
 			_scrollWindow?.MoveScrollToIncludePosition(localScrollPosition, _height * 1.25f);
 			OnSelectSlot();
@@ -154,7 +193,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			}
 
 			if (linksSource && !(_icon.ShowDetails(this, DetailsTab.Sources) || (!UserInterfaceUtility.IsUsingMouseAndKeyboard && _icon.ShowDetails(this, DetailsTab.Usages))))
-				UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.NoSourcesOrUsages, this);
+				ItemBrowserSounds.PlayError();
 		}
 
 		public override void OnRightClicked(bool mod1, bool mod2) {
@@ -166,7 +205,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			}
 
 			if (linksUsage && !_icon.ShowDetails(this, DetailsTab.Usages))
-				UserInterfaceUtility.PlaySound(UserInterfaceUtility.MenuSound.NoSourcesOrUsages, this);
+				ItemBrowserSounds.PlayError();
 		}
 
 		private void SetDiscoveredTemporarily() {
@@ -196,10 +235,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public override List<TextAndFormatFields> GetHoverDescription() {
 			var lines = _icon.GetHoverDescription(this) ?? new List<TextAndFormatFields>();
 
-			if (!HasBeenDiscovered) {
-				UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/DiscoverTemporarily", "UIInteract");
+			if (!HasBeenDiscovered)
 				return lines;
-			}
 
 			var containedObjectData = _icon.ContainedObject.objectData;
 			if (containedObjectData.objectID != ObjectID.None) {
@@ -227,27 +264,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 						color = ItemBrowserAPI.ItemBrowserUI.GetTemporarilyDiscoveredColor()
 					});
 				}
-			}
-
-			if (containedObjectData.objectID != ObjectID.None) {
-				var hasSources = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, containedObjectData).Any();
-				var hasUsages = ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Usage, containedObjectData).Any();
-				
-				if (linksSource && hasSources)
-					UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/ViewSource", "UIInteract");
-
-				if (linksUsage && hasUsages) {
-					if (!hasSources && !UserInterfaceUtility.IsUsingMouseAndKeyboard)
-						UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/ViewUsage", "UIInteract");
-
-					UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/ViewUsage", "UISecondInteract");
-				}
-
-				if (CanCheatInObjects)
-					UserInterfaceUtility.AppendButtonHint(lines, GetAmountToPickUp(containedObjectData).Hint, "ControlMapper/ItemBrowser-SpawnItem");
-				
-				if (CanBeFavorited)
-					UserInterfaceUtility.AppendButtonHint(lines, IsFavorited ? "ItemBrowser-ButtonHints/RemoveFavorite" : "ItemBrowser-ButtonHints/AddFavorite", "ToggleLocking");
 			}
 			
 			return lines;
@@ -304,7 +320,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			return SnapPoint.TryFindNextSnapPoint(this, dir)?.AttachedElement;
 		}
 
-		public void UpdateVisuals() {
+		public virtual void UpdateVisuals() {
 			background.sprite = rarityBorders[0];
 			if (favoritedBorder != null)
 				favoritedBorder.gameObject.SetActive(IsFavorited);
@@ -312,6 +328,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			var visualObject = Icon.VisualObject;
 			RenderAmountNumberRange(Icon.Amount);
 
+			icon.color = Color.white;
 			icon.transform.localScale = Vector3.one;
 			colorReplacer.UpdateColorReplacerFromObjectData(visualObject);
 			Manager.ui.ApplyAnyIconGradientMap(visualObject, icon);
@@ -332,19 +349,22 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (rarityIndex >= 0 && rarityIndex < rarityBorders.Length)
 				background.sprite = rarityBorders[rarityIndex];
 
+			if (ShouldIconBeHidden())
+				icon.color = new Color(0f, 0f, 0f, 0.55f);
+
 			var iconToUse = ObjectUtility.GetIcon(visualObject.objectData, preferSmallIcons);
-			if (iconToUse == null || !HasBeenDiscovered) {
+			if (iconToUse == null) {
 				SetMissingIcon(true);
 				return;
 			}
 
 			icon.sprite = iconToUse;
 			UserInterfaceUtility.ApplyObjectIconTransform(icon, objectInfo, 1f);
-
 			colorReplacer.UpdateColorReplacerFromObjectData(visualObject);
 			Manager.ui.ApplyAnyIconGradientMap(visualObject, icon);
+			UserInterfaceUtility.ApplyPetGradientMapBasedOnVariation(visualObject, icon);
 		}
-
+		
 		private void SetMissingIcon(bool isVisible) {
 			if (missingIcon != null)
 				missingIcon.gameObject.SetActive(isVisible);
@@ -355,7 +375,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (amountNumber == null)
 				return false;
 			
-			if ((amount.Max > 1 || alwaysShowAmount) && !AmountIsShownAsBar()) {
+			if ((amount.Max > 1 || alwaysShowAmount) && !AmountIsShownAsBar() && HasBeenDiscovered) {
 				var text = UserInterfaceUtility.FormatRange(amount);
 				
 				amountNumber.gameObject.SetActive(true);
@@ -375,22 +395,22 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			return false;
 		}
 
-		private static (int Amount, string Hint) GetAmountToPickUp(ObjectDataCD objectData) {
-			const string giveStackHint = "ItemBrowser-ButtonHints/GiveStack";
-			const string giveTenHint = "ItemBrowser-ButtonHints/GiveTen";
-			const string giveOneHint = "ItemBrowser-ButtonHints/GiveOne";
-			
+		protected virtual bool ShouldIconBeHidden() {
+			return !HasBeenDiscovered;
+		}
+
+		private static int GetAmountToPickUp(ObjectDataCD objectData) {
 			var isStackable = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation) is {
 				isStackable: true
 			};
 
 			if (isStackable && InputHelper.IsPickUpStackHeld)
-				return (Constants.inventoryMaxAmountPerSlot, giveStackHint);
+				return Constants.inventoryMaxAmountPerSlot;
 
 			if (isStackable && InputHelper.IsPickUpTenHeld)
-				return (10, giveTenHint);
+				return 10;
 
-			return (1, giveOneHint);
+			return 1;
 		}
 	}
 }

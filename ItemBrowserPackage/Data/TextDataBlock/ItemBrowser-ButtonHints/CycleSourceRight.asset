@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: GiveStack
+  m_Name: CycleSourceRight
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: 5027388175458095634
-    m_high: 724135653207828283
+    m_low: 8080720659612000581
+    m_high: -1308207331038649334
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
@@ -66,7 +66,7 @@ MonoBehaviour:
         m_address:
           m_low: 681352171529052915
           m_high: 2314507893210082619
-      title: 'Give 9999x: {0}'
+      title: Next source
       description: 
     - m_language:
         m_address:
@@ -102,7 +102,7 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: 'Dar 9999: {0}'
+      title: "Pr\xF3xima fonte"
       description: 
     - m_language:
         m_address:
@@ -132,9 +132,9 @@ MonoBehaviour:
   m_prevImportPrimaryEntry:
     m_language:
       m_address:
-        m_low: 681352171529052915
-        m_high: 2314507893210082619
-    title: 'Give 9999x: {0}'
+        m_low: 0
+        m_high: 0
+    title: Next source
     description: 
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-ButtonHints

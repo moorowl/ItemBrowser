@@ -36,6 +36,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			IsToggled = entriesView.SelectedCategory == _categoryIndex;
 			
 			base.LateUpdate();
+			
+			if (!UserInterfaceUtility.IsUsingMouseAndKeyboard)
+				TryShowButtonHint(style == ButtonStyle.CycleRight ? ButtonHint.CycleTabRight : ButtonHint.CycleTabLeft);
 		}
 
 		public override void OnLeftClicked(bool mod1, bool mod2) {
@@ -85,9 +88,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 						color = UserInterfaceUtility.DescriptionColor
 					}
 				};
-
-				if (!UserInterfaceUtility.IsUsingMouseAndKeyboard)
-					UserInterfaceUtility.AppendButtonHint(lines, "ShortCutPC", style == ButtonStyle.CycleRight ? "ZoomInMap" : "ZoomOutMap");
 
 				return lines;
 			}

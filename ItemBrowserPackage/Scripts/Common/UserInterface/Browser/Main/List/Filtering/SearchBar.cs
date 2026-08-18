@@ -1,7 +1,10 @@
 ﻿using System.Collections;
+using System.Linq;
+using ItemBrowser.Common.Api;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using Pug.UnityExtensions;
+using PugMod;
 using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
@@ -10,9 +13,14 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		
 		public ObjectListView objectListView;
 		public GameObject highlightBorder;
+		public SpriteMask mask;
 		
 		private float _lastLeftClicked;
 		private bool _oldHighlightSearchResults;
+		private string _lastSearchTerm;
+
+		private bool CanHighlightSearchResults => !string.IsNullOrWhiteSpace(GetInputText());
+		private bool CanClearSearchResults => GetInputText().Length > 0;
 
 		public override void OnLeftClicked(bool mod1, bool mod2) {
 			if (UserInterfaceUtility.IsUsingMouseAndKeyboard)
@@ -20,7 +28,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		public override void OnRightClicked(bool mod1, bool mod2) {
-			if (UserInterfaceUtility.IsUsingMouseAndKeyboard) {
+			if (UserInterfaceUtility.IsUsingMouseAndKeyboard && CanClearSearchResults) {
 				ResetText();
 				StartCoroutine(ReselectInputField());
 			}
@@ -39,6 +47,19 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			DeselectIfUsingController();
 			UpdateHighlightSearchResultsInput();
 			UpdateVisuals();
+
+			if (selectedMarker != null && selectedMarker.activeSelf) {
+				if (CanClearSearchResults)
+					ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(ButtonHint.SearchClear);
+				
+				if (CanHighlightSearchResults)
+					ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(ButtonHint.SearchHighlight);
+			}
+
+			if (_lastSearchTerm != GetInputText()) {
+				AdjustSearchFieldPosition();
+				_lastSearchTerm = GetInputText();
+			}
 		}
 
 		private void UpdateVisuals() {
@@ -47,9 +68,19 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				_oldHighlightSearchResults = objectListView.HighlightSearchResults;
 			}
 		}
+		
+		private void AdjustSearchFieldPosition() {
+			var maskUnitWidth = mask.transform.localScale.x / 16f;
+			var searchInputPosition = pugText.transform.localPosition;
+			searchInputPosition.x = -1f * Mathf.Max(0f, pugText.dimensions.width - maskUnitWidth);
+			pugText.transform.localPosition = searchInputPosition;
+
+			var member = typeof(TextInputField).GetMembersChecked().FirstOrDefault(x => x.GetNameChecked() == "Update");
+			API.Reflection.Invoke(member, this);
+		}
 
 		private void UpdateHighlightSearchResultsInput() {
-			if (string.IsNullOrWhiteSpace(GetInputText())) {
+			if (!CanHighlightSearchResults) {
 				objectListView.HighlightSearchResults = false;
 				return;
 			}

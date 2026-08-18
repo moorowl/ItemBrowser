@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: RemoveFavorite
+  m_Name: SearchHighlight
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: 3059348519837861324
-    m_high: 8993261555535806489
+    m_low: -1075172628847398009
+    m_high: 4949830074913862827
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
@@ -66,7 +66,7 @@ MonoBehaviour:
         m_address:
           m_low: 681352171529052915
           m_high: 2314507893210082619
-      title: Remove from favorites
+      title: Highlight search
       description: 
     - m_language:
         m_address:
@@ -102,7 +102,7 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: Remover dos favoritos
+      title: Pesquisa por destaque
       description: 
     - m_language:
         m_address:
@@ -134,7 +134,7 @@ MonoBehaviour:
       m_address:
         m_low: 0
         m_high: 0
-    title: Remove from favorites
+    title: Highlight search
     description: 
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-ButtonHints

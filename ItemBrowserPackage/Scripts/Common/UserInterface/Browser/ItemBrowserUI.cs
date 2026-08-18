@@ -24,10 +24,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public MainView mainView;
 		public DetailsView detailsView;
 		public Gradient temporarilyDiscoveredGradient;
+		public PugText[] buttonHintLines;
 
 		public ItemBrowserTheme CurrentTheme { get; private set; }
 		private List<ItemBrowserTheme> _allThemes;
 		private readonly List<ThemedRenderer> _themedRenderers = new();
+		private readonly List<string> _activeButtonHints = new();
 
 		private float _timeToAutoUpdateObjectsToHighlightInInventory;
 		public readonly HashSet<ObjectID> ObjectsToHighlightInInventory = new();
@@ -106,6 +108,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			HideMapIfShowing();
 			PlayToggleSound();
 			
+			_activeButtonHints.Clear();
+			UpdateButtonHints();
+			
 			Manager.input.SetActiveInputField(null);
 		}
 
@@ -165,10 +170,17 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				IsShowing = false;
 			}
 		}
+
+		public void ShowButtonHint(ButtonHint hint, object[] formatFields = null) {
+			var localizedHint = hint.GetLocalizedDescription(formatFields);
+			if (!_activeButtonHints.Contains(localizedHint))
+				_activeButtonHints.Add(localizedHint);
+		}
 		
 		protected override void LateUpdate() {
 			UpdateScale();
 			UpdateGoBack();
+			UpdateButtonHints();
 			HideMapIfShowing();
 
 			if (Time.time >= _timeToAutoUpdateObjectsToHighlightInInventory) {
@@ -178,6 +190,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 			if (Manager.main.player != null && Manager.main.player.guestMode)
 				IsShowing = false;
+
+			if (Manager.ui.chatWindow.inputFieldPrompt.gameObject.activeSelf)
+				Manager.ui.chatWindow.Deactivate(false);
 			
 			base.LateUpdate();
 		}
@@ -193,6 +208,21 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 
 			if (Manager.input.IsMenuStartButtonDown() || Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.CANCEL))
 				GoBack();
+		}
+
+		private void UpdateButtonHints() {
+			foreach (var buttonHintLine in buttonHintLines)
+				buttonHintLine.gameObject.SetActive(false);
+
+			for (var i = 0; i < _activeButtonHints.Count; i++) {
+				if (i >= _activeButtonHints.Count)
+					break;
+				
+				buttonHintLines[i].gameObject.SetActive(true);
+				buttonHintLines[i].Render(_activeButtonHints[_activeButtonHints.Count - 1 - i]);
+			}
+
+			_activeButtonHints.Clear();
 		}
 		
 		private void UpdateObjectsToHighlightInInventory() {
@@ -273,6 +303,13 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				// Force mouse to appear (for controllers)
 				if (ItemBrowserAPI.ItemBrowserUI != null && ItemBrowserAPI.ItemBrowserUI.IsShowing)
 					__result = true;
+			}
+			
+			[HarmonyPatch(typeof(InGameButtonHintsUI), "LateUpdate")]
+			[HarmonyPostfix]
+			private static void InGameButtonHintsUI_LateUpdate(InGameButtonHintsUI __instance) {
+				if (ItemBrowserAPI.ItemBrowserUI != null && ItemBrowserAPI.ItemBrowserUI.IsShowing)
+					__instance.container.gameObject.SetActive(false);
 			}
 			
 			[HarmonyPatch(typeof(UIMouse), "UpdateMouseMode")]

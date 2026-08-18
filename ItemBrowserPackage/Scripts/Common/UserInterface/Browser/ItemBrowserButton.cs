@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ItemBrowser.Common.Api;
 using ItemBrowser.Utilities;
 using ItemBrowser.Utilities.DataStructures;
 using Pug.UnityExtensions;
@@ -56,6 +56,11 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		protected void TryPlayClickSound() {
 			if (canBeClicked && playClickSoundEffect)
 				AudioManager.SfxUI(Manager.audio.InspectorFriendlySfxIDToSfxID(clickSoundEffect), clickSoundPitch, false, 1f, 0f);
+		}
+
+		protected void TryShowButtonHint(ButtonHint hint, params object[] formatFields) {
+			if (IsSelected)
+				ItemBrowserAPI.ItemBrowserUI.ShowButtonHint(hint, formatFields);
 		}
 
 		protected override void LateUpdate() {

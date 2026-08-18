@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using ItemBrowser.Common.UserInterface.SlotIcons;
-using ItemBrowser.Utilities;
-using UnityEngine;
+﻿using ItemBrowser.Common.UserInterface.SlotIcons;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class SelectedObjectSlot : ItemBrowserSlot {
@@ -16,11 +12,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			itemBrowserUI.GoBack();
 		}
 
-		public override List<TextAndFormatFields> GetHoverDescription() {
-			var lines = base.GetHoverDescription() ?? new List<TextAndFormatFields>();
-			UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/GoBack", "UIInteract");
-
-			return lines;
+		protected override void LateUpdate() {
+			base.LateUpdate();
+			
+			TryShowButtonHint(ButtonHint.GoBack);
 		}
 	}
 }

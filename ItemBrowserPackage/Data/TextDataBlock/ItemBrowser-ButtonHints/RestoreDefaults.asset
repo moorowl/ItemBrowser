@@ -54,7 +54,7 @@ MonoBehaviour:
         m_address:
           m_low: 681352171529052915
           m_high: 2314507893210082619
-      title: 'Restore defaults: {0}'
+      title: Restore defaults
       description: 
     - m_language:
         m_address:
@@ -102,7 +102,7 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: "Restaurar padr\xF5es: {0}"
+      title: "Restaurar padr\xF5es"
       description: 
     - m_language:
         m_address:
@@ -134,7 +134,7 @@ MonoBehaviour:
       m_address:
         m_low: 5072271549517713136
         m_high: -6896136573278429030
-    title: 'Restore defaults: {0}'
+    title: Restore defaults
     description: 
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-ButtonHints

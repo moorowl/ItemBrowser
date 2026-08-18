@@ -1,11 +1,17 @@
 ﻿using System.Collections.Generic;
 using ItemBrowser.Utilities;
-using UnityEngine.Serialization;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
 	public class ToggleFiltersButton : ItemBrowserButton {
 		public ObjectListView objectListView;
 		public FiltersPanel filtersPanel;
+
+		protected override void LateUpdate() {
+			base.LateUpdate();
+			
+			if (filtersPanel.HasBeenModified)
+				TryShowButtonHint(ButtonHint.RestoreDefaults);
+		}
 
 		public override TextAndFormatFields GetHoverTitle() {
 			return new TextAndFormatFields {
@@ -34,9 +40,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				}
 			};
 
-			if (filtersPanel.HasBeenModified)
-				UserInterfaceUtility.AppendButtonHint(lines, "ItemBrowser-ButtonHints/RestoreDefaults", "UISecondInteract");
-			
 			return lines;
 		}
 	}
