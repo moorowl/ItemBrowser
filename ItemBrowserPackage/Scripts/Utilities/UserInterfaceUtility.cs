@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ItemBrowser.Common.Api;
 using PugMod;
 using UnityEngine;
 
@@ -109,6 +110,23 @@ namespace ItemBrowser.Utilities {
 				sr.material.EnableKeyword("USE_GRADIENT_MAP");
 				sr.material.SetTexture(GradientMap, gradientMapTexture);
 			}
+		}
+
+		public static void OpenSkillPage(SkillID skill) {
+			ItemBrowserAPI.ItemBrowserUI.IsShowing = false;
+
+			if (!Manager.ui.characterWindow.isShowing) {
+				Manager.ui.HideAllInventoryAndCraftingUI();
+				Manager.ui.OnPlayerInventoryOpen();
+			}
+			
+			if (!Manager.ui.characterWindow.isShowing)
+				Manager.ui.characterWindow.Show();
+			Manager.ui.characterWindow.ShowSkillsWindow();
+
+			var talentTreeUI = Manager.ui.characterWindow.skillsWindow.GetComponentInChildren<SkillTalentTreeUI>();
+			talentTreeUI.root.SetActive(false);
+			talentTreeUI.ToggleTalentTree(skill);
 		}
 	}
 }

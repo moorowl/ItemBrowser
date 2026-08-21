@@ -39,5 +39,9 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				color = UserInterfaceUtility.DescriptionColor
 			});	
 		}
+		
+		public static void OpenCraftingSkillPage() {
+			UserInterfaceUtility.OpenSkillPage(SkillID.Crafting);
+		}
 	}
 }
