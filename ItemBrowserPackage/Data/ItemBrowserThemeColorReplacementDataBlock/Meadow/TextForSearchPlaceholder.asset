@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 845fe13b9ab74d33ab51a2ac54962ffe, type: 3}
+  m_Name: TextForSearchPlaceholder
+  m_EditorClassIdentifier: 
+  m_overload:
+    m_address:
+      m_low: 0
+      m_high: 0
+  m_address:
+    m_low: 4577061954718486862
+    m_high: -8909173078131100885
+  m_dynamicCollections:
+    m_list: []
+  theme:
+    m_address:
+      m_low: -9005980508295957540
+      m_high: -152623098679890440
+  colorVariable:
+    m_address:
+      m_low: 5558699319540295649
+      m_high: 5370917476460309723
+  colorReplacement: {r: 0.81960785, g: 0.58431375, b: 0.45882353, a: 0}
+  references:
+    version: 2
+    RefIds: []
