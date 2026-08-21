@@ -174,6 +174,9 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		public void ShowButtonHint(ButtonHint hint, object[] formatFields = null) {
+			if (!OptionsManager.Instance.ShowButtonHints)
+				return;
+			
 			var localizedHint = hint.GetLocalizedDescription(formatFields);
 			if (!_activeButtonHints.Contains(localizedHint))
 				_activeButtonHints.Add(localizedHint);
