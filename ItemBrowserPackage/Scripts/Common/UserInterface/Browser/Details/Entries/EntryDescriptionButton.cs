@@ -157,7 +157,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		public override List<PugDatabase.MaterialInfo> GetRequiredMaterials(bool isRepairing, bool isReinforcing) {
-			return _materials;
+			return CanShowDescription(out _) ? _materials : base.GetRequiredMaterials(isRepairing, isReinforcing);
 		}
 
 		public override void OnLeftClicked(bool mod1, bool mod2) {

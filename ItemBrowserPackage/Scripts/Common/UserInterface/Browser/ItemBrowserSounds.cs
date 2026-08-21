@@ -1,3 +1,4 @@
+using ItemBrowser.Utilities;
 using UnityEngine;
 
 namespace ItemBrowser.Common.UserInterface.Browser {
@@ -57,6 +58,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					AudioManager.Sfx(SfxTableID.inventorySFXRepairOn, source.transform.position, volumeMultiplier: 0.1f);
 					break;
 			}
+		}
+
+		public static void PlayInteract(Component source, ObjectDataCD objectData) {
+			var soundId = ObjectUtility.GetInteractSoundId(objectData);
+			if (soundId != 0)
+				AudioManager.Sfx(soundId, source.transform.position, volumeMultiplier: 0.3f);
 		}
 	}
 }

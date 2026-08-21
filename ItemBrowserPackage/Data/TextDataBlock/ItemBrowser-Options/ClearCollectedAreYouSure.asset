@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: ShowTileGrid
+  m_Name: ClearCollectedAreYouSure
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: 6112717077306146757
-    m_high: 4826810559939521690
+    m_low: 7941180649627069962
+    m_high: -1560512287932855877
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
@@ -66,8 +66,8 @@ MonoBehaviour:
         m_address:
           m_low: 681352171529052915
           m_high: 2314507893210082619
-      title: Show tile grid
-      description: Displays a grid that shows the borders of tiles and spawn cells
+      title: Clear all collected items? This cannot be undone.
+      description: 
     - m_language:
         m_address:
           m_low: 6040640903323332866
@@ -102,9 +102,9 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: Mostrar grade de ladrilhos
-      description: "Mostra uma grade que representa as bordas dos ladrilhos e c\xE9lulas
-        de gera\xE7\xE3o de criaturas"
+      title: "Deseja excluir todos os itens coletados? Essa a\xE7\xE3o n\xE3o pode
+        ser revertida."
+      description: 
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -135,8 +135,8 @@ MonoBehaviour:
       m_address:
         m_low: 681352171529052915
         m_high: 2314507893210082619
-    title: Show tile grid
-    description: Displays a grid that shows the borders of tiles and spawn cells
+    title: Clear all collected items? This cannot be undone.
+    description: 
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Options
   references:

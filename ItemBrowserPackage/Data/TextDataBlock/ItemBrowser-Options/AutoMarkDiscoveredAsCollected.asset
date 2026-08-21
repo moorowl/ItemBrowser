@@ -67,7 +67,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Auto mark as collected
-      description: Automatically marks picked up items as collected.
+      description: Automatically marks picked up items as collected
     - m_language:
         m_address:
           m_low: 6040640903323332866
@@ -103,7 +103,7 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: "Marca autom\xE1tica coletada"
-      description: Marca automaticamente os itens retirados como recolhidos.
+      description: Marca automaticamente os itens retirados como recolhidos
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -135,7 +135,7 @@ MonoBehaviour:
         m_low: 0
         m_high: 0
     title: Auto mark as collected
-    description: Automatically marks picked up items as collected.
+    description: Automatically marks picked up items as collected
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Options
   references:

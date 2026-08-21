@@ -535,12 +535,12 @@ namespace ItemBrowser.Content.VanillaData {
 				FunctionIsDynamic = true,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist
 			});
-			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Collected") {
+			/*registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Collected") {
 				Icon = ObjectID.CritterCatcher,
 				Function = objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.Collected),
 				FunctionIsDynamic = true,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist
-			});
+			});*/
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_ExcludedFromChecklist") {
 				Icon = ObjectID.WallExplosiveBlock,
 				Function = objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.ExcludeFromChecklist),

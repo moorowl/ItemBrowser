@@ -55,7 +55,7 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Show button hints
-      description: Displays button hints on certain UI elements
+      description: Displays button hints for certain UI elements
     - m_language:
         m_address:
           m_low: 8319415704751845611
@@ -104,7 +104,7 @@ MonoBehaviour:
           m_high: 4794823751170882376
       title: "Mostrar dicas de bot\xE3o"
       description: "Mostra quais bot\xF5es devem ser pressionados em certos elementos
-        de interface."
+        de interface"
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -136,7 +136,7 @@ MonoBehaviour:
         m_low: 5072271549517713136
         m_high: -6896136573278429030
     title: Show button hints
-    description: Displays button hints on certain UI elements
+    description: Displays button hints for certain UI elements
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Options
   references:

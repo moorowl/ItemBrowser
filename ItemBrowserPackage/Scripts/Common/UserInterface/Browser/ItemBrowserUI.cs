@@ -133,6 +133,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			detailsView.IsShowing = true;
 			
 			ItemBrowserSounds.PlayGenericOpen();
+			// ItemBrowserSounds.PlayInteract(Manager.ui.currentSelectedUIElement, objectData);
 
 			return true;
 		}
@@ -149,6 +150,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			detailsView.IsShowing = true;
 			
 			ItemBrowserSounds.PlayGenericOpen();
+			// ItemBrowserSounds.PlayInteract(Manager.ui.currentSelectedUIElement, state.ObjectData);
 
 			return true;
 		}

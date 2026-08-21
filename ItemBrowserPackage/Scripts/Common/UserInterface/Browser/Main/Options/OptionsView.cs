@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Options;
+using ItemBrowser.Common.Options.Discovery;
 using ItemBrowser.Utilities;
 using UnityEngine;
 
@@ -137,9 +138,49 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private readonly OptionsEntryType _autoMarkDiscoveredAsCollected = new() {
 			OnLeftClick = () => {
 				OptionsManager.Instance.AutoMarkDiscoveredAsCollected = !OptionsManager.Instance.AutoMarkDiscoveredAsCollected;
+				DiscoverTilesAndObjects.AddAlreadyDiscoveredObjects();
 			},
 			UpdateValueText = (valueText, _) => {
 				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.AutoMarkDiscoveredAsCollected ? "Enabled" : "Disabled")}");
+			}
+		};
+		private readonly OptionsEntryType _hideNotCollectedIcons = new() {
+			OnLeftClick = () => {
+				OptionsManager.Instance.HideNotCollectedIcons = !OptionsManager.Instance.HideNotCollectedIcons;
+			},
+			UpdateValueText = (valueText, _) => {
+				valueText.Render($"ItemBrowser-Options/{(OptionsManager.Instance.HideNotCollectedIcons ? "WhenCollected" : "Always")}");
+			}
+		};
+		private readonly OptionsEntryType _clearCollected = new() {
+			OnLeftClick = () => {
+				Manager.menu.centerPopUpText.StartNewDisplaySequence(
+					"ItemBrowser-Options/ClearCollectedAreYouSure",
+					null,
+					menuInputCooldown: true,
+					fadeTime: 0f,
+					staticTime: 1.5f,
+					useUnscaledTime: true,
+					yPosition: 0f,
+					textBackgroundAlpha: 1f,
+					localize: true,
+					TextManager.FontFace.boldMedium,
+					response => {
+						if (response.IsCancel)
+							return;
+
+						OptionsManager.Instance.RemoveTagFromAll(ObjectTagType.Uncollected);
+						OptionsManager.Instance.RemoveTagFromAll(ObjectTagType.Collected);
+
+						DiscoverTilesAndObjects.AddAlreadyDiscoveredObjects();
+					},
+					options: new List<string> { "cancelDialogue", "yes" },
+					minWidth: 10f,
+					backgroundAlpha: 0.9f,
+					pauseGame: false
+				);
+				Manager.ui.DeselectAnySelectedUIElement();
+				Manager.ui.mouse.UpdateMouseUIInput(out _, out _);
 			}
 		};
 
@@ -185,9 +226,11 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			AddEntry("ItemBrowser-Options/ShowTechnicalInfo", _showTechnicalInfo);
 
 			// Checklist
-			// AddSection("ItemBrowser-Options/Checklist");
-			// AddEntry("ItemBrowser-Options/ShowChecklist", _showChecklist);
-			// AddEntry("ItemBrowser-Options/AutoMarkDiscoveredAsCollected", _autoMarkDiscoveredAsCollected);
+			/*AddSection("ItemBrowser-Options/Checklist");
+			AddEntry("ItemBrowser-Options/ShowChecklist", _showChecklist);
+			AddEntry("ItemBrowser-Options/AutoMarkDiscoveredAsCollected", _autoMarkDiscoveredAsCollected);
+			AddEntry("ItemBrowser-Options/HideNotCollectedIcons", _hideNotCollectedIcons);
+			AddEntry("ItemBrowser-Options/ClearCollected", _clearCollected);*/
 
 			// Search
 			AddSection("ItemBrowser-Options/Search");

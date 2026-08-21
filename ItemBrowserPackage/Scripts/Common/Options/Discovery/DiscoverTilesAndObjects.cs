@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using HarmonyLib;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Utilities;
@@ -31,13 +32,12 @@ namespace ItemBrowser.Common.Options.Discovery {
 		}
 		
 		private static void AddDiscoveredTags(ObjectDataCD objectData, bool automaticallyCollected) {
-			objectData.variation = ObjectUtility.GetPrimaryVariation(objectData);
 			objectData.amount = 0;
 			
 			if (OptionsManager.Instance.AddTag(objectData, ObjectTagType.Discovered))
 				OptionsManager.Instance.AddTag(objectData, ObjectTagType.New);
 			
-			if (automaticallyCollected && OptionsManager.Instance.AutoMarkDiscoveredAsCollected && ItemBrowserAPI.IsChecklistIndexed(objectData))
+			if (automaticallyCollected && OptionsManager.Instance.AutoMarkDiscoveredAsCollected && ItemBrowserAPI.IsChecklistIndexed(objectData) && !OptionsManager.Instance.HasTag(objectData, ObjectTagType.Uncollected))
 				OptionsManager.Instance.AddTag(objectData, ObjectTagType.Collected);
 		}
 		
@@ -47,7 +47,7 @@ namespace ItemBrowser.Common.Options.Discovery {
 			
 			// Discover placed objects and creatures
 			var objectData = entityManager.GetComponentData<ObjectDataCD>(entity);
-			AddDiscoveredTags(objectData, false);
+			AddDiscoveredTags(GetObjectDataToUse(objectData), false);
 		}
 		
 		private static void DiscoverNearbyTiles() {
@@ -61,18 +61,18 @@ namespace ItemBrowser.Common.Options.Discovery {
 					continue;
 
 				if (TileUtility.TryGetAssociatedObject(entry.Key.TileType, entry.Key.Tileset, out var associatedObjectData))
-					AddDiscoveredTags(associatedObjectData, false);
+					AddDiscoveredTags(GetObjectDataToUse(associatedObjectData), false);
 			}
 		}
 
-		private static void AddAlreadyDiscoveredObjects() {
+		public static void AddAlreadyDiscoveredObjects() {
 			var characterData = Manager.saves.GetValue<CharacterData[]>("characterData");
 			var currentCharacterData = characterData[Manager.saves.GetCharacterId()];
 
 			var autoMarkDiscoveredAsCollected = OptionsManager.Instance.AutoMarkDiscoveredAsCollected;
 			
 			foreach (var discoveredObject in currentCharacterData.nonSerialized.discoveredObjects)
-				AddDiscoveredTags(discoveredObject, autoMarkDiscoveredAsCollected);
+				AddDiscoveredTags(GetObjectDataToUse(discoveredObject), autoMarkDiscoveredAsCollected);
 		}
 		
 		[HarmonyPatch(typeof(SaveManager), "SetObjectAsDiscovered")]
@@ -81,7 +81,37 @@ namespace ItemBrowser.Common.Options.Discovery {
 			if (!__result)
 				return;
 
-			AddDiscoveredTags(objectData, true);
+			AddDiscoveredTags(GetObjectDataToUse(objectData), true);
+		}
+		
+		[HarmonyPatch(typeof(PlayerController), "DetectUndiscoveredObjectsInInventory")]
+		[HarmonyPrefix]
+		private static void DetectUndiscoveredObjectsInInventory(PlayerController __instance, ref List<ContainedObjectsBuffer> ___previousInventoryObjects, InventoryHandler inventoryHandler) {
+			for (var i = 0; i < inventoryHandler.size; i++) {
+				var containedObjectData = inventoryHandler.GetContainedObjectData(i);
+				if (containedObjectData.objectID == ObjectID.None || ___previousInventoryObjects[i].Equals(containedObjectData))
+					continue;
+
+				if (PugDatabase.HasComponent<PetCD>(containedObjectData.objectID))
+					AddDiscoveredTags(GetObjectDataToUse(containedObjectData), true);
+			}
+		}
+
+		
+		private static ObjectDataCD GetObjectDataToUse(ObjectDataCD objectData) {
+			objectData.variation = ObjectUtility.GetPrimaryVariation(objectData);
+			return objectData;
+		}
+		
+		private static ObjectDataCD GetObjectDataToUse(ContainedObjectsBuffer containedObject) {
+			var objectData = containedObject.objectData;
+
+			if (InventoryHandler.TryGetExtraInventoryData<PetSkinCD>(containedObject, out var data))
+				objectData.variation = data.skinIndex;
+			else
+				objectData.variation = ObjectUtility.GetPrimaryVariation(objectData);
+			
+			return objectData;
 		}
 	}
 }

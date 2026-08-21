@@ -61,7 +61,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		protected override bool ShouldIconBeHidden() {
-			return base.ShouldIconBeHidden() || !HasBeenCollected;
+			return base.ShouldIconBeHidden() || (!HasBeenCollected && OptionsManager.Instance.HideNotCollectedIcons);
 		}
 		
 		public override List<TextAndFormatFields> GetHoverDescription() {

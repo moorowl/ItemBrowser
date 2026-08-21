@@ -67,8 +67,8 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Hide undiscovered
-      description: (Experimental) Hides items and creatures that haven't been picked
-        up or encountered by your character before
+      description: Hides items and creatures that haven't been picked up or encountered
+        by your character before
     - m_language:
         m_address:
           m_low: 6040640903323332866
@@ -104,8 +104,8 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: "Ocultar itens n\xE3o descobertos"
-      description: "(Experimental) Oculta itens e criaturas que ainda n\xE3o foram
-        recolhidos ou encontrados pelo seu personagem."
+      description: "Oculta itens e criaturas que ainda n\xE3o foram recolhidos ou
+        encontrados pelo seu personagem"
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -137,8 +137,8 @@ MonoBehaviour:
         m_low: 0
         m_high: 0
     title: Hide undiscovered
-    description: (Experimental) Hides items and creatures that haven't been picked
-      up or encountered by your character before
+    description: Hides items and creatures that haven't been picked up or encountered
+      by your character before
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Options
   references:

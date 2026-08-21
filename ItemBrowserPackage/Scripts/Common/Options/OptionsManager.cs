@@ -53,6 +53,14 @@ namespace ItemBrowser.Common.Options {
 			}
 		}
 		
+		public bool HideNotCollectedIcons {
+			get => GetActiveCharacterSpecificData().HideNotCollectedIcons;
+			set {
+				GetActiveCharacterSpecificData().HideNotCollectedIcons = value;
+				_isDirty = true;
+			}
+		}
+		
 		public bool ShowSourceMod {
 			get => _data.ShowSourceMod;
 			set {
@@ -297,6 +305,7 @@ namespace ItemBrowser.Common.Options {
 			public bool DiscoveryMode { get; set; }
 			public bool ShowChecklist { get; set; }
 			public bool AutoMarkDiscoveredAsCollected { get; set; } = true;
+			public bool HideNotCollectedIcons { get; set; } = true;
 			public List<TagObjectData> TaggedObjects { get; set; } = new();
 		}
 		

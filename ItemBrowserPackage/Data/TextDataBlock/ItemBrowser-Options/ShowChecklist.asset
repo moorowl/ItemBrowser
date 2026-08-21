@@ -67,11 +67,12 @@ MonoBehaviour:
           m_low: 681352171529052915
           m_high: 2314507893210082619
       title: Show checklist
-      description: 'The checklist tab allows you to keep track of what items, pets
-        and cattle you''ve collected.
+      description: '(Experimental) The checklist tab allows you to keep track of
+        what items, pets and cattle you''ve collected
 
-        Items that aren''t obtainable legitimately
-        won''t be shown.'
+
+        Items that aren''t
+        obtainable legitimately won''t be shown'
     - m_language:
         m_address:
           m_low: 6040640903323332866
@@ -107,9 +108,9 @@ MonoBehaviour:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
       title: "Mostrar lista de verifica\xE7\xE3o"
-      description: "A aba lista de verifica\xE7\xE3o permite que voc\xEA acompanhe
-        quais itens, animais de estima\xE7\xE3o e gado voc\xEA j\xE1 coletou.\r\nItens
-        que n\xE3o podem ser obtidos de forma leg\xEDtima n\xE3o ser\xE3o exibidos."
+      description: "(Experimental) A aba lista de verifica\xE7\xE3o permite que voc\xEA
+        acompanhe quais itens, animais de estima\xE7\xE3o e gado voc\xEA j\xE1 coletou\n\r\nItens
+        que n\xE3o podem ser obtidos de forma leg\xEDtima n\xE3o ser\xE3o exibidos"
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -141,11 +142,12 @@ MonoBehaviour:
         m_low: 0
         m_high: 0
     title: Show checklist
-    description: 'The checklist tab allows you to keep track of what items, pets
-      and cattle you''ve collected.
+    description: '(Experimental) The checklist tab allows you to keep track of what
+      items, pets and cattle you''ve collected
 
-      Items that aren''t obtainable legitimately
-      won''t be shown.'
+
+      Items that aren''t obtainable
+      legitimately won''t be shown'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Options
   references:

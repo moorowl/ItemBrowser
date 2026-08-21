@@ -37,7 +37,8 @@ namespace ItemBrowser.Utilities {
 			ObjectType.Hoe,
 			ObjectType.PaintTool,
 			ObjectType.Bucket,
-			ObjectType.RoofingTool
+			ObjectType.RoofingTool,
+			ObjectType.Seeder
 		};
 		public static readonly IEnumerable<ObjectType> MiningToolObjectTypes = new List<ObjectType> {
 			ObjectType.MiningPick,
@@ -56,13 +57,15 @@ namespace ItemBrowser.Utilities {
 		private static readonly Dictionary<ObjectDataCD, float> ArmorValues = new();
 		private static readonly Dictionary<ObjectDataCD, Sprite> IconOverrides = new();
 		private static readonly Dictionary<ObjectCategoryTag, HashSet<ObjectDataCD>> TagLookup = new();
-
+		private static readonly Dictionary<ObjectID, int> InteractSounds = new();
+		
 		internal static void Bake() {
 			BakeDisplayNamesAndNotes();
 			BakeCategories();
 			BakePrimaryVariations();
 			BakeConditions();
 			BakeTagLookup();
+			BakeInteractSounds();
 		}
 
 		private static void BakeDisplayNamesAndNotes() {
@@ -280,6 +283,38 @@ namespace ItemBrowser.Utilities {
 				}
 			}
 		}
+
+		private static void BakeInteractSounds() {
+			InteractSounds.Clear();
+			
+			foreach (var objectData in GetAllObjects()) {
+				if (objectData.variation != 0)
+					continue;
+				
+				if (PugDatabase.TryGetComponent<CustomAttackSoundCD>(objectData, out var customAttackSoundCD))
+					TryAddSound(objectData, customAttackSoundCD.attackSoundId);
+				
+				if (PugDatabase.TryGetComponent<TileEffectCD>(objectData, out var tileEffectCD))
+					TryAddSound(objectData, tileEffectCD.sfxTableDamageId);
+
+				if (TryGetEntityMono(objectData, out var entityMono))
+					TryAddSound(objectData, entityMono.soundOptions?.takeDamageSfx.value ?? 0);
+				
+				var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
+				if (objectInfo.objectType == ObjectType.Eatable)
+					TryAddSound(objectData, SfxTableID.cattleEating);
+
+				if (objectInfo.objectType == ObjectType.PlaceablePrefab)
+					TryAddSound(objectData, SfxTableID.defaultTakeDamage);
+			}
+
+			return;
+
+			void TryAddSound(ObjectDataCD objectData, int sound) {
+				if (sound != 0)
+					InteractSounds.TryAdd(objectData.objectID, sound);
+			}
+		}
 		
 		public static string GetLocalizedDisplayName(ObjectDataCD objectData) {
 			return DisplayNames.GetValueOrDefault(objectData) ?? DisplayNames.GetValueOrDefault(new ObjectDataCD {
@@ -407,7 +442,7 @@ namespace ItemBrowser.Utilities {
 			
 			var primaryPrefabEntity = PugDatabase.GetPrimaryPrefabEntity(objectData.objectID, ClientWorldStateSystem.PugDatabaseBank.databaseBankBlob, objectData.variation);
 			if (primaryPrefabEntity != Entity.Null) {
-				if ((EntityUtility.IsComponentEnabled<DontDropSelfCD>(primaryPrefabEntity, API.Client.World) && !PugDatabase.HasComponent<DiggableCD>(objectData)) && !PugDatabase.HasComponent<IsExplosiveCD>(objectData) && !PugDatabase.HasComponent<WayPointCD>(objectData) && !PugDatabase.HasComponent<PortalCD>(objectData))
+				if ((EntityUtility.IsComponentEnabled<DontDropSelfCD>(primaryPrefabEntity, API.Client.World) && !PugDatabase.HasComponent<DiggableCD>(objectData)) && !PugDatabase.HasComponent<IsExplosiveCD>(objectData) && !PugDatabase.HasComponent<ExplodeStateCD>(objectData) && !PugDatabase.HasComponent<WayPointCD>(objectData) && !PugDatabase.HasComponent<PortalCD>(objectData))
 					return true;
 			}
 			
@@ -522,7 +557,7 @@ namespace ItemBrowser.Utilities {
 				case DamageCategory.PhysicalMelee:
 				case DamageCategory.PhysicalRange:
 				case DamageCategory.Magic:
-					if (!PugDatabase.TryGetComponent<HasWeaponDamageCD>(objectData, out var hasWeaponDamageCD))
+					if (!PugDatabase.TryGetComponent<HasWeaponDamageCD>(objectData, out var hasWeaponDamageCD) || PugDatabase.HasComponent<StateInfoCD>(objectData))
 						return 0;
 
 					if (category == DamageCategory.PhysicalMelee && (hasWeaponDamageCD.isRange || hasWeaponDamageCD.isMagic))
@@ -618,6 +653,14 @@ namespace ItemBrowser.Utilities {
 		// from InventoryUtility.GetRaritySellValue
 		private static int GetRaritySellValue(Rarity rarity) {
 			return 1 + math.max(0, (int) rarity) * 5;
+		}
+		
+		public static int GetInteractSoundId(ObjectDataCD objectData) {
+			return InteractSounds.GetValueOrDefault(objectData.objectID, 0);
+		}
+		
+		public static int GetInteractSoundId(ObjectID id, int variation) {
+			return GetInteractSoundId(new ObjectDataCD { objectID = id, variation = variation });
 		}
 
 		public static void GetTotalAmountInInventoryAndNearbyChests(PlayerController player, ObjectDataCD objectData, out int inInventory, out int inNearbyChests) {
@@ -724,6 +767,20 @@ namespace ItemBrowser.Utilities {
 				AddObjectsInEntity(chest, objects, ClientWorldStateSystem.PugDatabaseBank.databaseBankBlob, inventoryBufferLookup, containedObjectsBufferLookup);
 
 			return objects;
+		}
+
+		public static bool TryGetEntityMono(ObjectDataCD objectData, out EntityMonoBehaviour entityMono) {
+			entityMono = null;
+			
+			var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
+			if (objectInfo == null || objectInfo.prefabInfos.Count == 0 || objectInfo.prefabInfos[0].prefab == null)
+				return false;
+
+			if (objectInfo.prefabInfos[0].prefab is not EntityMonoBehaviour prefab)
+				return false;
+
+			entityMono = prefab;
+			return true;
 		}
 		
 		private static void AddObjectsInEntity(Entity entity, Dictionary<ObjectID, int> objects, BlobAssetReference<PugDatabase.PugDatabaseBank> pugDatabaseBlob, BufferLookup<InventoryBuffer> inventoryBufferLookup, BufferLookup<ContainedObjectsBuffer> containedObjectsBufferLookup) {
