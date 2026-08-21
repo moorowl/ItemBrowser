@@ -142,7 +142,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 				foreach (var dungeon in entry.FoundInDungeons) {
 					structureInfo.AddLine(new TextAndFormatFields {
-						text = "ItemBrowser-ObjectEntryDescriptions/Loot_5",
+						text = "ItemBrowser-ObjectEntryDescriptions/Loot_6",
 						formatFields = new[] {
 							dungeon.Name
 						},
