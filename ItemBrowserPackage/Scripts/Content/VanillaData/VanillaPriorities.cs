@@ -19,21 +19,22 @@
 		public const int SeedExtracting = 6400;
 		public const int CattleProduce = 6300;
 		public const int Breeding = 6200;
-		public const int NaturalSpawnRespawn = 6100;
-		public const int NaturalSpawnInitial = 6000;
-		public const int NaturalSpawnAroundObject = 5900;
-		public const int Drops = 5800;
-		public const int DropsWhenDamaged = 5700;
-		public const int ChallengeArenaReward = 5600;
-		public const int Loot = 5500;
-		public const int BackgroundPerks = 5400;
-		public const int Unlocking = 5300;
-		public const int Salvaging = 5200;
-		public const int StructureContents = 5100;
-		public const int TerritoryContents = 5000;
-		public const int UpgradeMaterial = 4900;
-		public const int PetTalents = 4800;
-		public const int PrimaryLootTable = 4700;
+		public const int Saddling = 6100;
+		public const int NaturalSpawnRespawn = 6000;
+		public const int NaturalSpawnInitial = 5900;
+		public const int NaturalSpawnAroundObject = 5800;
+		public const int Drops = 5700;
+		public const int DropsWhenDamaged = 5600;
+		public const int ChallengeArenaReward = 5500;
+		public const int Loot = 5400;
+		public const int BackgroundPerks = 5300;
+		public const int Unlocking = 5200;
+		public const int Salvaging = 5100;
+		public const int StructureContents = 5000;
+		public const int TerritoryContents = 4900;
+		public const int UpgradeMaterial = 4800;
+		public const int PetTalents = 4700;
+		public const int PrimaryLootTable = 4600;
 		public const int Miscellaneous = 0;
 	}
 }

@@ -103,7 +103,8 @@ namespace ItemBrowser.Content.VanillaData {
 				new TerritoryContents.Provider(),
 				new SeedExtracting.Provider(),
 				new CritterCatching.Provider(),
-				new PetTalents.Provider()
+				new PetTalents.Provider(),
+				new Saddling.Provider()
 			};
 			
 			foreach (var provider in providers)
