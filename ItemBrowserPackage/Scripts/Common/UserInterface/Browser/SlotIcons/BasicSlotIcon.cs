@@ -107,17 +107,31 @@ namespace ItemBrowser.Common.UserInterface.SlotIcons {
 					});
 				}
 
-				var prefabInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).prefabInfos[0];
-				if (prefabInfo.ecsPrefab != null) {
+				var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
+				var authoringPrefab = objectInfo.prefabInfo.GetAuthoring();
+				if (authoringPrefab != null) {
 					lines.Add(new TextAndFormatFields {
-						text = $"{prefabInfo.ecsPrefab.gameObject.name}",
+						text = $"{authoringPrefab.name}",
+						dontLocalize = true
+					});
+				}
+				if (objectInfo.prefabInfo.authoringRef.hasAddress) {
+					lines.Add(new TextAndFormatFields {
+						text = $"({objectInfo.prefabInfo.authoringRef.address.ToString()})",
 						dontLocalize = true
 					});
 				}
 
-				if (prefabInfo.prefab != null) {
+				var graphicalPrefab = objectInfo.prefabInfo.GetGraphical();
+				if (graphicalPrefab != null) {
 					lines.Add(new TextAndFormatFields {
-						text = $"{prefabInfo.prefab.gameObject.name}",
+						text = $"{graphicalPrefab.name}",
+						dontLocalize = true
+					});
+				}
+				if (objectInfo.prefabInfo.graphicalRef.hasAddress) {
+					lines.Add(new TextAndFormatFields {
+						text = $"({objectInfo.prefabInfo.graphicalRef.address.ToString()})",
 						dontLocalize = true
 					});
 				}
