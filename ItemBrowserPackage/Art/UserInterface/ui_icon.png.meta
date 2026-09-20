@@ -462,10 +462,32 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ui_icon_collected_big
+      name: ui_icon_uncollapsed
       rect:
         serializedVersion: 2
         x: 10
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a602151893ad834ab8c434a02c96118
+      internalID: -1443469005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ui_icon_collapsed
+      rect:
+        serializedVersion: 2
+        x: 20
         y: 0
         width: 10
         height: 10
@@ -477,8 +499,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5a602151893ad834ab8c434a02c96118
-      internalID: -1443469005
+      spriteID: 59d5ee35ef494934693d430878eaca79
+      internalID: -890831434
       vertices: []
       indices: 
       edges: []
@@ -500,8 +522,8 @@ TextureImporter:
       ui_icon_0: 745449105
       ui_icon_cheat: 77498136
       ui_icon_clear_search: -1281604667
+      ui_icon_collapsed: -890831434
       ui_icon_collected: 1581743932
-      ui_icon_collected_big: -1443469005
       ui_icon_cycle: 169372963
       ui_icon_favorite: -2075442542
       ui_icon_filter: -392396922
@@ -515,6 +537,7 @@ TextureImporter:
       ui_icon_sort_order_asc: 1804492927
       ui_icon_sort_order_desc: 169819583
       ui_icon_structure: 1402510494
+      ui_icon_uncollapsed: -1443469005
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

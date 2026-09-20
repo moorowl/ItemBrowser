@@ -11,6 +11,7 @@ using PlayerEquipment;
 using Pug.Properties;
 using PugMod;
 using PugTilemap;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -91,7 +92,7 @@ namespace ItemBrowser.Utilities {
 					nameNotes.TryAdd(appliesToObjectData, objectOverride.nameNote);
 			}
 			
-			foreach (var objectData in GetAllObjects()) {
+			foreach (var objectData in GetAllObjectsAndCookedFood()) {
 				InternalNames.TryAdd(objectData.objectID, API.Authoring.ObjectProperties.TryGetPropertyString(objectData.objectID, "name", out var internalName) ? internalName : objectData.objectID.ToString());
 				
 				// Setup display names
@@ -130,7 +131,7 @@ namespace ItemBrowser.Utilities {
 			//DisplayNameSortOrders.Clear();
 			var objectNames = new List<(ObjectDataCD ObjectData, string Name)>();
 			
-			foreach (var objectData in GetAllObjects()) {
+			foreach (var objectData in GetAllObjectsAndCookedFood()) {
 				var objectName = DisplayNames.GetValueOrDefault(objectData);
 				objectName ??= $"ZZZ+{GetInternalName(objectData.objectID)}+{objectData.variation}";
 				objectName += $"+{objectData.variation}";
@@ -154,7 +155,7 @@ namespace ItemBrowser.Utilities {
 					Categories[objectData.objectID] = new HashSet<string>();
 			}
 			
-			foreach (var subCategory in ObjectIDCategoryManager.SubCategories) {
+			foreach (var subCategory in ObjectIDCategoryCache.SubCategories) {
 				foreach (var objectId in subCategory.ObjectIds) {
 					if (!Categories.TryGetValue(objectId, out var categories))
 						continue;
@@ -168,14 +169,16 @@ namespace ItemBrowser.Utilities {
 			PrimaryVariations.Clear();
 			
 			var nameToPrimaryVariation = new Dictionary<string, int>();
-			foreach (var objectData in GetAllObjects().OrderBy(objectData => objectData.variation)) {
+			foreach (var objectData in GetAllObjectsAndCookedFood().OrderBy(objectData => objectData.variation)) {
 				var displayName = DisplayNames.GetValueOrDefault(objectData) ?? $"{objectData.objectID}:{objectData.variation}";
 				var displayNameNote = DisplayNameNotes.GetValueOrDefault(objectData);
 
 				if (displayNameNote != null)
 					displayName = $"{displayName} ({displayNameNote})";
 
-				if (nameToPrimaryVariation.TryGetValue(displayName, out var primaryVariation)) {
+				if (PugDatabase.HasComponent<CookedFoodCD>(objectData)) {
+					PrimaryVariations[objectData] = objectData.variation;
+				} else if (nameToPrimaryVariation.TryGetValue(displayName, out var primaryVariation)) {
 					PrimaryVariations[objectData] = primaryVariation;
 				} else {
 					nameToPrimaryVariation[displayName] = objectData.variation;
@@ -195,7 +198,7 @@ namespace ItemBrowser.Utilities {
 					conditionToCategory.TryAdd(condition.Id, conditionCategory.category);
 			}
 			
-			foreach (var objectData in GetAllObjects()) {
+			foreach (var objectData in GetAllObjectsAndCookedFood()) {
 				var associatedConditions = new List<(ConditionID Id, int Value)>();
 				
 				// Equipped conditions
@@ -205,7 +208,29 @@ namespace ItemBrowser.Utilities {
 				}
 				
 				// Consumed conditions
-				if (PugDatabase.HasComponent<GivesConditionsWhenConsumedBuffer>(objectData)) {
+				if (PugDatabase.HasComponent<CookedFoodCD>(objectData) && objectData.variation != 0) {
+					var ingredients = default(FixedList64Bytes<ObjectDataCD>);
+					ingredients.Add(objectData);
+					ingredients.Add(new ObjectDataCD {
+						objectID = CookedFoodCD.GetPrimaryIngredientFromVariation(objectData.variation),
+						amount = 1
+					});
+					ingredients.Add(new ObjectDataCD {
+						objectID = CookedFoodCD.GetSecondaryIngredientFromVariation(objectData.variation),
+						amount = 1
+					});
+
+					var querySystem = Manager.main.player.querySystem;
+					var singleton = querySystem.GetSingleton<PugDatabase.DatabaseBankCD>();
+					var singleton2 = querySystem.GetSingleton<ConditionsTableCD>();
+					var componentLookup = querySystem.GetComponentLookup<FlowerCD>();
+					var componentLookup2 = querySystem.GetComponentLookup<FishCD>();
+					var bufferLookup = querySystem.GetBufferLookup<GivesConditionsWhenConsumedBuffer>();
+					var conditionsOnConsume = ConditionUIExtensions.GetConditionsOnConsume(objectData, ingredients, true, Entity.Null, singleton, singleton2, componentLookup, componentLookup2, bufferLookup, default, Allocator.Temp);
+
+					for (var i = 0; i < conditionsOnConsume.Length; i++)
+						associatedConditions.Add((conditionsOnConsume[i].conditionID, conditionsOnConsume[i].value));
+				} else if (PugDatabase.HasComponent<GivesConditionsWhenConsumedBuffer>(objectData)) {
 					foreach (var givesConditionsWhenEquipped in PugDatabase.GetBuffer<GivesConditionsWhenConsumedBuffer>(objectData)) {
 						associatedConditions.Add((givesConditionsWhenEquipped.conditionDataContainer.conditionData.conditionID, givesConditionsWhenEquipped.conditionDataContainer.conditionData.value));
 						
@@ -294,18 +319,57 @@ namespace ItemBrowser.Utilities {
 				if (PugDatabase.TryGetComponent<CustomAttackSoundCD>(objectData, out var customAttackSoundCD))
 					TryAddSound(objectData, customAttackSoundCD.attackSoundId);
 				
+				if (PugDatabase.TryGetComponent<InstrumentCD>(objectData, out var instrumentCD))
+					TryAddSound(objectData, instrumentCD.noteSound);
+
 				if (PugDatabase.TryGetComponent<TileEffectCD>(objectData, out var tileEffectCD))
 					TryAddSound(objectData, tileEffectCD.sfxTableDamageId);
 
 				if (TryGetEntityMono(objectData, out var entityMono))
 					TryAddSound(objectData, entityMono.soundOptions?.takeDamageSfx.value ?? 0);
 				
-				var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
-				if (objectInfo.objectType == ObjectType.Eatable)
-					TryAddSound(objectData, SfxTableID.cattleEating);
-
-				if (objectInfo.objectType == ObjectType.PlaceablePrefab)
-					TryAddSound(objectData, SfxTableID.defaultTakeDamage);
+				switch (PugDatabase.GetObjectInfo(objectData.objectID).objectType) {
+					case ObjectType.Helm:
+					case ObjectType.BreastArmor:
+					case ObjectType.PantsArmor:
+					case ObjectType.Necklace:
+					case ObjectType.Ring:
+					case ObjectType.Offhand:
+					case ObjectType.Bag:
+					case ObjectType.Lantern:
+					case ObjectType.Pouch:
+					case ObjectType.MeleeWeapon:
+						TryAddSound(objectData, SfxTableID.inventorySFXEquipmentTab);
+						break;
+					case ObjectType.RangeWeapon:
+						TryAddSound(objectData, SfxTableID.strongAttackBow);
+						break;
+					case ObjectType.SummoningWeapon:
+						TryAddSound(objectData, SfxTableID.spawnBatMinion);
+						break;
+					case ObjectType.ThrowingWeapon:
+					case ObjectType.Shovel:
+					case ObjectType.Hoe:
+					case ObjectType.MiningPick:
+					case ObjectType.PaintTool:
+					case ObjectType.FishingRod:
+					case ObjectType.BugNet:
+					case ObjectType.Sledge:
+						TryAddSound(objectData, SfxTableID.swingNormalAttackSfx);
+						break;
+					case ObjectType.RoofingTool:
+						TryAddSound(objectData, SfxTableID.roofingTool);
+						break;
+					case ObjectType.PlaceablePrefab:
+						TryAddSound(objectData, SfxTableID.defaultTakeDamage);
+						break;
+					case ObjectType.Eatable:
+						TryAddSound(objectData, SfxTableID.cattleEating);
+						break;
+					case ObjectType.TrainingDummy:
+						TryAddSound(objectData, SfxTableID.trainingDummyHitSfx);
+						break;
+				}
 			}
 
 			return;
@@ -510,6 +574,45 @@ namespace ItemBrowser.Utilities {
 			return PugDatabase.objectsByType.Keys;
 		}
 		
+		public static IEnumerable<ObjectDataCD> GetAllObjectsAndCookedFood() {
+			foreach (var objectData in GetAllObjects())
+				yield return objectData;
+
+			var allIngredients = GetAllObjects()
+				.Where(objectData => objectData.variation == 0 && PugDatabase.HasComponent<CookingIngredientCD>(objectData))
+				.ToList();
+
+			foreach (var ingredientA in allIngredients) {
+				foreach (var ingredientB in allIngredients) {
+					var ingredientARarity = PugDatabase.GetObjectInfo(ingredientA.objectID).rarity;
+					var ingredientBRarity = PugDatabase.GetObjectInfo(ingredientB.objectID).rarity;
+					
+					var primaryIngredient = CookedFoodCD.GetPrimaryIngredient(ingredientA.objectID, ingredientB.objectID);
+
+					var turnsIntoFood = PugDatabase.GetComponent<CookingIngredientCD>(primaryIngredient).turnsIntoFood;
+					var turnsIntoFoodVariation = CookedFoodCD.GetFoodVariation(ingredientA.objectID, ingredientB.objectID);
+					var turnsIntoFoodCD = PugDatabase.GetComponent<CookedFoodCD>(turnsIntoFood);
+					
+					var canBeEpic = ingredientARarity == Rarity.Rare && PugDatabase.HasComponent<FlowerCD>(ingredientA.objectID)
+					                || ingredientBRarity == Rarity.Rare && PugDatabase.HasComponent<FlowerCD>(ingredientB.objectID)
+					                || ingredientARarity == Rarity.Legendary
+					                || ingredientBRarity == Rarity.Legendary;
+
+					yield return new ObjectDataCD {
+						objectID = turnsIntoFood,
+						variation = turnsIntoFoodVariation
+					};
+
+					if (canBeEpic) {
+						yield return new ObjectDataCD {
+							objectID = turnsIntoFoodCD.epicVersion,
+							variation = turnsIntoFoodVariation
+						};
+					}
+				}
+			}
+		}
+		
 		public static IEnumerable<ObjectDataCD> GetAllObjectsWithTag(ObjectCategoryTag tag) {
 			if (tag == ObjectCategoryTag.None)
 				return Array.Empty<ObjectDataCD>();
@@ -537,8 +640,13 @@ namespace ItemBrowser.Utilities {
 
 		private static int GetDamageFromLevelEntity(ObjectDataCD objectData) {
 			var levelEntity = EntityUtility.GetLevelEntity(objectData);
-			if (levelEntity != Entity.Null && EntityUtility.TryGetComponentData<WeaponDamageCD>(levelEntity, API.Client.World, out var weaponDamageCD))
-				return weaponDamageCD.GetDamage(false);
+			if (levelEntity != Entity.Null) {
+				if (EntityUtility.TryGetComponentData<WeaponDamageCD>(levelEntity, API.Client.World, out var weaponDamageCD))
+					return weaponDamageCD.GetDamage(false);
+				
+				if (EntityUtility.TryGetComponentData<AttackContinuouslyCD>(levelEntity, API.Client.World, out var attackContinuouslyCD))
+					return attackContinuouslyCD.damage;
+			}
 
 			return 0;
 		}
@@ -568,6 +676,11 @@ namespace ItemBrowser.Utilities {
 					
 					if (category == DamageCategory.Magic && !hasWeaponDamageCD.isMagic)
 						return 0;
+					
+					if (StatsUIUtility.HasAreaDamage(objectData, API.Client.World, out var attackContinuouslyCD, out var destroyTimerCD, out var areaDamageObjectID)) {
+						var areaDamage = GetDamageFromLevelEntity(new ObjectDataCD { objectID = areaDamageObjectID, variation = objectData.variation });
+						return areaDamage;
+					}
 			
 					return GetDamageFromLevelEntity(objectData);
 				case DamageCategory.Summon:
@@ -615,7 +728,7 @@ namespace ItemBrowser.Utilities {
 			if (sellValue < 0) {
 				sellValue = GetRaritySellValue(objectInfo.rarity);
 				
-				if (PugDatabase.HasComponent<CookedFoodAuthoring>(objectData)) {
+				if (PugDatabase.HasComponent<CookedFoodCD>(objectData)) {
 					var primaryIngredient = CookedFoodCD.GetPrimaryIngredientFromVariation(objectData.variation);
 					var secondaryIngredient = CookedFoodCD.GetSecondaryIngredientFromVariation(objectData.variation);
 					sellValue = GetValue(primaryIngredient, 0, buy) + GetValue(secondaryIngredient, 0, buy);
@@ -729,9 +842,17 @@ namespace ItemBrowser.Utilities {
 			return amount;
 		}
 
-		public static bool HasMaterialsInInventoryAndNearbyChestsToCraft(PlayerController player, ObjectInfo recipeInfo) {
+		public static bool HasMaterialsInInventoryAndNearbyChestsToCraft(PlayerController player, ObjectDataCD objectToCraft) {
 			var objects = GetObjectsInInventoryAndNearbyChests(player);
 
+			if (objectToCraft.variation != 0 && PugDatabase.HasComponent<CookedFoodCD>(objectToCraft)) {
+				var primaryIngredient = CookedFoodCD.GetPrimaryIngredientFromVariation(objectToCraft.variation);
+				var secondaryIngredient = CookedFoodCD.GetSecondaryIngredientFromVariation(objectToCraft.variation);
+
+				return objects.GetValueOrDefault(primaryIngredient) > 0 && objects.GetValueOrDefault(secondaryIngredient) > 0;
+			}
+			
+			var recipeInfo = PugDatabase.GetObjectInfo(objectToCraft.objectID, objectToCraft.variation);
 			if (recipeInfo.craftingSettings.canOnlyUseAnyMaterialsWithTag != ObjectCategoryTag.None && TagLookup.TryGetValue(recipeInfo.craftingSettings.canOnlyUseAnyMaterialsWithTag, out var objectsWithTag)) {
 				foreach (var objectData in objectsWithTag) {
 					if (objects.TryGetValue(objectData.objectID, out var amount) && amount >= 1)
@@ -747,17 +868,27 @@ namespace ItemBrowser.Utilities {
 
 				if (craftingObject.amount > amountInInventory)
 					return false;
-			}
+			}	
 
 			return true;
 		}
+
+		private static Dictionary<ObjectID, int> _cachedObjectsInInventoryAndNearbyChests;
+		private static int _lastUpdateObjectsInInventoryAndNearbyChests;
 		
 		public static Dictionary<ObjectID, int> GetObjectsInInventoryAndNearbyChests(PlayerController player) {
+			if (Time.frameCount == _lastUpdateObjectsInInventoryAndNearbyChests)
+				return _cachedObjectsInInventoryAndNearbyChests;
+			
 			var objects = new Dictionary<ObjectID, int>();
 			
 			var querySystem = player.querySystem;
-			if (querySystem == null)
+			if (querySystem == null) {
+				_cachedObjectsInInventoryAndNearbyChests = objects;
+				_lastUpdateObjectsInInventoryAndNearbyChests = Time.frameCount;
+
 				return objects;
+			}
 
 			var inventoryBufferLookup = querySystem.GetBufferLookup<InventoryBuffer>();
 			var containedObjectsBufferLookup = querySystem.GetBufferLookup<ContainedObjectsBuffer>();
@@ -766,6 +897,9 @@ namespace ItemBrowser.Utilities {
 			foreach (var chest in ClientWorldStateSystem.NearbyChests)
 				AddObjectsInEntity(chest, objects, ClientWorldStateSystem.PugDatabaseBank.databaseBankBlob, inventoryBufferLookup, containedObjectsBufferLookup);
 
+			_cachedObjectsInInventoryAndNearbyChests = objects;
+			_lastUpdateObjectsInInventoryAndNearbyChests = Time.frameCount;
+			
 			return objects;
 		}
 
@@ -773,14 +907,9 @@ namespace ItemBrowser.Utilities {
 			entityMono = null;
 			
 			var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
-			if (objectInfo == null || objectInfo.prefabInfos.Count == 0 || objectInfo.prefabInfos[0].prefab == null)
-				return false;
-
-			if (objectInfo.prefabInfos[0].prefab is not EntityMonoBehaviour prefab)
-				return false;
-
-			entityMono = prefab;
-			return true;
+			var graphicalObject = objectInfo.prefabInfo?.GetGraphical();
+			
+			return graphicalObject != null && graphicalObject.TryGetComponent(out entityMono);
 		}
 		
 		private static void AddObjectsInEntity(Entity entity, Dictionary<ObjectID, int> objects, BlobAssetReference<PugDatabase.PugDatabaseBank> pugDatabaseBlob, BufferLookup<InventoryBuffer> inventoryBufferLookup, BufferLookup<ContainedObjectsBuffer> containedObjectsBufferLookup) {
@@ -841,7 +970,7 @@ namespace ItemBrowser.Utilities {
 		};
 		
 		public static bool IsCarriedObject(ObjectType objectType) {
-			var equipmentSlotType = PlayerController.GetEquippedSlotTypeForObjectType(objectType, default, default, default, default);
+			var equipmentSlotType = PlayerController.GetEquippedSlotTypeForObjectType(objectType, default, default, default, default, default);
 			return objectType != ObjectType.ThrowingWeapon && CarriedEquipmentSlotTypes.Contains(equipmentSlotType);
 		}
 	}

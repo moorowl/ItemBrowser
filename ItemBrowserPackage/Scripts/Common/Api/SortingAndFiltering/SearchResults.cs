@@ -41,6 +41,7 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 					case '.':
 					case ',':
 					case '\n':
+                    case '"':
 						continue;
 				}
 				
@@ -78,7 +79,7 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 			var terms = new List<string>();
 			var shouldAddPinyinTerms = ShouldAddPinyinTerms();
 
-			void TryAddTerm(string text, bool convertToPinyin = true) {
+			void TryAddTerm(string text, bool convertToPinyin = false) {
 				if (text == null)
 					return;
 				
@@ -88,15 +89,25 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 					terms.Add(PinyinConvert.GetPinyinForAutoComplete(text));
 			}
 
-			TryAddTerm(ObjectUtility.GetLocalizedDisplayName(objectData));
+			TryAddTerm(ObjectUtility.GetLocalizedDisplayName(objectData), true);
 			
 			var displayNameNote = ObjectUtility.GetUnlocalizedDisplayNameNote(objectData);
 			if (displayNameNote != null)
 				displayNameNote = API.Localization.GetLocalizedTerm(displayNameNote);
 			TryAddTerm(displayNameNote);
 
+			if (PugDatabase.HasComponent<CookedFoodCD>(objectData)) {
+				var primaryIngredient = CookedFoodCD.GetPrimaryIngredientFromVariation(objectData.variation);
+				var secondaryIngredient = CookedFoodCD.GetSecondaryIngredientFromVariation(objectData.variation);
+				
+				if (primaryIngredient != ObjectID.None)
+					TryAddTerm(ObjectUtility.GetLocalizedDisplayName(primaryIngredient), true);
+				if (secondaryIngredient != ObjectID.None)
+					TryAddTerm(ObjectUtility.GetLocalizedDisplayName(secondaryIngredient), true);
+			}
+
 			if (OptionsManager.Instance.SearchByDescription)
-				TryAddTerm(ObjectUtility.GetLocalizedDescription(objectData), false);
+				TryAddTerm(ObjectUtility.GetLocalizedDescription(objectData));
 			
 			if (OptionsManager.Instance.SearchById) {
 				TryAddTerm(ObjectUtility.GetInternalName(objectData));
@@ -110,7 +121,7 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 
 					var effectDescription = API.Localization.GetLocalizedTerm($"Conditions/{conditionForEffectDescription}");
 					if (effectDescription != null)
-						TryAddTerm(effectDescription.Replace("{0}", ""));
+						TryAddTerm(effectDescription.Replace("{0}", ""), true);
 				}
 			}
 
@@ -118,7 +129,7 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 			return ObjectTermsBlobCache[objectData];
 		}
 
-		public static SearchResults Create(string term, List<ObjectDataCD> objectsToFilter) {
+		public static SearchResults Create(string term, HashSet<ObjectDataCD> objectsToFilter) {
 			term = StripUnimportantCharacters(term);
 			var isTermEmpty = string.IsNullOrEmpty(term);
 

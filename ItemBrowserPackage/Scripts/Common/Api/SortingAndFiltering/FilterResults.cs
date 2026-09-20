@@ -17,7 +17,7 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 			return Results.Contains(objectData);
 		}
 		
-		public static FilterResults Create(Filter filter, List<ObjectDataCD> objectsToFilter) {
+		public static FilterResults Create(Filter filter, HashSet<ObjectDataCD> objectsToFilter) {
 			var matches = new HashSet<ObjectDataCD>(objectsToFilter.Count);
 			foreach (var objectData in objectsToFilter) {
 				if (filter.Function(objectData))

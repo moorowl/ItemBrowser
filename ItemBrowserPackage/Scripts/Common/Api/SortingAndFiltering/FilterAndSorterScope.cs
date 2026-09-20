@@ -7,6 +7,7 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 		Items = 1,
 		Creatures = 2,
 		Checklist = 4,
-		All = Items | Creatures | Checklist,
+		Cooking = 8,
+		All = Items | Creatures | Checklist | Cooking,
 	}
 }

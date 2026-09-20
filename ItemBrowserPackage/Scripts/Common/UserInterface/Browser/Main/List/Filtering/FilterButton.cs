@@ -39,7 +39,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			Filter = filter;
 			ResetState();
 
-			var showIcon = filter.Icon != ObjectID.None;
+			var showIcon = filter.IconFromSprite || filter.IconFromObject != ObjectID.None;
 			var showSymbol = !showIcon && !string.IsNullOrWhiteSpace(filter.Symbol);
 
 			foreach (var icon in icons)
@@ -48,22 +48,31 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				symbol.gameObject.SetActive(showSymbol);
 
 			if (showIcon) {
-				var iconContainedObject = new ContainedObjectsBuffer {
-					objectData = new ObjectDataCD {
-						objectID = filter.Icon
+				if (filter.IconFromSprite != null) {
+					foreach (var icon in icons) {
+						icon.sprite = filter.IconFromSprite;
+						icon.transform.localPosition = Vector3.zero;
 					}
-				};
-				var iconObjectInfo = PugDatabase.GetObjectInfo(filter.Icon);
-				var iconSprite = ObjectUtility.GetIcon(iconContainedObject.objectData, true);
+				} else if (filter.IconFromObject != ObjectID.None) {
+					var iconContainedObject = new ContainedObjectsBuffer {
+						objectData = new ObjectDataCD {
+							objectID = filter.IconFromObject,
+							variation = PugDatabase.HasComponent<CookedFoodCD>(filter.IconFromObject) ? CookedFoodCD.GetFoodVariation(ObjectID.Egg, ObjectID.HeartBerry) : 0
+						}
+					};
+					var iconObjectInfo = PugDatabase.GetObjectInfo(filter.IconFromObject);
+					var iconSprite = ObjectUtility.GetIcon(iconContainedObject.objectData, true);
 
-				for (var i = 0; i < icons.Length; i++) {
-					var icon = icons[i];
-					icon.sprite = iconSprite;
-					icon.material = UserInterfaceUtility.GetUISpriteColorReplaceMaterial();
-					UserInterfaceUtility.ApplyObjectIconTransform(icon, iconObjectInfo, 1f);
+					for (var i = 0; i < icons.Length; i++) {
+						var icon = icons[i];
+						icon.sprite = iconSprite;
+						icon.material = UserInterfaceUtility.GetUISpriteColorReplaceMaterial();
+						icon.transform.localPosition = iconObjectInfo.iconOffset;
+						UserInterfaceUtility.ApplyObjectIconTransform(icon, iconObjectInfo, 1f);
 					
-					colorReplacers[i].UpdateColorReplacerFromObjectData(iconContainedObject);
-					Manager.ui.ApplyAnyIconGradientMap(iconContainedObject, icon);
+						colorReplacers[i].UpdateColorReplacerFromObjectData(iconContainedObject);
+						Manager.ui.ApplyAnyIconGradientMap(iconContainedObject, icon);
+					}
 				}
 			}
 

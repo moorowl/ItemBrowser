@@ -22,12 +22,13 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private bool _requestedListRefresh;
 		private bool _requestedListRefreshPreservesScroll;
 		private float _lastListRefreshFromDynamicFiltersTime;
-		private Task<(bool PreserveScroll, List<ObjectDataCD> Objects)> _listRefreshTask;
+		private Task<(bool PreserveScroll, List<VirtualObjectList.Entry> Entries)> _listRefreshTask;
 
 		private List<ObjectDataCD> _filteredObjects = new();
 		public IEnumerable<ObjectDataCD> FilteredObjects => _filteredObjects;
 		public int IncludedObjects { get; private set; }
 		public int ExcludedObjects { get; private set; }
+		public int ExcludedObjectsFromFilters { get; private set; }
 		
 		private FiltersPanel PrimaryFiltersPanel => filtersPanels[0];
 		private readonly Dictionary<Filter, FilterResults> _filterResults = new();
@@ -44,6 +45,12 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private int _currentSorterIndex;
 		public bool UseReverseSorting { get; set; }
 		public Sorter CurrentSorter => _currentSorterIndex < 0 || _currentSorterIndex >= _sorters.Count ? null : _sorters[_currentSorterIndex];
+
+		private readonly List<Group> _groups = new();
+		private readonly List<GroupResults> _groupResults = new();
+		private int _currentGroupIndex;
+		private readonly Dictionary<int, bool> _currentGroupCollapsed = new();
+		public Group CurrentGroup => _currentGroupIndex < 0 || _currentGroupIndex >= _groups.Count ? null : _groups[_currentGroupIndex];
 		
 		protected override void OnShow(bool isFirstTimeShowing) {
 			base.OnShow(isFirstTimeShowing);
@@ -80,7 +87,28 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			UseReverseSorting = true;
 			
 			foreach (var sorter in _sorters)
-				_sorterResults.Add(SorterResults.Create(sorter));
+				_sorterResults.Add(SorterResults.Create(sorter, GetIncludedObjects()));
+			
+			// Setup groups
+			_currentGroupIndex = 0;
+			_groups.Clear();
+			_groupResults.Clear();
+			_currentGroupCollapsed.Clear();
+
+			if (this is CookingListView) {
+				_groups.Add(new Group("Cooking") {
+					Names = new[] {
+						"ItemBrowser-Groups/Ingredients",
+						"ItemBrowser-Groups/CookedFood"
+					},
+					Function = objectData => PugDatabase.HasComponent<CookedFoodCD>(objectData) ? 1 : 0
+				});
+			} else {
+				_groups.Add(new Group("None"));
+			}
+			
+			foreach (var group in _groups)
+				_groupResults.Add(GroupResults.Create(group, GetIncludedObjects()));
 			
 			// Setup filters
 			PrimaryFiltersPanel.Clear();
@@ -137,7 +165,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					if (!_filterResults.ContainsKey(filter) || !FilterResults.Equals(updatedFilterResults, _filterResults[filter])) {
 						_filterResults[filter] = updatedFilterResults;
 						shouldRefresh = true;
-						Debug.Log($"updating dynamic filter results for {filter.Name}");
+						// Debug.Log($"updating dynamic filter results for {filter.Name}");
 					}
 				}
 				
@@ -149,33 +177,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			return false;
 		}
 
-		/*private void UpdateSearch(bool doNotSyncWithOtherLists) {
-			var currentSearchTerm = searchInput.GetInputText();
-			_isSearchTermEmpty = string.IsNullOrWhiteSpace(currentSearchTerm);
-
-			AdjustSearchFieldPosition();
-
-			if (_updateSearchResultsTask is { IsCompleted: true } && _listRefreshTask == null) {
-				if (_updateSearchResultsTask.IsCompletedSuccessfully) {
-					_searchResults = _updateSearchResultsTask.Result;
-					RequestListRefresh(false);
-				}
-
-				_updateSearchResultsTask = null;
-			}
-
-			if (currentSearchTerm != _lastSearchTerm && _updateSearchResultsTask == null) {
-				_updateSearchResultsTask = Task.Run(() => SearchResults.Create(currentSearchTerm, GetIncludedObjects()));
-				
-				if (!doNotSyncWithOtherLists) {
-					foreach (var otherList in otherListsToSyncSearchWith)
-						otherList.SetSearchTermFromOtherList(currentSearchTerm);	
-				}
-				
-				_lastSearchTerm = currentSearchTerm;
-			}
-		}*/
-		
 		private void UpdateSearch(bool doNotSyncWithOtherLists) {
 			var currentSearchTerm = searchInput.GetInputText();
 			_isSearchTermEmpty = string.IsNullOrWhiteSpace(currentSearchTerm);
@@ -187,10 +188,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					otherList.SetSearchTermFromOtherList(currentSearchTerm);	
 			}
 
-			RequestListRefresh(false);
-
 			_searchResults = SearchResults.Create(currentSearchTerm, GetIncludedObjects());
 			_lastSearchTerm = currentSearchTerm;
+			
+			RequestListRefresh(false);
 		}
 
 		public void SetSearchTermFromOtherList(string term) {
@@ -211,6 +212,15 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			_filterResults[filter] = FilterResults.Create(filter, GetIncludedObjects());
 			
 			RequestListRefresh(false);
+		}
+
+		public bool IsIndexInGroupCollapsed(int index) {
+			return _currentGroupCollapsed.GetValueOrDefault(index, false);
+		}
+
+		public void SetIndexInGroupCollapsed(int index, bool isCollapsed) {
+			_currentGroupCollapsed[index] = isCollapsed;
+			RequestListRefresh(true);
 		}
 		
 		public void ToggleFiltersPanel() {
@@ -256,8 +266,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private void UpdateListRefresh() {
 			if (_listRefreshTask is { IsCompleted: true }) {
 				if (_listRefreshTask.IsCompletedSuccessfully) {
-					_filteredObjects = _listRefreshTask.Result.Objects;
-					objectList.SetObjects(_filteredObjects, _listRefreshTask.Result.PreserveScroll);
+					_filteredObjects = _listRefreshTask.Result.Entries.Select(entry => entry.ObjectData).ToList();
+					objectList.SetEntries(_listRefreshTask.Result.Entries, ExcludedObjectsFromFilters, _listRefreshTask.Result.PreserveScroll);
 				} else {
 					Logger.LogException(_listRefreshTask.Exception);
 					_requestedListRefresh = true;
@@ -276,34 +286,75 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			}
 		}
 		
-		private Task<(bool, List<ObjectDataCD>)> RunListRefreshTask(bool preserveScrollPosition) {
-			// Filtering
+		private Task<(bool, List<VirtualObjectList.Entry>)> RunListRefreshTask(bool preserveScrollPosition) {
 			return Task.Run(() => {
-				var allObjects = GetIncludedObjects();
-				var filteredObjects = UseReverseSorting
-					? allObjects
-						.Where(MatchesFilters)
-						.OrderByDescending(objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.Favorited) ? 1 : 0)
-						.ThenByDescending(objectData => _sorterResults[_currentSorterIndex].GetScore(objectData))
-						.ThenByDescending(objectData => _sorterResults[0].GetScore(objectData))
-						.ToList()
-					: allObjects
-						.Where(MatchesFilters)
-						.OrderByDescending(objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.Favorited) ? 1 : 0)
-						.ThenBy(objectData => _sorterResults[_currentSorterIndex].GetScore(objectData))
-						.ThenBy(objectData => _sorterResults[0].GetScore(objectData))
-						.ToList();
+				IncludedObjects = 0;
+				ExcludedObjectsFromFilters = 0;
 
-				IncludedObjects = filteredObjects.Count;
+				var allObjects = GetIncludedObjects();
+				var results = new List<VirtualObjectList.Entry>();
+
+				foreach (var grouping in GetIncludedObjects().Where(objectData => _isSearchTermEmpty || _searchResults.Matches(objectData)).GroupBy(objectData => _groupResults[_currentGroupIndex].GetGroup(objectData))) {
+					var groupName = _groupResults[_currentGroupIndex].GetGroupName(grouping.Key);
+					var groupCount = grouping.Count();
+					var headerIndex = -1;
+
+					if (groupName != null) {
+						headerIndex = results.Count;
+
+						if (IsIndexInGroupCollapsed(grouping.Key)) {
+							results.Add(VirtualObjectList.Entry.Header(grouping.Key, grouping.Where(MatchesFilters).Count(), groupName));
+							continue;
+						} else {
+							// replaced further down
+							results.Add(default);
+						}
+					}
+
+					var includedObjectsFromFilters = 0;
+
+					if (UseReverseSorting) {
+						var sortedObjectDatas = grouping
+							.Where(MatchesFilters)
+							.OrderByDescending(objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.Favorited) ? 1 : 0)
+							.ThenByDescending(objectData => _sorterResults[_currentSorterIndex].GetScore(objectData))
+							.ThenByDescending(objectData => _sorterResults[0].GetScore(objectData));
+
+						foreach (var objectData in sortedObjectDatas) {
+							results.Add(VirtualObjectList.Entry.Object(objectData));
+							IncludedObjects++;
+							includedObjectsFromFilters++;
+						}
+					} else {
+						var sortedObjectDatas = grouping
+							.Where(MatchesFilters)
+							.OrderByDescending(objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.Favorited) ? 1 : 0)
+							.ThenBy(objectData => _sorterResults[_currentSorterIndex].GetScore(objectData))
+							.ThenBy(objectData => _sorterResults[0].GetScore(objectData));
+						
+						foreach (var objectData in sortedObjectDatas) {
+							results.Add(VirtualObjectList.Entry.Object(objectData));
+							IncludedObjects++;
+							includedObjectsFromFilters++;
+						}
+					}
+
+					if (headerIndex != -1)
+						results[headerIndex] = VirtualObjectList.Entry.Header(grouping.Key, includedObjectsFromFilters, groupName);
+					
+					var excludedObjectsFromFilters = groupCount - includedObjectsFromFilters;
+					if (excludedObjectsFromFilters > 0 && (headerIndex == -1 || includedObjectsFromFilters > 0))
+						results.Add(VirtualObjectList.Entry.ExtraAmount(excludedObjectsFromFilters));
+				}
+
 				ExcludedObjects = allObjects.Count - IncludedObjects;
 
-				return (preserveScrollPosition, filteredObjects);
+				return (preserveScrollPosition, results);
 			});
 		}
 
 		private bool MatchesFilters(ObjectDataCD objectData) {
-			return _searchResults.Matches(objectData)
-			       && !(canHideUndiscoveredObjects && OptionsManager.Instance.DiscoveryMode && _isSearchTermEmpty && !_discoveredFilterResults.Matches(objectData))
+			return !(canHideUndiscoveredObjects && OptionsManager.Instance.DiscoveryMode && _isSearchTermEmpty && !_discoveredFilterResults.Matches(objectData))
 			       && PrimaryFiltersPanel.FiltersToInclude.All(group => group.Any(filter => _filterResults[filter].Matches(objectData)))
 			       && !PrimaryFiltersPanel.FiltersToExclude.Any(group => group.Any(filter => _filterResults[filter].Matches(objectData)));
 		}
@@ -312,6 +363,6 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		
 		public abstract List<(string Group, Filter Filter)> GetFilters();
 		
-		public abstract List<ObjectDataCD> GetIncludedObjects();
+		public abstract HashSet<ObjectDataCD> GetIncludedObjects();
 	}
 }

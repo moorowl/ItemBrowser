@@ -16,8 +16,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			return ItemBrowserAPI.Registry.ChecklistFilters;
 		}
 
-		public override List<ObjectDataCD> GetIncludedObjects() {
-			return ItemBrowserAPI.Registry.ChecklistObjects.ToList();
+		public override HashSet<ObjectDataCD> GetIncludedObjects() {
+			return ItemBrowserAPI.Registry.ChecklistObjects;
 		}
 		
 		protected override void OnShow(bool isFirstTimeShowing) {

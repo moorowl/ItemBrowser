@@ -31,7 +31,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
 						
 						// Some scenes contain objects that can't be placed for some reason
-						if (objectInfo == null || objectInfo.prefabInfos[0].prefab == null)
+						if (objectInfo == null || objectInfo.prefabInfo.GetGraphical() == null)
 							continue;
 						
 						allObjectDatas.Add(new ObjectDataCD {

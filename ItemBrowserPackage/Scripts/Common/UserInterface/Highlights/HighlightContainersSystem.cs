@@ -38,7 +38,7 @@ namespace ItemBrowser.Common.UserInterface.Highlights {
 				
 				state.Dependency = new UpdateHighlightedEntitiesJob {
 					ObjectsToHighlight = _objectsToHiglight,
-				}.Schedule(_entitiesToHighlightQuery, state.Dependency);	
+				}.ScheduleParallel(_entitiesToHighlightQuery, state.Dependency);	
 			}
 			
 			foreach (var (visualOutlineCD, highlightContainerCD) in SystemAPI.Query<RefRW<VisualOutlineCD>, RefRO<HighlightContainerCD>>().WithAll<EntityMonoBehaviourCD, ContainedObjectsBuffer>()) {

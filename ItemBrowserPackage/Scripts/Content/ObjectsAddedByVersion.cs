@@ -1,25 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using ItemBrowser.Common.Api;
 
 namespace ItemBrowser.Content {
 	public class ObjectsAddedByVersion {
 		public readonly string Name;
 		public readonly ObjectID Icon;
-		private readonly HashSet<ObjectID> _objects;
-
-		public IEnumerable<ObjectID> Objects => _objects;
-		public bool HasAnyIndexedItems => _objects.Any(id => ItemBrowserAPI.IsItemIndexed(new ObjectDataCD {
-			objectID = id
-		}));
-		public bool HasAnyIndexedCreatures => _objects.Any(id => ItemBrowserAPI.IsCreatureIndexed(new ObjectDataCD {
-			objectID = id
-		}));
+		public readonly HashSet<ObjectID> Objects;
 
 		public ObjectsAddedByVersion(string name, ObjectID icon, ObjectID[] ids) {
 			Name = name;
 			Icon = icon;
-			_objects = new HashSet<ObjectID>(ids);
+			Objects = new HashSet<ObjectID>(ids);
+		}
+
+		public bool Contains(ObjectID id) {
+			return Objects.Contains(id);
 		}
 		
 		public static readonly ObjectsAddedByVersion Ck044 = new("0.4.4", ObjectID.Painting, new[] {

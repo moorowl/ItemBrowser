@@ -51,7 +51,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				color = UserInterfaceUtility.DescriptionColor
 			});
 			description.AddPadding();
-			description.AddMaterialsFor(entry.Result.Id);
+			description.AddMaterialsForRecipe(entry.Result.Id);
 		}
 		
 		private static List<CraftingObject> GetRequiredObjectsToCraft((ObjectID Id, int Variation) item) {

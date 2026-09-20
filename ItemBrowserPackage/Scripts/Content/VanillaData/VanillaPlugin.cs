@@ -34,12 +34,15 @@ namespace ItemBrowser.Content.VanillaData {
 				if (IsDeprecatedObject(objectData))
 					registry.AddDeprecatedObject(objectData);
 			}
+
+			foreach (var objectData in ObjectUtility.GetAllObjectsAndCookedFood()) {
+				if (PugDatabase.HasComponent<CookingIngredientCD>(objectData) || (objectData.variation > 0 && PugDatabase.HasComponent<CookedFoodCD>(objectData)))
+					registry.AddToCooking(objectData);
+			}
 		}
 
 		public override void OnRegister(ItemBrowserRegistry registry) {
 			AddProviders(registry);
-			AddSorters(registry);
-			AddFilters(registry);
 		}
 
 		public override void OnLateRegister(ItemBrowserRegistry registry) {
@@ -66,6 +69,9 @@ namespace ItemBrowser.Content.VanillaData {
 					}
 				}
 			}
+
+			AddSorters(registry);
+			AddFilters(registry);
 		}
 
 		private static void AddProviders(ItemBrowserRegistry registry) {
@@ -114,8 +120,15 @@ namespace ItemBrowser.Content.VanillaData {
 		private static void AddSorters(ItemBrowserRegistry registry) {
 			registry.AddSorter(new Sorter("ItemBrowser-Sorters/Alphabetical") {
 				Function = allObjectData => allObjectData.OrderByDescending(objectData => {
-					var localizedDisplayName = ObjectUtility.GetLocalizedDisplayName(objectData);
-					return localizedDisplayName ?? $"ZZZ+{ObjectUtility.GetInternalName(objectData)}:{objectData.variation}";
+					if (PugDatabase.HasComponent<CookedFoodCD>(objectData)) {
+						var primaryIngredient = CookedFoodCD.GetPrimaryIngredientFromVariation(objectData.variation);
+						var secondaryIngredient = CookedFoodCD.GetSecondaryIngredientFromVariation(objectData.variation);
+
+						if (primaryIngredient != ObjectID.None && secondaryIngredient != ObjectID.None)
+							return $"{ObjectUtility.GetLocalizedDisplayName(primaryIngredient)}+{ObjectUtility.GetLocalizedDisplayName(secondaryIngredient)}";
+					}
+
+					return ObjectUtility.GetLocalizedDisplayName(objectData) ?? $"ZZZ+{ObjectUtility.GetInternalName(objectData)}:{objectData.variation}";
 				}, StringComparer.Create(LocalizationManager.CurrentCulture, true)),
 				Scope = FilterAndSorterScope.All
 			});
@@ -285,31 +298,31 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = damageGroup
 			});
 			registry.AddFilter(damageGroup, new Filter($"{damageGroup}_PhysicalMeleeDamage") {
-				Icon = ObjectID.RustyDagger,
+				IconFromObject = ObjectID.RustyDagger,
 				Function = objectData => ObjectUtility.GetDamage(objectData, ObjectUtility.DamageCategory.PhysicalMelee) > 0,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist,
 				Group = damageGroup
 			});
 			registry.AddFilter(damageGroup, new Filter($"{damageGroup}_PhysicalRangeDamage") {
-				Icon = ObjectID.Slingshot,
+				IconFromObject = ObjectID.Slingshot,
 				Function = objectData => ObjectUtility.GetDamage(objectData, ObjectUtility.DamageCategory.PhysicalRange) > 0,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist,
 				Group = damageGroup
 			});
 			registry.AddFilter(damageGroup, new Filter($"{damageGroup}_MagicDamage") {
-				Icon = ObjectID.BasicStaff,
+				IconFromObject = ObjectID.BasicStaff,
 				Function = objectData => ObjectUtility.GetDamage(objectData, ObjectUtility.DamageCategory.Magic) > 0,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist,
 				Group = damageGroup
 			});
 			registry.AddFilter(damageGroup, new Filter($"{damageGroup}_SummonDamage") {
-				Icon = ObjectID.TomeOfRange,
+				IconFromObject = ObjectID.TomeOfRange,
 				Function = objectData => ObjectUtility.GetDamage(objectData, ObjectUtility.DamageCategory.Summon) > 0,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist,
 				Group = damageGroup
 			});
 			registry.AddFilter(damageGroup, new Filter($"{damageGroup}_ExplosiveDamage") {
-				Icon = ObjectID.Bomb,
+				IconFromObject = ObjectID.Bomb,
 				Function = objectData => ObjectUtility.GetDamage(objectData, ObjectUtility.DamageCategory.Explosive) > 0,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist,
 				Group = damageGroup
@@ -320,10 +333,10 @@ namespace ItemBrowser.Content.VanillaData {
 			// Item equipment
 			const string equipmentGroup = "ItemBrowser-Filters/Equipment";
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Weapon") {
-				Icon = ObjectID.TinDagger,
+				IconFromObject = ObjectID.TinDagger,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
-					if (PugDatabase.HasComponent<HasWeaponDamageCD>(objectData) && !ObjectUtility.ToolObjectTypes.Contains(objectType) && objectType != ObjectType.PlaceablePrefab && !(PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam))
+					if (PugDatabase.HasComponent<HasWeaponDamageCD>(objectData) && !ObjectUtility.ToolObjectTypes.Contains(objectType) && objectType != ObjectType.PlaceablePrefab && objectType != ObjectType.TrainingDummy && !(PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam))
 						return true;
 
 					return PugDatabase.TryGetComponent<SecondaryUseCD>(objectData, out var secondaryUse) && secondaryUse.summonsMinion;
@@ -332,16 +345,16 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Tool") {
-				Icon = ObjectID.Bucket,
+				IconFromObject = ObjectID.Bucket,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
-					return (ObjectUtility.ToolObjectTypes.Contains(objectType) && objectType != ObjectType.PlaceablePrefab) || (PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam);
+					return (ObjectUtility.ToolObjectTypes.Contains(objectType) && objectType != ObjectType.PlaceablePrefab && objectType != ObjectType.TrainingDummy) || (PugDatabase.TryGetComponent<BeamWeaponCD>(objectData, out var beamWeaponCD) && beamWeaponCD.isStickyBeam);
 				},
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist,
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Armor") {
-				Icon = ObjectID.IronShield,
+				IconFromObject = ObjectID.IronShield,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return ObjectUtility.ArmorObjectTypes.Contains(objectType);
@@ -350,7 +363,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Helm") {
-				Icon = ObjectID.IronHelm,
+				IconFromObject = ObjectID.IronHelm,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Helm;
@@ -359,7 +372,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_BreastArmor") {
-				Icon = ObjectID.IronBreastArmor,
+				IconFromObject = ObjectID.IronBreastArmor,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.BreastArmor;
@@ -368,7 +381,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_PantsArmor") {
-				Icon = ObjectID.IronPantsArmor,
+				IconFromObject = ObjectID.IronPantsArmor,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.PantsArmor;
@@ -377,7 +390,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Accessory") {
-				Icon = ObjectID.HeartBerryNecklace,
+				IconFromObject = ObjectID.HeartBerryNecklace,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return ObjectUtility.AccessoryObjectTypes.Contains(objectType);
@@ -386,7 +399,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Ring") {
-				Icon = ObjectID.CavelingMothersRing,
+				IconFromObject = ObjectID.CavelingMothersRing,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Ring;
@@ -395,7 +408,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Necklace") {
-				Icon = ObjectID.GoldCrystalNecklace,
+				IconFromObject = ObjectID.GoldCrystalNecklace,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Necklace;
@@ -404,7 +417,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_OffHand") {
-				Icon = ObjectID.OracleDeck,
+				IconFromObject = ObjectID.OracleDeck,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Offhand;
@@ -413,7 +426,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Bag") {
-				Icon = ObjectID.ExplorerBackpack,
+				IconFromObject = ObjectID.ExplorerBackpack,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Bag;
@@ -422,7 +435,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Pouch") {
-				Icon = ObjectID.ValuablePouch,
+				IconFromObject = ObjectID.ValuablePouch,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Pouch;
@@ -431,7 +444,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Lantern") {
-				Icon = ObjectID.Lantern,
+				IconFromObject = ObjectID.Lantern,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
 					return objectType == ObjectType.Lantern;
@@ -440,7 +453,7 @@ namespace ItemBrowser.Content.VanillaData {
 				Group = equipmentGroup
 			});
 			registry.AddFilter(equipmentGroup, new Filter($"{equipmentGroup}_Pet") {
-				Icon = ObjectID.PetCat,
+				IconFromObject = ObjectID.PetCat,
 				Function = PugDatabase.HasComponent<PetCD>,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist,
 				Group = equipmentGroup
@@ -451,61 +464,96 @@ namespace ItemBrowser.Content.VanillaData {
 			// Creature type
 			const string typeGroup = "ItemBrowser-Filters/Type";
 			registry.AddFilter(typeGroup, new Filter($"{typeGroup}_Hostile") {
-				Icon = ObjectID.AggressiveSlimeBlob,
+				IconFromObject = ObjectID.AggressiveSlimeBlob,
 				Function = objectData => !ObjectCategoryTagsCD.HasTag(PugDatabase.GetComponent<ObjectCategoryTagsCD>(objectData).tagsBitMask, ObjectCategoryTag.NonHostileCreature)
 				                         && !PugDatabase.HasComponent<CattleCD>(objectData)
+				                         && !PugDatabase.HasComponent<MountCD>(objectData)
 				                         && !PugDatabase.HasComponent<CritterCD>(objectData)
 				                         && !PugDatabase.HasComponent<MerchantCD>(objectData),
 				Scope = FilterAndSorterScope.Creatures,
 				Group = typeGroup
 			});
 			registry.AddFilter(typeGroup, new Filter($"{typeGroup}_Boss") {
-				Icon = ObjectID.SlimeBossCrystal,
+				IconFromObject = ObjectID.SlimeBossCrystal,
 				Function = objectData => PugDatabase.HasComponent<BossCD>(objectData) || ObjectUtility.GetCategories(objectData).Contains("Boss/BossCreature"),
 				Scope = FilterAndSorterScope.Creatures,
 				Group = typeGroup
 			});
 			registry.AddFilter(typeGroup, new Filter($"{typeGroup}_Merchant") {
-				Icon = ObjectID.SlimeMerchant,
+				IconFromObject = ObjectID.SlimeMerchant,
 				Function = PugDatabase.HasComponent<MerchantCD>,
 				Scope = FilterAndSorterScope.Creatures,
 				Group = typeGroup
 			});
 			registry.AddFilter(typeGroup, new Filter($"{typeGroup}_Cattle") {
-				Icon = ObjectID.Cow,
-				Function = PugDatabase.HasComponent<CattleCD>,
+				IconFromObject = ObjectID.Cow,
+				Function = objectData => PugDatabase.HasComponent<CattleCD>(objectData) || PugDatabase.HasComponent<MountCD>(objectData),
 				Scope = FilterAndSorterScope.Creatures | FilterAndSorterScope.Checklist,
 				Group = typeGroup
 			});
 			registry.AddFilter(typeGroup, new Filter($"{typeGroup}_Critter") {
-				Icon = ObjectID.ButterflySunset,
+				IconFromObject = ObjectID.ButterflySunset,
 				Function = PugDatabase.HasComponent<CritterCD>,
 				Scope = FilterAndSorterScope.Creatures,
 				Group = typeGroup
 			});
+			
+			var ingredientTypes = new(IngredientType Type, ObjectID Icon)[] {
+				(IngredientType.Plant, ObjectID.HeartBerry),
+				(IngredientType.Fish, ObjectID.OrangeCaveGuppy),
+				(IngredientType.Meat, ObjectID.Egg)
+			};
+
+			foreach (var ingredientType in ingredientTypes) {
+				registry.AddFilter(typeGroup, new Filter($"{typeGroup}_{ingredientType.Type}") {
+					IconFromObject = ingredientType.Icon,
+					Function = objectData => {
+						if (PugDatabase.HasComponent<CookedFoodCD>(objectData)) {
+							var primaryIngredient = new ObjectDataCD {
+								objectID = CookedFoodCD.GetPrimaryIngredientFromVariation(objectData.variation)
+							};
+							var secondaryIngredient = new ObjectDataCD {
+								objectID = CookedFoodCD.GetSecondaryIngredientFromVariation(objectData.variation)
+							};
+
+							if (PugDatabase.TryGetComponent<CookingIngredientCD>(primaryIngredient, out var primaryCookingIngredientCD) && primaryCookingIngredientCD.ingredientType == ingredientType.Type)
+								return true;
+							
+							if (PugDatabase.TryGetComponent<CookingIngredientCD>(secondaryIngredient, out var secondaryCookingIngredientCD) && secondaryCookingIngredientCD.ingredientType == ingredientType.Type)
+								return true;
+
+							return false;
+						}
+						
+						return PugDatabase.TryGetComponent<CookingIngredientCD>(objectData, out var cookingIngredientCD) && cookingIngredientCD.ingredientType == ingredientType.Type;
+					},
+					Scope = FilterAndSorterScope.Cooking,
+					Group = typeGroup
+				});
+			}
 		}
 		
 		private static void AddFilters_Utility(ItemBrowserRegistry registry) {
 			// Utility
 			const string utilityGroup = "ItemBrowser-Filters/Utility";
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Placeable") {
-				Icon = ObjectID.WoodTable,
+				IconFromObject = ObjectID.WoodTable,
 				Function = objectData => {
 					var objectType = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).objectType;
-					return objectType == ObjectType.PlaceablePrefab
+					return (objectType == ObjectType.PlaceablePrefab || objectType == ObjectType.TrainingDummy)
 					       && PugDatabase.TryGetComponent<ObjectPropertiesCD>(objectData, out var properties)
 					       && properties.Has(PropertyID.PlaceableObject.placeableObject);
 				},
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist
 			});
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Consumable") {
-				Icon = ObjectID.HeartberrySoda,
+				IconFromObject = ObjectID.HeartberrySoda,
 				Function = objectData => PugDatabase.HasComponent<GivesConditionsWhenConsumedBuffer>(objectData)
 				                         || (PugDatabase.TryGetComponent<CastItemCD>(objectData, out var castItem) && castItem.useType != CastItemUseType.LeashCattle),
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist
 			});
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_CookingIngredient") {
-				Icon = ObjectID.HeartBerry,
+				IconFromObject = ObjectID.HeartBerry,
 				Function = objectData => {
 					var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
 					return objectInfo.tags.Contains(ObjectCategoryTag.CookingIngredient);
@@ -513,28 +561,35 @@ namespace ItemBrowser.Content.VanillaData {
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist
 			});
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Paintable") {
-				Icon = ObjectID.PaintBrushTeal,
+				IconFromObject = ObjectID.PaintBrushTeal,
 				Function = PugDatabase.HasComponent<PaintableObjectCD>,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist
 			});
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Craftable") {
-				Icon = ObjectID.CopperWorkbench,
+				IconFromObject = ObjectID.CopperWorkbench,
 				Function = objectData => {
-					var objectInfo = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation);
-					if (objectInfo == null || !ItemBrowserAPI.ObjectEntryRegistry.GetEntries<Crafting>(ObjectEntryType.Source, objectData).Any())
+					if (!ItemBrowserAPI.ObjectEntryRegistry.GetEntries<Crafting>(ObjectEntryType.Source, objectData).Any())
 						return false;
 
-					return ObjectUtility.HasMaterialsInInventoryAndNearbyChestsToCraft(Manager.main.player, objectInfo);
+					return ObjectUtility.HasMaterialsInInventoryAndNearbyChestsToCraft(Manager.main.player, objectData);
 				},
 				FunctionIsDynamic = true,
 				CausesItemCraftingRequirementsToDisplay = true,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist
 			});
+			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Craftable") {
+				IconFromObject = ObjectID.CookingPot,
+				Function = objectData => {
+					return ObjectUtility.HasMaterialsInInventoryAndNearbyChestsToCraft(Manager.main.player, objectData);
+				},
+				FunctionIsDynamic = true,
+				Scope = FilterAndSorterScope.Cooking
+			});
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Discovered") {
-				Icon = ObjectID.CartographyTable,
+				IconFromObject = ObjectID.CartographyTable,
 				Function = DiscoveredTracker.HasBeenDiscovered,
 				FunctionIsDynamic = true,
-				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist
+				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist | FilterAndSorterScope.Cooking
 			});
 			/*registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Collected") {
 				Icon = ObjectID.CritterCatcher,
@@ -543,27 +598,46 @@ namespace ItemBrowser.Content.VanillaData {
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Checklist
 			});*/
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_ExcludedFromChecklist") {
-				Icon = ObjectID.WallExplosiveBlock,
+				IconFromObject = ObjectID.WallExplosiveBlock,
 				Function = objectData => OptionsManager.Instance.HasTag(objectData, ObjectTagType.ExcludeFromChecklist),
 				FunctionIsDynamic = true,
 				Scope = FilterAndSorterScope.Checklist
 			});
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_NonObtainable") {
-				Icon = ObjectID.WallObsidianBlock,
+				IconFromObject = ObjectID.WallObsidianBlock,
 				Function = ObjectUtility.IsNonObtainable,
 				Scope = FilterAndSorterScope.Items
 			});
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_Technical") {
-				Icon = ObjectID.MechanicalPart,
+				IconFromObject = ObjectID.MechanicalPart,
 				Function = ItemBrowserAPI.IsTechnicalObject,
 				DefaultState = () => FilterState.Exclude,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Creatures
 			});
 			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_NoSources") {
-				Icon = ObjectID.JingleJamCookie,
+				IconFromObject = ObjectID.JingleJamCookie,
 				Function = objectData => !ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, objectData).Any(),
 				DefaultState = () => ItemBrowserSlot.CanCheatInObjects ? FilterState.None : FilterState.Exclude,
 				Scope = FilterAndSorterScope.Items | FilterAndSorterScope.Creatures
+			});
+			registry.AddFilter(utilityGroup, new Filter($"{utilityGroup}_NoSources") {
+				IconFromObject = ObjectID.JingleJamCookie,
+				Function = objectData => {
+					if (PugDatabase.HasComponent<CookedFoodCD>(objectData)) {
+						var primaryIngredient = new ObjectDataCD {
+							objectID = CookedFoodCD.GetPrimaryIngredientFromVariation(objectData.variation)
+						};
+						var secondaryIngredient = new ObjectDataCD {
+							objectID = CookedFoodCD.GetSecondaryIngredientFromVariation(objectData.variation)
+						};
+
+						return !ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, primaryIngredient).Any() || !ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, secondaryIngredient).Any();
+					}
+
+					return !ItemBrowserAPI.ObjectEntryRegistry.GetAllEntries(ObjectEntryType.Source, objectData).Any();
+				},
+				DefaultState = () => ItemBrowserSlot.CanCheatInObjects ? FilterState.None : FilterState.Exclude,
+				Scope = FilterAndSorterScope.Cooking
 			});
 		}
 		
@@ -604,6 +678,31 @@ namespace ItemBrowser.Content.VanillaData {
 					Group = rarityGroup
 				});
 			}
+			
+			registry.AddFilter(rarityGroup, new Filter($"{rarityGroup}_FoodUncommonOrRare") {
+				IconFromObject = ObjectID.CookedCake,
+				Function = objectData => {
+					if (!PugDatabase.HasComponent<CookedFoodCD>(objectData))
+						return false;
+					
+					var rarity = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).rarity;
+					return rarity == Rarity.Uncommon || rarity == Rarity.Rare;
+				},
+				Scope = FilterAndSorterScope.Cooking,
+				Group = rarityGroup
+			});
+			registry.AddFilter(rarityGroup, new Filter($"{rarityGroup}_FoodEpic") {
+				IconFromObject = ObjectID.CookedCakeRare,
+				Function = objectData => {
+					if (!PugDatabase.HasComponent<CookedFoodCD>(objectData))
+						return false;
+					
+					var rarity = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).rarity;
+					return rarity == Rarity.Epic;
+				},
+				Scope = FilterAndSorterScope.Cooking,
+				Group = rarityGroup
+			});
 		}
 		
 		private static void AddFilters_Level(ItemBrowserRegistry registry) {
@@ -628,22 +727,17 @@ namespace ItemBrowser.Content.VanillaData {
 			// Version added
 			const string versionGroup = "ItemBrowser-Filters/VersionAdded";
 			foreach (var version in ObjectsAddedByVersion.AllVersions) {
-				var filterScope = FilterAndSorterScope.None;
-				if (version.HasAnyIndexedItems)
-					filterScope |= FilterAndSorterScope.Items;
-				if (version.HasAnyIndexedCreatures)
-					filterScope |= FilterAndSorterScope.Creatures;
-				if (version.Objects.Any(id => IsChecklistObject(new ObjectDataCD { objectID = id })))
-					filterScope |= FilterAndSorterScope.Checklist;
+				if (!TryGetScopeForObjectList(version.Objects, out var scope))
+					continue;
 
 				registry.AddFilter(versionGroup, new Filter($"{versionGroup}_Version") {
-					Icon = version.Icon,
+					IconFromObject = version.Icon,
 					NameFormatFields = new[] { version.Name },
 					LocalizeNameFormatFields = false,
 					DescriptionFormatFields = new[] { version.Name },
 					LocalizeDescriptionFormatFields = false,
 					Function = objectData => version.Objects.Contains(objectData.objectID),
-					Scope = filterScope,
+					Scope = scope,
 					Group = versionGroup
 				});
 			}
@@ -698,7 +792,7 @@ namespace ItemBrowser.Content.VanillaData {
 
 			return true;
 		}
-
+		
 		private static bool IsTechnicalObject(ObjectDataCD objectData) {
 			return ObjectUtility.GetLocalizedDisplayName(objectData) == null && ObjectUtility.GetUnlocalizedDisplayNameNote(objectData) == null;
 		}

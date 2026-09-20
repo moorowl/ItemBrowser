@@ -6,6 +6,7 @@ namespace ItemBrowser.Utilities.Extensions {
 	public static class ScrollWindowExtensions {
 		private static readonly MemberInfo MiScrollable = typeof(UIScrollWindow).GetMembersChecked().First(x => x.GetNameChecked() == "_scrollable");
 		private static readonly MemberInfo MiUpdateScrollHeight = typeof(UIScrollWindow).GetMembersChecked().First(x => x.GetNameChecked() == "UpdateScrollHeight");
+		private static readonly MemberInfo MiSetScrollablePosition = typeof(UIScrollWindow).GetMembersChecked().First(x => x.GetNameChecked() == "SetScrollablePosition");
 		
 		public static void SetScrollValueImmediately(this UIScrollWindow scrollWindow, float value, IScrollable scrollable) {
 			// Update scroll height immediately, since it only happens normally every LateUpdate
@@ -25,6 +26,14 @@ namespace ItemBrowser.Utilities.Extensions {
 				scrollValue = 1f;
 			
 			return scrollValue;
+		}
+
+		public static void ScrollToPosition(this UIScrollWindow scrollWindow, float position) {
+			API.Reflection.Invoke(MiSetScrollablePosition, scrollWindow, position);
+		}
+
+		public static float GetScrollPosition(this UIScrollWindow scrollWindow) {
+			return scrollWindow.scrollingContent.localPosition.y;
 		}
 	}
 }

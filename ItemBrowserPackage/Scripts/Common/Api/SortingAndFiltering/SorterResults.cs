@@ -16,10 +16,10 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 			return _scores.GetValueOrDefault(objectData, -1);
 		}
 
-		public static SorterResults Create(Sorter sorter) {
+		public static SorterResults Create(Sorter sorter, HashSet<ObjectDataCD> objectsToSort) {
 			var scores = new Dictionary<ObjectDataCD, int>();
 			
-			foreach (var objectData in sorter.Function(ObjectUtility.GetAllObjects()))
+			foreach (var objectData in sorter.Function(objectsToSort))
 				scores.TryAdd(objectData, scores.Count);
 
 			return new SorterResults(scores);

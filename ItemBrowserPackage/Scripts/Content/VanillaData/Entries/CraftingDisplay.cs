@@ -68,7 +68,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 				color = UserInterfaceUtility.DescriptionColor
 			});
 			
-			description.AddMaterialsFor(entry.Result.Id);
+			description.AddMaterialsForRecipe(entry.Result.Id);
 
 			// Crafting time
 			if (entry.CraftingTime > 0) {

@@ -13,14 +13,18 @@ namespace ItemBrowser.Common.Api {
 		internal readonly HashSet<ObjectDataCD> TechnicalObjects = new();
 		internal readonly HashSet<ObjectDataCD> DeprecatedObjects = new();
 		internal readonly HashSet<ObjectDataCD> ChecklistObjects = new();
+		internal readonly HashSet<ObjectDataCD> CookingObjects = new();
 		
 		internal readonly List<(string Group, Filter Filter)> ItemFilters = new();
 		internal readonly List<(string Group, Filter Filter)> CreatureFilters = new();
 		internal readonly List<(string Group, Filter Filter)> ChecklistFilters = new();
+		internal readonly List<(string Group, Filter Filter)> CookingFilters = new();
+		
 
 		internal readonly List<Sorter> ItemSorters = new();
 		internal readonly List<Sorter> CreatureSorters = new();
 		internal readonly List<Sorter> ChecklistSorters = new();
+		internal readonly List<Sorter> CookingSorters = new();
 
 		internal readonly List<ObjectEntryProvider> EntryProviders = new();
 		internal readonly Dictionary<Type, ObjectEntryDisplayBase> EntryToDisplayComponent = new();
@@ -49,6 +53,14 @@ namespace ItemBrowser.Common.Api {
 		
 		public void RemoveFromChecklist(ObjectDataCD objectData) {
 			ChecklistObjects.Remove(objectData);
+		}
+		
+		public void AddToCooking(ObjectDataCD objectData) {
+			CookingObjects.Add(objectData);
+		}
+		
+		public void RemoveFromCooking(ObjectDataCD objectData) {
+			CookingObjects.Remove(objectData);
 		}
 		
 		public void AddTechnicalObject(ObjectDataCD objectData) {
@@ -98,6 +110,9 @@ namespace ItemBrowser.Common.Api {
 			
 			if (filter.Scope.HasFlag(FilterAndSorterScope.Checklist))
 				ChecklistFilters.Add((group, filter));
+			
+			if (filter.Scope.HasFlag(FilterAndSorterScope.Cooking))
+				CookingFilters.Add((group, filter));
 		}
 		
 		public void AddSorter(Sorter sorter) {
@@ -109,6 +124,9 @@ namespace ItemBrowser.Common.Api {
 			
 			if (sorter.Scope.HasFlag(FilterAndSorterScope.Checklist))
 				ChecklistSorters.Add(sorter);
+			
+			if (sorter.Scope.HasFlag(FilterAndSorterScope.Cooking))
+				CookingSorters.Add(sorter);
 		}
 		
 		public void AddPooledElement(PooledElement element) {

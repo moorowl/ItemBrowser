@@ -45,8 +45,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						continue;
 					
 					// need to check if this is actually a crafting station, signs have a CraftingAuthoring for some reason
-					var graphicalPrefab = objectInfo.prefabInfos[0].prefab.gameObject;
-					if (graphicalPrefab == null || !graphicalPrefab.TryGetComponent<EntityMonoBehaviour>(out var entityMono) || (entityMono is not CraftingBuilding && entityMono is not PlayerController))
+					if (!ObjectUtility.TryGetEntityMono(objectData, out var entityMono) || (entityMono is not CraftingBuilding && entityMono is not PlayerController))
 						continue;
 					
 					using var canCraftObjects = GetUnfilteredRecipes(objectData.objectID, objectPropertiesCD, Allocator.Temp);
@@ -112,7 +111,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 					if (!PugDatabase.TryGetComponent<CastItemCD>(objectData, out var castItemCD) || castItemCD.useType != CastItemUseType.CombineMaterials)
 						continue;
 
-					if (!PugDatabase.TryGetComponent<ParchmentRecipeCD>(objectData, out var parchmentRecipeCD))
+					if (!PugDatabase.TryGetComponent<RecipeCD>(objectData, out var parchmentRecipeCD))
 						continue;
 
 					var castTime = PugDatabase.TryGetComponent<CooldownCD>(objectData, out var cooldown) ? cooldown.cooldown : 0f;

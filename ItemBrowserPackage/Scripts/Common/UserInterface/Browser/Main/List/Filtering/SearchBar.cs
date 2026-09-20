@@ -19,8 +19,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private bool _oldHighlightSearchResults;
 		private string _lastSearchTerm;
 
-		private bool CanHighlightSearchResults => !string.IsNullOrWhiteSpace(GetInputText());
-		private bool CanClearSearchResults => GetInputText().Length > 0;
+		public bool CanHighlightSearchResults => !string.IsNullOrWhiteSpace(GetInputText());
+		public bool CanClearSearchResults => GetInputText().Length > 0;
 
 		public override void OnLeftClicked(bool mod1, bool mod2) {
 			if (UserInterfaceUtility.IsUsingMouseAndKeyboard)

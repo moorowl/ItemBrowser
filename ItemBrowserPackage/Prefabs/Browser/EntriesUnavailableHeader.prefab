@@ -205,6 +205,9 @@ MonoBehaviour:
   centerInParent: 0
   activeInPlatforms: -1
   activeInStoreFronts: -1
+  onResized:
+    m_PersistentCalls:
+      m_Calls: []
   renderOnStart: 1
   keepEnabledOnStart: 1
   alwaysUpdateDynamicTextPixelPos: 0
@@ -213,7 +216,6 @@ MonoBehaviour:
   isHidden: 0
   trackDynamicTextCharacterEndPositions: 0
   localize: 1
-  topAligned: 0
   languagesToForceLatinFont: 
   localizePlaceholders: 1
   dontResetEffectsOnRender: 0

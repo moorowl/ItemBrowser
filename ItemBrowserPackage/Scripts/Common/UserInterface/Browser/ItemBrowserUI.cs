@@ -238,6 +238,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			AddObjectsFromGrid(mainView.itemsListView);
 			AddObjectsFromGrid(mainView.creaturesListView);
 			AddObjectsFromGrid(mainView.checklistListView);
+			AddObjectsFromGrid(mainView.cookingListView);
 
 			return;
 

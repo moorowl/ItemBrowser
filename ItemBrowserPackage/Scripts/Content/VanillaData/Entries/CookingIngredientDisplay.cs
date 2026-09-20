@@ -18,7 +18,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		protected override void OnRenderDescription(CookingIngredient entry, EntryDescriptionButton description) {
 			description.AddLine(new TextAndFormatFields {
 				text = "ItemBrowser-ObjectEntryDescriptions/CookingIngredient_0",
-				color = UserInterfaceUtility.DescriptionColor
+				color = Manager.ui.hoverTextSettings.canBeCookedColor
 			});
 			
 			description.AddPadding();
@@ -28,8 +28,9 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 
 				if (conditionData.conditionID != ConditionID.None && conditionData.value != 0) {
 					var text = ConditionUI.GetConditionTextAndFormatFields(default, conditionData, false, false, false);
-					text.color = UserInterfaceUtility.DescriptionColor;
+					text.color = UserInterfaceUtility.AlmostWhiteColor;
 					text.dontLocalizeFormatFields = true;
+
 					description.AddLine(text);
 				}
 			}

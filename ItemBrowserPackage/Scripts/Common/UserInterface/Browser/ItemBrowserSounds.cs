@@ -28,7 +28,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		}
 
 		public static void PlayToggleBrowser() {
-			AudioManager.Sfx(SfxTableID.inventorySFXInfoTab, Manager.main.player.transform.position);
+            if (Manager.main.player != null)
+			    AudioManager.Sfx(SfxTableID.inventorySFXInfoTab, Manager.main.player.transform.position);
 		}
 
 		public static void PlayError() {
@@ -43,7 +44,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 					AudioManager.Sfx(SfxTableID.turfDamage, source.transform.position, volumeMultiplier: 0.3f);
 					break;
 				case MainTab.Cooking:
-					AudioManager.Sfx(SfxTableID.cattleEating, source.transform.position, volumeMultiplier: 0.15f);
+					AudioManager.Sfx(SfxTableID.cattleEating, source.transform.position, volumeMultiplier: 0.3f);
 					break;
 				case MainTab.Checklist:
 					AudioManager.Sfx(SfxTableID.cavelingBruteScratch, source.transform.position, volumeMultiplier: 0.75f);
@@ -63,7 +64,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public static void PlayInteract(Component source, ObjectDataCD objectData) {
 			var soundId = ObjectUtility.GetInteractSoundId(objectData);
 			if (soundId != 0)
-				AudioManager.Sfx(soundId, source.transform.position, volumeMultiplier: 0.3f);
+				AudioManager.Sfx(soundId, source.transform.position, volumeMultiplier: 0.2f);
 		}
 	}
 }

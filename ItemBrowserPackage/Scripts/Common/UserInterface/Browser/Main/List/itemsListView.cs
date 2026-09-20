@@ -13,8 +13,8 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			return ItemBrowserAPI.Registry.ItemFilters;
 		}
 
-		public override List<ObjectDataCD> GetIncludedObjects() {
-			return ItemBrowserAPI.Registry.Items.ToList();
+		public override HashSet<ObjectDataCD> GetIncludedObjects() {
+			return ItemBrowserAPI.Registry.Items;
 		}
 	}
 }

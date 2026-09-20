@@ -99,7 +99,7 @@ namespace ItemBrowser.Common.Api {
 				.Select(objectData => new {
 					Id = ObjectUtility.GetInternalName(objectData),
 					Variation = objectData.variation,
-					AuthoringPrefabName = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).prefabInfos[0].ecsPrefab.name
+					AuthoringPrefabName = PugDatabase.GetObjectInfo(objectData.objectID, objectData.variation).prefabInfo.GetAuthoring().name
 				})
 				.ToList()
 			);
@@ -172,6 +172,17 @@ namespace ItemBrowser.Common.Api {
 			});
 		}
 
+		public static bool IsCookingIndexed(ObjectDataCD objectData) {
+			return Registry.CookingObjects.Contains(objectData);
+		}
+		
+		public static bool IsCookingIndexed(ObjectID id, int variation = 0) {
+			return IsChecklistIndexed(new ObjectDataCD {
+				objectID = id,
+				variation = variation
+			});
+		}
+		
 		public static bool IsTechnicalObject(ObjectDataCD objectData) {
 			return Registry.TechnicalObjects.Contains(objectData);
 		}
@@ -250,7 +261,7 @@ namespace ItemBrowser.Common.Api {
 			OnBrowserUpdate?.Invoke();
 		}
 
-		[HarmonyPatch(typeof(PlayerController), "OnOccupied")]
+		[HarmonyPatch(typeof(PlayerController), "OnSpawn")]
 		[HarmonyPostfix]
 		private static void InitBrowserFromPlayer(PlayerController __instance) {
 			if (!__instance.isLocal)
@@ -260,7 +271,7 @@ namespace ItemBrowser.Common.Api {
 			__instance.StartCoroutine(InitBrowserOnWorldEnteredRoutine());
 		}
 
-		[HarmonyPatch(typeof(PlayerController), "OnFree")]
+		[HarmonyPatch(typeof(PlayerController), "OnDespawn")]
 		[HarmonyPostfix]
 		private static void UninitBrowserFromPlayer(PlayerController __instance) {
 			if (!__instance.isLocal)

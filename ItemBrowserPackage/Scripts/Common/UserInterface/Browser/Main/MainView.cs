@@ -14,12 +14,14 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public HistoryView historyView;
 		public OptionsView optionsView;
 		public ChecklistListView checklistListView;
+		public CookingListView cookingListView;
 		public Transform tabButtonsRoot;
 		public ItemBrowserButton itemsTabButton;
 		public ItemBrowserButton creaturesTabButton;
 		public ItemBrowserButton historyTabButton;
 		public ItemBrowserButton optionsTabButton;
 		public ItemBrowserButton checklistTabButton;
+		public ItemBrowserButton cookingTabButton;
 
 		private MainTab _selectedTab;
 		private UIelement _lastSelectedElement;
@@ -27,6 +29,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		private readonly List<MainTab> _allTabs = new() {
 			MainTab.Items,
 			MainTab.Creatures,
+			MainTab.Cooking,
 			MainTab.Checklist,
 			MainTab.History,
 			MainTab.Options
@@ -49,6 +52,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			itemsListView.UpdateSearchAndListRefresh();
 			creaturesListView.UpdateSearchAndListRefresh();
 			checklistListView.UpdateSearchAndListRefresh();
+			cookingListView.UpdateSearchAndListRefresh();
 		}
 
 		private void UpdateControllerInput() {
@@ -115,6 +119,10 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 		public void SwapToChecklistTab() {
 			SwapSelectedTab(MainTab.Checklist);
 		}
+		
+		public void SwapToCookingTab() {
+			SwapSelectedTab(MainTab.Cooking);
+		}
 
 		private void SwapToNextTab() {
 			SwapSelectedTab(_allAvailableTabs[GetNextTabIndex(1)]);
@@ -141,6 +149,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				MainTab.History => historyView,
 				MainTab.Options => optionsView,
 				MainTab.Checklist => checklistListView,
+				MainTab.Cooking => cookingListView,
 				_ => throw new ArgumentOutOfRangeException()
 			};
 		}
@@ -152,6 +161,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				MainTab.History => historyTabButton,
 				MainTab.Options => optionsTabButton,
 				MainTab.Checklist => checklistTabButton,
+				MainTab.Cooking => cookingTabButton,
 				_ => throw new ArgumentOutOfRangeException()
 			};
 		}

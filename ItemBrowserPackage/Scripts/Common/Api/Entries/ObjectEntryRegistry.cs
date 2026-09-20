@@ -56,14 +56,16 @@ namespace ItemBrowser.Common.Api.Entries {
 			foreach (var entries in _entries)
 				entries.Clear();
 
-			var allObjects = DatabaseConversionUtility.GetPrefabList(Manager.ecs.pugDatabase)
-				.Select(prefabData => {
+			var allObjects = ScriptableData.GetDataBlocks<EntityAuthoringDataBlock>()
+				.Select(dataBlock => dataBlock.prefab?.GetComponent<IEntityMonoBehaviourData>())
+				.Where(entityMonoBehaviourData => entityMonoBehaviourData != null && !entityMonoBehaviourData.ObjectInfo.isCustomScenePrefab)
+				.Select(entityMonoBehaviourData => {
 					var objectData = new ObjectData {
-						objectID = prefabData.ObjectInfo.objectID,
-						variation = prefabData.ObjectInfo.variation
+						objectID = entityMonoBehaviourData.ObjectInfo.objectID,
+						variation = entityMonoBehaviourData.ObjectInfo.variation
 					};
 
-					return (objectData, prefabData.ObjectInfo.prefabInfos[0].ecsPrefab);
+					return (objectData, entityMonoBehaviourData.GameObject);
 				})
 				.Where(entry => ObjectUtility.IsPrimaryVariation(entry.objectData) && !ItemBrowserAPI.IsDeprecatedObject(entry.objectData))
 				.ToList();

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace ItemBrowser.Common.Api.SortingAndFiltering {
 	public record Filter {
@@ -7,7 +8,8 @@ namespace ItemBrowser.Common.Api.SortingAndFiltering {
 		public readonly string Name;
 		public readonly string Description;
 
-		public ObjectID Icon { get; set; }
+		public Sprite IconFromSprite { get; set; }
+		public ObjectID IconFromObject { get; set; }
 		public string Symbol { get; set; } = "?";
 		public string[] NameFormatFields { get; set; }
 		public bool LocalizeNameFormatFields { get; set; } = true;
