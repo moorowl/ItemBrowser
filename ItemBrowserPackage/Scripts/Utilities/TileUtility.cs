@@ -46,7 +46,7 @@ namespace ItemBrowser.Utilities {
 		}
 		
 		public static string GetLocalizedDisplayName(TileType tileType, Tileset? tileset) {
-			if (tileset == null)
+			if (tileset == null || IsTilesetIrrelevant(tileType))
 				return API.Localization.GetLocalizedTerm($"ItemBrowser-AnyTileType/{tileType}");
 
 			if (IsBlock(tileType, tileset.Value, out var wallObjectId, out _)) {
@@ -61,6 +61,10 @@ namespace ItemBrowser.Utilities {
 				return ObjectUtility.GetLocalizedDisplayNameOrDefault(objectInfo.objectID, objectInfo.variation);
 
 			return $"{tileType}/{tileset}";
+		}
+
+		private static bool IsTilesetIrrelevant(TileType tileType) {
+			return tileType == TileType.pit;
 		}
 	}
 }
