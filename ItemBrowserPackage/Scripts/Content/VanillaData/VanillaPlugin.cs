@@ -184,6 +184,7 @@ namespace ItemBrowser.Content.VanillaData {
 			AddFilters_Faction(registry);
 			AddFilters_Rarity(registry);
 			AddFilters_Level(registry);
+			AddFilters_SourcesAndUsages(registry);
 			AddFilters_VersionAdded(registry);
 		}
 
@@ -741,6 +742,72 @@ namespace ItemBrowser.Content.VanillaData {
 					Group = versionGroup
 				});
 			}
+		}
+		
+		private static void AddFilters_SourcesAndUsages(ItemBrowserRegistry registry) {
+			var entryRegistry = ItemBrowserAPI.ObjectEntryRegistry;
+			
+			// Sources
+			const string sourceGroup = "ItemBrowser-Filters/Source";
+
+			foreach (var (category, objects) in entryRegistry.GetAllUniqueCategoriesAndAssociatedObjects(ObjectEntryType.Source).OrderByDescending(entry => entry.Category.Priority)) {
+				if (!TryGetScopeForObjectList(objects, out var scope))
+					continue;
+				
+				registry.AddFilter(sourceGroup, new Filter($"{sourceGroup}_Source") {
+					IconFromObject = category.Icon,
+					NameFormatFields = new[] { API.Localization.GetLocalizedTerm(category.Title) ?? category.Title },
+					LocalizeNameFormatFields = true,
+					DescriptionFormatFields = new[] { category.Title },
+					LocalizeDescriptionFormatFields = true,
+					Function = objectData => objects.Contains(objectData),
+					Scope = scope,
+					Group = sourceGroup
+				});
+			}
+			
+			// Usages
+			const string usageGroup = "ItemBrowser-Filters/Usage";
+
+			foreach (var (category, objects) in entryRegistry.GetAllUniqueCategoriesAndAssociatedObjects(ObjectEntryType.Usage).OrderByDescending(entry => entry.Category.Priority)) {
+				if (!TryGetScopeForObjectList(objects, out var scope))
+					continue;
+				
+				registry.AddFilter(usageGroup, new Filter($"{usageGroup}_Usage") {
+					IconFromObject = category.Icon,
+					NameFormatFields = new[] { API.Localization.GetLocalizedTerm(category.Title) ?? category.Title },
+					LocalizeNameFormatFields = true,
+					DescriptionFormatFields = new[] { category.Title },
+					LocalizeDescriptionFormatFields = true,
+					Function = objectData => objects.Contains(objectData),
+					Scope = scope,
+					Group = usageGroup
+				});
+			}
+		}
+
+		private static bool TryGetScopeForObjectList(HashSet<ObjectDataCD> objects, out FilterAndSorterScope scope) {
+			scope = FilterAndSorterScope.None;
+			if (objects.Any(IsItemIndexed))
+				scope |= FilterAndSorterScope.Items;
+			if (objects.Any(IsCreatureIndexed))
+				scope |= FilterAndSorterScope.Creatures;
+			if (objects.Any(IsChecklistObject))
+				scope |= FilterAndSorterScope.Checklist;
+			
+			return scope != FilterAndSorterScope.None;
+		}
+		
+		private static bool TryGetScopeForObjectList(HashSet<ObjectID> objects, out FilterAndSorterScope scope) {
+			scope = FilterAndSorterScope.None;
+			if (objects.Any(id => IsItemIndexed(new ObjectDataCD { objectID = id })))
+				scope |= FilterAndSorterScope.Items;
+			if (objects.Any(id => IsCreatureIndexed(new ObjectDataCD { objectID = id })))
+				scope |= FilterAndSorterScope.Creatures;
+			if (objects.Any(id => IsChecklistObject(new ObjectDataCD { objectID = id })))
+				scope |= FilterAndSorterScope.Checklist;
+			
+			return scope != FilterAndSorterScope.None;
 		}
 
 		private static bool IsItemIndexed(ObjectDataCD objectData) {

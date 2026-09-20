@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 2108018792, guid: e853a5af7d19630282ad0af7b5dabadc, type: 3}
-  m_Name: Source_FromUnknownMod
+  m_Name: Source_Source
   m_EditorClassIdentifier: 
   m_overload:
     m_address:
       m_low: 0
       m_high: 0
   m_address:
-    m_low: 7927742401805063547
-    m_high: -737605139655291240
+    m_low: -2777353119490788330
+    m_high: -7272627341840117
   m_dynamicCollections:
     m_list: []
   m_localizedTexts:
@@ -66,8 +66,8 @@ MonoBehaviour:
         m_address:
           m_low: 681352171529052915
           m_high: 2314507893210082619
-      title: From unknown mods
-      description: '{0} added by unknown mods'
+      title: '{0}'
+      description: '{0} with a {1} source'
     - m_language:
         m_address:
           m_low: 6040640903323332866
@@ -102,8 +102,8 @@ MonoBehaviour:
         m_address:
           m_low: 7851011593462244222
           m_high: 4794823751170882376
-      title: De mods desconhecidos
-      description: '{0} adicionados por mods de fontes desconhecidas.'
+      title: '{0}'
+      description: '{0} com uma fonte {1}'
     - m_language:
         m_address:
           m_low: -998452581336238672
@@ -132,10 +132,10 @@ MonoBehaviour:
   m_prevImportPrimaryEntry:
     m_language:
       m_address:
-        m_low: 681352171529052915
-        m_high: 2314507893210082619
-    title: From unknown mods
-    description: '{0} added by unknown mods'
+        m_low: 0
+        m_high: 0
+    title: '{0}'
+    description: '{0} with a {1} source'
   m_shouldBeLocalized: 1
   m_header: ItemBrowser-Filters
   references:
