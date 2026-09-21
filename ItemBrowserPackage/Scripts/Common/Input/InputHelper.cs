@@ -23,6 +23,7 @@ namespace ItemBrowser.Common.Input {
 		public static bool IsPickUpStackHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.PICK_UP_HALF);
 		public static bool IsToggleFavoritePressed => Manager.input.singleplayerInputModule.WasButtonPressedDownThisFrame(PlayerInput.InputType.LOCKING_TOGGLE);
 		public static bool IsCopyPressed => UnityEngine.Input.GetKey(KeyCode.LeftControl) && UnityEngine.Input.GetKeyDown(KeyCode.C);
+		public static bool IsCompareHeld => Manager.input.singleplayerInputModule.IsButtonCurrentlyDown(PlayerInput.InputType.COMPARE);
 		
 		private static bool IsBrowserRelatedInputsDisabled {
 			get {

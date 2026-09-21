@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using ItemBrowser.Common.Api;
 using ItemBrowser.Common.Api.Entries;
 using ItemBrowser.Common.Input;
@@ -11,8 +12,10 @@ using ItemBrowser.Utilities.DataStructures;
 using Pug.UnityExtensions;
 using PugMod;
 using UnityEngine;
+// ReSharper disable InconsistentNaming
 
 namespace ItemBrowser.Common.UserInterface.Browser {
+	[HarmonyPatch]
 	public class ItemBrowserSlot : SlotUIBase, IScrollItem {
 		private static SlotIcon EmptyIcon => new BasicSlotIcon(new ObjectDataCD());
 		
@@ -421,6 +424,21 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 				return 10;
 
 			return 1;
+		}
+
+		private static readonly MemberInfo MiRenderCompareToolTip = typeof(UIMouse).GetMembersChecked().First(x => x.GetNameChecked() == "RenderCompareToolTip");
+		
+		[HarmonyPatch(typeof(UIMouse), "LateUpdate")]
+		[HarmonyPostfix]
+		private static void HandleItemComparisonManually(UIMouse __instance) {
+			if (!__instance.pointer.gameObject.activeInHierarchy || Manager.ui.currentSelectedUIElement is not ItemBrowserSlot slot || !InputHelper.IsCompareHeld)
+				return;
+			
+			var containedObjectData = slot.Icon.ContainedObject.objectData;
+			if (containedObjectData.objectID == ObjectID.None)
+				return;
+			
+			__instance.slotCompareTooltip.gameObject.SetActive((bool) API.Reflection.Invoke(MiRenderCompareToolTip, __instance));;
 		}
 	}
 }
