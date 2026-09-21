@@ -385,7 +385,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			if (amountNumber == null)
 				return false;
 			
-			if ((amount.Max > 1 || alwaysShowAmount) && !AmountIsShownAsBar() && HasBeenDiscovered) {
+			if ((amount.Max > 1 || alwaysShowAmount) && HasBeenDiscovered) {
 				var text = UserInterfaceUtility.FormatRange(amount);
 				
 				amountNumber.gameObject.SetActive(true);
