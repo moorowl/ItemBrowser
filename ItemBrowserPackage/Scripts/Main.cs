@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 // ReSharper disable InconsistentNaming
 
 public class Main : IMod {
-	public const string Version = "1.5";
+	public const string Version = "1.6";
 	public const string InternalName = "ItemBrowser";
 	public const string DisplayName = "Item Browser";
 
