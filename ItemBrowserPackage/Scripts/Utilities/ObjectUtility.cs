@@ -849,7 +849,10 @@ namespace ItemBrowser.Utilities {
 				var primaryIngredient = CookedFoodCD.GetPrimaryIngredientFromVariation(objectToCraft.variation);
 				var secondaryIngredient = CookedFoodCD.GetSecondaryIngredientFromVariation(objectToCraft.variation);
 
-				return objects.GetValueOrDefault(primaryIngredient) > 0 && objects.GetValueOrDefault(secondaryIngredient) > 0;
+				if (primaryIngredient == secondaryIngredient)
+					return objects.GetValueOrDefault(primaryIngredient) >= 2;
+
+				return objects.GetValueOrDefault(primaryIngredient) >= 1 && objects.GetValueOrDefault(secondaryIngredient) >= 1;
 			}
 			
 			var recipeInfo = PugDatabase.GetObjectInfo(objectToCraft.objectID, objectToCraft.variation);

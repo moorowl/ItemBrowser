@@ -116,9 +116,12 @@ namespace ItemBrowser.Utilities {
 			ItemBrowserAPI.ItemBrowserUI.IsShowing = false;
 
 			if (!Manager.ui.characterWindow.isShowing) {
-				Manager.ui.HideAllInventoryAndCraftingUI();
+				Manager.ui.TryHideAllInventoryAndCraftingUI();
 				Manager.ui.OnPlayerInventoryOpen();
 			}
+
+			if (Manager.ui.creativeModeUI.isShowing)
+				Manager.ui.OnCreativeModeUIClose();
 			
 			if (!Manager.ui.characterWindow.isShowing)
 				Manager.ui.characterWindow.Show();

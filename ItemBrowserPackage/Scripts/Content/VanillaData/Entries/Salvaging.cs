@@ -10,6 +10,7 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 		public ObjectID Result { get; set; }
 		public (int Min, int Max) ResultAmount { get; set; }
 		public ObjectID ItemSalvaged { get; set; }
+		public float? ChanceForExtraItem { get; set; }
 
 		public class Provider : ObjectEntryProvider {
 			public override void Register(ObjectEntryRegistry registry, List<(ObjectData ObjectData, GameObject Authoring)> allObjects) {
@@ -45,13 +46,15 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						if (!hasDurability || !hasLevel)
 							minAmount = maxAmount;
 
-						if (!Mathf.Approximately(maxAmount % 1, 0f))
+						var hasChanceForExtraItem = !Mathf.Approximately(maxAmount % 1, 0f);
+						if (hasChanceForExtraItem)
 							maxAmount++;
 
 						var materialEntry = new Salvaging {
 							Result = craftingObject.objectID,
 							ResultAmount = ((int) minAmount, (int) maxAmount),
-							ItemSalvaged = objectData.objectID
+							ItemSalvaged = objectData.objectID,
+							ChanceForExtraItem = hasChanceForExtraItem ? maxAmount % 1 : 0
 						};
 						registry.Register(ObjectEntryType.Source, materialEntry.Result, 0, materialEntry);
 						registry.Register(ObjectEntryType.Usage, materialEntry.ItemSalvaged, 0, materialEntry);

@@ -226,7 +226,7 @@ namespace ItemBrowser.Common.UserInterface.Browser {
 			for (var i = 0; i < group.Count; i++) {
 				var filter = group[i];
 
-				result.Append(PugText.ProcessText(filter.Name, filter.NameFormatFields, true, filter.LocalizeNameFormatFields));
+				result.Append(PugText.ProcessText(filter.Name, filter.NameFormatFields, true, false));
 				if (i < group.Count - 1)
 					result.Append(", ");
 			}

@@ -96,7 +96,7 @@ namespace ItemBrowser.Common.Api {
 			foreach (var type in API.Reflection.GetTypes(0)) {
 				if (component.AssociatedEntry.IsAssignableFrom(type)) {
 					EntryToDisplayComponent.TryAdd(type, component);
-					Logger.LogInfo($"{type.GetNameChecked()} -> {component.gameObject.name} display");
+					// Logger.LogInfo($"{type.GetNameChecked()} -> {component.gameObject.name} display");
 				}
 			}
 		}

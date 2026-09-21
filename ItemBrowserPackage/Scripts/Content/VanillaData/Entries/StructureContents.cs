@@ -141,17 +141,25 @@ namespace ItemBrowser.Content.VanillaData.Entries {
 						for (var entryIdx = 0; entryIdx < spawnTemplate.entries.Length; entryIdx++) {
 							ref var entry = ref spawnTemplate.entries[entryIdx];
 
-							if (entry.disabled || entry.chanceToAppearAtAll <= 0f)
+							if (entry.disabled || entry.chanceToAppearAtAll <= 0f) {
+								// Debug.Log($"Skip {entry.objectToSpawn.objectID} because disabled or chance is < =0");
 								continue;
+							}
 
-							if (entry.canSpawnOn.Length > 0 && !entry.canSpawnOn.ToArray().Any(canSpawnOn => objectsThatCouldHaveSpawned.Contains(canSpawnOn)))
+							if (entry.canSpawnOn.Length > 0 && !entry.canSpawnOn.ToArray().Any(canSpawnOn => objectsThatCouldHaveSpawned.Contains(canSpawnOn))) {
+								// Debug.Log($"Skip {entry.objectToSpawn.objectID} (canSpawnOn) it can't spawn on anything ({string.Join(", ", objectsThatCouldHaveSpawned)})");
 								continue;
+							}
 
-							if (entry.canNotSpawnOn.Length > 0 && !entry.canNotSpawnOn.ToArray().All(canNotSpawnOn => objectsThatCouldHaveSpawned.Contains(canNotSpawnOn)))
+							if (entry.canNotSpawnOn.Length > 0 && entry.canNotSpawnOn.ToArray().All(canNotSpawnOn => !objectsThatCouldHaveSpawned.Contains(canNotSpawnOn))) {
+								// Debug.Log($"Skip {entry.objectToSpawn.objectID} (canNotSpawnOn) it can't spawn on anything ({string.Join(", ", objectsThatCouldHaveSpawned)})");
 								continue;
+							}
 
-							if (entry.canSpawnNextTo.Length > 0 && !entry.canSpawnNextTo.ToArray().Any(canSpawnNextTo => objectsThatCouldHaveSpawned.Contains(canSpawnNextTo)))
+							if (entry.canSpawnNextTo.Length > 0 && !entry.canSpawnNextTo.ToArray().Any(canSpawnNextTo => objectsThatCouldHaveSpawned.Contains(canSpawnNextTo))) {
+								// Debug.Log($"Skip {entry.objectToSpawn.objectID} (canSpawnNextTo) it can't spawn on anything ({string.Join(", ", objectsThatCouldHaveSpawned)})");
 								continue;
+							}
 
 							for (var variationIdx = 0; variationIdx < entry.objectToSpawn.variations.Length; variationIdx++) {
 								var variation = entry.objectToSpawn.variations[variationIdx];

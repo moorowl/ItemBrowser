@@ -33,6 +33,23 @@ namespace ItemBrowser.Common.Api.Entries {
 			return GetEntries<T>(type, objectData.objectID, objectData.variation);
 		}
 
+		public IEnumerable<(ObjectEntryCategory Category, HashSet<ObjectDataCD> Objects)> GetAllUniqueCategoriesAndAssociatedObjects(ObjectEntryType type) {
+			var results = new Dictionary<ObjectEntryCategory, HashSet<ObjectDataCD>>();
+
+			foreach (var (objectData, lookup) in _entries[(int) type]) {
+				foreach (var entry in lookup.GetEntries()) {
+					var category = entry.Category;
+					
+					if (!results.ContainsKey(category))
+						results[category] = new HashSet<ObjectDataCD>();
+					
+					results[category].Add(objectData);
+				}
+			}
+			
+			return results.Select(entry => (entry.Key, entry.Value));
+		} 
+
 		public void Register(ObjectEntryType type, ObjectID id, int variation, ObjectEntry entry) {
 			id = TryReplaceObjectID(id);
 			if (id == ObjectID.None || !ObjectUtility.IsPrimaryVariation(id, variation) || (type == ObjectEntryType.Source && ItemBrowserAPI.IsDeprecatedObject(id, variation)))

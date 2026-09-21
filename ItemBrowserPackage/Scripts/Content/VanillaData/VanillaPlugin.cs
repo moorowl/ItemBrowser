@@ -176,7 +176,7 @@ namespace ItemBrowser.Content.VanillaData {
 		}
 		
 		private static void AddFilters(ItemBrowserRegistry registry) {
-			AddFilters_Source(registry);
+			AddFilters_AddedBy(registry);
 			AddFilters_Damage(registry);
 			AddFilters_Equipment(registry);
 			AddFilters_Type(registry);
@@ -188,9 +188,9 @@ namespace ItemBrowser.Content.VanillaData {
 			AddFilters_VersionAdded(registry);
 		}
 
-		private static void AddFilters_Source(ItemBrowserRegistry registry) {
-			// Source
-			const string sourceGroup = "ItemBrowser-Filters/Source";
+		private static void AddFilters_AddedBy(ItemBrowserRegistry registry) {
+			// Added by
+			const string addedByGroup = "ItemBrowser-Filters/AddedBy";
 			const string unknownModSymbol = "?";
 
 			var itemsByMod = new Dictionary<long, HashSet<ObjectDataCD>>();
@@ -220,21 +220,21 @@ namespace ItemBrowser.Content.VanillaData {
 			
 			// General modded content filters
 			if (itemsByMod.Count > 0) {
-				registry.AddFilter(sourceGroup, new Filter($"{sourceGroup}_FromMods") {
+				registry.AddFilter(addedByGroup, new Filter($"{addedByGroup}_FromMods") {
 					Symbol = "#",
 					Function = ModUtility.IsModded,
 					Scope = FilterAndSorterScope.Items
 				});	
 			}
 			if (creaturesByMod.Count > 0) {
-				registry.AddFilter(sourceGroup, new Filter($"{sourceGroup}_FromMods") {
+				registry.AddFilter(addedByGroup, new Filter($"{addedByGroup}_FromMods") {
 					Symbol = "#",
 					Function = ModUtility.IsModded,
 					Scope = FilterAndSorterScope.Creatures
 				});
 			}
 			if (checklistObjectsByMod.Count > 0) {
-				registry.AddFilter(sourceGroup, new Filter($"{sourceGroup}_FromMods") {
+				registry.AddFilter(addedByGroup, new Filter($"{addedByGroup}_FromMods") {
 					Symbol = "#",
 					Function = ModUtility.IsModded,
 					Scope = FilterAndSorterScope.Checklist
@@ -246,7 +246,7 @@ namespace ItemBrowser.Content.VanillaData {
 				var displayName = ModUtility.GetDisplayName(mod);
 				var isUnknownMod = mod == ModUtility.UnknownModId;
 
-				registry.AddFilter(sourceGroup, new Filter($"{sourceGroup}_" + (isUnknownMod ? "FromUnknownMod" : "FromMod")) {
+				registry.AddFilter(addedByGroup, new Filter($"{addedByGroup}_" + (isUnknownMod ? "FromUnknownMod" : "FromMod")) {
 					Symbol = isUnknownMod ? unknownModSymbol : displayName[..Math.Min(displayName.Length, 2)],
 					NameFormatFields = new[] { displayName },
 					LocalizeNameFormatFields = false,
@@ -254,14 +254,14 @@ namespace ItemBrowser.Content.VanillaData {
 					LocalizeDescriptionFormatFields = false,
 					Function = objectData => associatedItems.Contains(objectData),
 					Scope = FilterAndSorterScope.Items,
-					Group = sourceGroup
+					Group = addedByGroup
 				});
 			}
 			foreach (var (mod, associatedCreatures) in creaturesByMod) {
 				var displayName = ModUtility.GetDisplayName(mod);
 				var isUnknownMod = mod == ModUtility.UnknownModId;
 
-				registry.AddFilter(sourceGroup, new Filter($"{sourceGroup}_" + (isUnknownMod ? "FromUnknownMod" : "FromMod")) {
+				registry.AddFilter(addedByGroup, new Filter($"{addedByGroup}_" + (isUnknownMod ? "FromUnknownMod" : "FromMod")) {
 					Symbol = isUnknownMod ? unknownModSymbol : displayName[..Math.Min(displayName.Length, 2)],
 					NameFormatFields = new[] { displayName },
 					LocalizeNameFormatFields = false,
@@ -269,14 +269,14 @@ namespace ItemBrowser.Content.VanillaData {
 					LocalizeDescriptionFormatFields = false,
 					Function = objectData => associatedCreatures.Contains(objectData),
 					Scope = FilterAndSorterScope.Creatures,
-					Group = sourceGroup
+					Group = addedByGroup
 				});
 			}
 			foreach (var (mod, associatedChecklistObjects) in checklistObjectsByMod) {
 				var displayName = ModUtility.GetDisplayName(mod);
 				var isUnknownMod = mod == ModUtility.UnknownModId;
 
-				registry.AddFilter(sourceGroup, new Filter($"{sourceGroup}_" + (isUnknownMod ? "FromUnknownMod" : "FromMod")) {
+				registry.AddFilter(addedByGroup, new Filter($"{addedByGroup}_" + (isUnknownMod ? "FromUnknownMod" : "FromMod")) {
 					Symbol = isUnknownMod ? unknownModSymbol : displayName[..Math.Min(displayName.Length, 2)],
 					NameFormatFields = new[] { displayName },
 					LocalizeNameFormatFields = false,
@@ -284,7 +284,7 @@ namespace ItemBrowser.Content.VanillaData {
 					LocalizeDescriptionFormatFields = false,
 					Function = objectData => associatedChecklistObjects.Contains(objectData),
 					Scope = FilterAndSorterScope.Checklist,
-					Group = sourceGroup
+					Group = addedByGroup
 				});
 			}
 		}
